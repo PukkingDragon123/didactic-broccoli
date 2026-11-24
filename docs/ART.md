@@ -49,8 +49,9 @@ lists everything under the standard, worst first, in shots/textures/lowres_list.
   roads, pavements, lane-side walls below 3.5 m, furniture, machines, interior props. At the eye height of 1.6 m (72°
   FOV) one texel is about 2 screen pixels on the floor at 1080p and 2.5 at 1440p, 4-5 at arm's length: crisp, fine
   pixel art, never a smear and never a blocky 4 cm pixel.
-- **Far surfaces: 128 px/m** (pass >= 115). Roofs, upper storeys above 3.5 m, the skyline, anything more than 6 m
-  from where you can walk.
+- **Far surfaces: 128 px/m** (pass >= 115) for roofs, upper storeys above 3.5 m and anything 6-30 m from where you can
+  walk; further away it is what the screen can show: 768 / distance px/m (a texel stays under ~1.3 screen pixels at
+  1080p), never under 16 px/m, so the skyline at 80 m needs ~10 px/m and memory isn't spent on texels nobody sees.
 - **Hand-held things and toys: 512 px/m** (looked at from 0.3-0.5 m).
 - How: surfaces are baked offline from real CC0 photos (Poly Haven) at the target density and turned into pixel art
   (art/lowpix/world_arch/hd/make_hd.py -> public/textures/hd/*.webp, loaded by src/gfx/hdtex.js wherever the old

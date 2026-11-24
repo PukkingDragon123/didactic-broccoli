@@ -2,7 +2,7 @@
  "name": "tree_sakura",
  "description": "Somei-yoshino cherry: short stout trunk, wide spreading limbs, low flat dome",
  "license": "CC0-1.0",
- "density": 40,
+ "density": 96,
  "budget": {
   "tris": 60000,
   "colors": 400

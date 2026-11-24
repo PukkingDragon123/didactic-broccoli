@@ -2,7 +2,7 @@
  "name": "tree_pine",
  "description": "Japanese black pine (kuromatsu), garden-pruned: twisting trunk, tiered cloud pads",
  "license": "CC0-1.0",
- "density": 40,
+ "density": 96,
  "budget": {
   "tris": 60000,
   "colors": 400

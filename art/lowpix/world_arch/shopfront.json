@@ -2,7 +2,7 @@
  "name": "shopfront",
  "description": "Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails",
  "license": "CC0-1.0",
- "density": 48,
+ "density": 96,
  "budget": {
   "tris": 60000,
   "colors": 400

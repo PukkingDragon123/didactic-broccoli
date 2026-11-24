@@ -1,0 +1,44 @@
+{
+ "id": "shopbag_own",
+ "src": "art/lowpix/world/made/shopbag.glb",
+ "credit": {
+  "title": "Corner-shop carrier bag (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shopbag.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 796,
+ "tex": 512,
+ "size": [
+  0.313,
+  0.387,
+  0.146
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#857452",
+   "#a49874",
+   "#bbb69e",
+   "#d5d3c6",
+   "#f0f0ec",
+   "#f2f2ef",
+   "#f3f3f2",
+   "#f5f5f5",
+   "#f7f7f7"
+  ],
+  "m1": [
+   "#620b25",
+   "#7e1128",
+   "#991829",
+   "#b31f26",
+   "#cc2e28",
+   "#d65443",
+   "#da7c64",
+   "#de9d83",
+   "#e4bba2"
+  ]
+ },
+ "warnings": []
+}

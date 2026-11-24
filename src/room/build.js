@@ -280,7 +280,8 @@ export function buildRoom(game, group) {
   B.box(M.wood, 0.06, 0.06, cz1 - cz0 + 0.06, x0 + 0.01, 1.74, (cz0 + cz1) / 2, { tint: 0xc89868 });
   B.box(M.wood, 0.06, 0.03, cz1 - cz0, x0 + 0.01, 0, (cz0 + cz1) / 2, { tint: 0xa87850 });
   // fusuma: the left leaf closed, the right one slid behind it (so half the closet shows)
-  const fus = [unitMat(() => T.fusuma(58, 112, 1), { hd: 'fusuma1' }), unitMat(() => T.fusuma(58, 112, 2), { hd: 'fusuma2' })];
+  // (plain meshes, not batched: no vertex colours, or the colour attribute is missing and they render black)
+  const fus = [unitMat(() => T.fusuma(58, 112, 1), { hd: 'fusuma1', vertexColors: false }), unitMat(() => T.fusuma(58, 112, 2), { hd: 'fusuma2', vertexColors: false })];
   const fw = (cz1 - cz0) / 2;
   const leaf = (m, z, dx) => { const g = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.74, fw), [m, m, M.edge, M.edge, M.edge, M.edge]); g.position.set(x0 + dx, 0.87, z); group.add(g); return g; };
   leaf(fus[0], cz0 + fw / 2, -0.015);
@@ -288,7 +289,7 @@ export function buildRoom(game, group) {
   // (what's inside, the folded spare futon, a toy box, old books and boxes: real models, src/room/dressing.js)
 
   // ---------------------------------------------------------------- the front door (inside face) + genkan bits
-  const doorMat = unitMat(() => T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2, hd: 'doorInside' });
+  const doorMat = unitMat(() => T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2, hd: 'doorInside', vertexColors: false });
   const doorLeaf = new THREE.Mesh(new THREE.BoxGeometry(d.w, d.h, 0.05), [M.edge, M.edge, M.edge, M.edge, M.edge, doorMat]);
   doorLeaf.geometry.translate(d.w / 2, 0, 0); // hinge on the left edge
   doorLeaf.position.set(dx0, d.y + d.h / 2, z1 - 0.03);

@@ -2700,6 +2700,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - coin changer by Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb), CC0 1.0. Shipped as `models/lowpix/world/coinchanger.glb`
 - Coin tray (カルトン) by Gacha Garage (made for the game, art/lowpix/world/made/cointray.glb), CC0 1.0. Shipped as `models/lowpix/world/cointray.glb`
 - Corn puff stick (our own model; wrapper from a real photo) by Gacha Garage (made for the game, art/lowpix/world/made/puff_stick.glb), CC0 1.0. Shipped as `models/lowpix/world/puff_stick_own.glb`
+- Corner-shop carrier bag (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/shopbag.glb), CC0 1.0. Shipped as `models/lowpix/world/shopbag_own.glb`
 - Crushed can (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb), CC0 1.0. Shipped as `models/lowpix/world/litter_can.glb`
 - Curve mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb), CC0 1.0. Shipped as `models/lowpix/world/mirror_pole.glb`
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0. Shipped as `models/lowpix/world/dagashirack.glb`
@@ -2759,6 +2760,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0. Shipped as `models/lowpix/world/ashtray_stand.glb`
 - Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
 - Street light by Gacha Garage (made for the game, art/lowpix/world/made/streetlight.glb), CC0 1.0. Shipped as `models/lowpix/world/streetlight.glb`
+- Tiled ofuro with a hinoki rim (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/ofuro_own.glb), CC0 1.0. Shipped as `models/lowpix/world/ofuro_own.glb`
 - tube box by Gacha Garage (made for the game, art/lowpix/world/made/tubebox.glb), CC0 1.0. Shipped as `models/lowpix/world/tubebox.glb`
 - Twin tub (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/twin_tub.glb), CC0 1.0. Shipped as `models/lowpix/world/twin_tub_own.glb`
 - Wash-place shower (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/shower.glb), CC0 1.0. Shipped as `models/lowpix/world/shower_own.glb`
@@ -3051,7 +3053,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - motorcycle helmet classic by zeleniy89 (https://sketchfab.com/3d-models/motorcycle-helmet-classic-a4d4ef2f17c843828cf24d538a9edbd3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_moto.glb`
 - Mount Fuji Volcano - Japan by Nate Loper  🗺️ ⛏🏺 (https://sketchfab.com/3d-models/mount-fuji-volcano-japan-bb83a647e5a8481d85a4bb33119d40a5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/fuji_diorama.glb`
 - Mustang Sunglasses - MU 1683 by Berk Gedik (https://sketchfab.com/3d-models/mustang-sunglasses-mu-1683-eeec9fbb427246959acee4e4266b0f0a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_shades.glb`
-- My own old notebook by Neo_minigan (https://sketchfab.com/3d-models/my-own-old-notebook-0f48bdbda70d4fe89fa0477e731dcadc), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/old_notebook.glb`
 - Neckerchief by hectopod (https://sketchfab.com/3d-models/neckerchief-d5c94ab29a3342b1bde11702c5b8e968), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_neckerchief.glb`
 - Noodle Cup by LittleWhiteElk (https://sketchfab.com/3d-models/noodle-cup-60b5fae8d55e48f5bc3a554652d5d9ad), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/room_cupnoodle.glb`
 - NVA PITH HELMET - Mũ Cối Sao Vàng by Long Nguyễn (https://sketchfab.com/3d-models/nva-pith-helmet-mu-coi-sao-vang-7ccc0bdff4ba4af8afcde410758e017d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_pith.glb`
@@ -3177,7 +3178,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Wood Clothes Hanger by ROH3D (https://sketchfab.com/3d-models/wood-clothes-hanger-3b5ada364d634aa18007f9c8d8dc79ce), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/hanger_wood.glb`
 - Wood Display Rack by greasoft (https://sketchfab.com/3d-models/wood-display-rack-dfd6e6a1842d4e0dbbfe9316697f4f75), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_peg_stand.glb`
 - Wood Geta by 3ddans (https://sketchfab.com/3d-models/wood-geta-357cc98173c347ee9ecb89ddb1755133), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/geta.glb`
-- Wooden Bathtub (game ready asset) by Aparicio Silva 3D (https://sketchfab.com/3d-models/wooden-bathtub-game-ready-asset-137881949bb14f78a0ac1fb4d6f3d2f1), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/ofuro_wood.glb`
 - Wooden Crate by YadroGames (https://sketchfab.com/3d-models/wooden-crate-e12fde1101b84b6da40056336a7b309d), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/mk_outbox.glb`
 - Wooden Cutting Board by Coozy (https://sketchfab.com/3d-models/wooden-cutting-board-5a1c3385222a4f35b208faad2837c5c9), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cutting_board.glb`
 - Wooden Dirty Crates - Broken Whole 2 Piece Set by Sunbox Games (https://sketchfab.com/3d-models/wooden-dirty-crates-broken-whole-2-piece-set-1ebaf13ac44748baa845ab7f5cb3fc9f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/junk_box_open.glb`

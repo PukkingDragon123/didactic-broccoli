@@ -9,7 +9,7 @@ COLS = {'red': '#c8382e', 'blue': '#2f62a8', 'yellow': '#e2b42a', 'green': '#3a9
 
 
 def playground():
-    S = Spec('playground', ppm=64, desc='Park play equipment: jungle gym, horizontal bars, swing rails')
+    S = Spec('playground', ppm=192, desc='Park play equipment: jungle gym, horizontal bars, swing rails')
     S.ramps(rust=ramp('#6a3a26', 6, hue=14, sat=0.02, spread=0.75), chrome=ramp('#a8b0b6', 7, hue=10, sat=0.02, spread=0.85),
             white=ramp('#e6e2d8', 6, hue=8, sat=0.02, spread=0.6), **{k: ramp(c, 7, hue=14, sat=0.04, spread=0.8) for k, c in COLS.items()})
     rim = {'light_shift': 1.0, 'dark_shift': -1.0}

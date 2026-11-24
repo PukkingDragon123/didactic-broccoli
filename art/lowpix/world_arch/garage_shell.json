@@ -2,7 +2,7 @@
  "name": "garage_shell",
  "description": "The garage's corrugated roof behind the false front and its exposed east wall",
  "license": "CC0-1.0",
- "density": 24,
+ "density": 96,
  "budget": {
   "tris": 60000,
   "colors": 400

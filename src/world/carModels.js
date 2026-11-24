@@ -48,7 +48,8 @@ function dress(g) {
     if (!o.isMesh) return;
     o.material = [].concat(o.material).map((m) => {
       const n = m.name || '';
-      if (GLASS.test(n) || (m.transparent && !/light|lamp/i.test(n))) {
+      if (!/wheel|tire|tyre|rim|hub/i.test(n) && (GLASS.test(n) || (m.transparent && !/light|lamp/i.test(n)))) {
+        // (a source's alpha-blended wheel is not glass)
         if (!GLASS_M.has(n)) {
           GLASS_M.set(n, new THREE.MeshPhysicalMaterial({ name: 'car-glass', color: 0x8fa3ad, roughness: 0.04, metalness: 0, transparent: true, opacity: 0.3,
             depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.7, specularIntensity: 1 }));
@@ -59,6 +60,7 @@ function dress(g) {
       if (CHROME.test(n)) { m.metalness = 0.85; m.roughness = 0.22; m.envMapIntensity = 1.3; }
       else if (PAINT.test(n)) { m.roughness = 0.42; m.metalness = 0.05; m.envMapIntensity = 0.9; }
       else { m.metalness = Math.min(m.metalness, 0.25); m.roughness = Math.max(m.roughness, 0.5); } // painted pixel art, not CG metal
+      if (/wheel|tire|tyre/i.test(n) && m.transparent) { m.transparent = false; m.opacity = 1; m.alphaTest = 0.5; m.depthWrite = true; }
       return m;
     });
     if (o.material.length === 1) o.material = o.material[0];
@@ -83,7 +85,24 @@ export function carBody(id, { plate: pl = {}, cast = true, onLoad = null } = {})
   f.position.set(0, fy, box.max[2] + 0.012);
   r.position.set(0, ry, box.min[2] - 0.012); r.rotation.y = Math.PI;
   wrap.add(g, f, r);
+  if (id === 'mini_truck') { const gr = grilleSlats(0.5, 0.15); gr.position.set(0, 0.79, 1.672); wrap.add(gr); } // where the maker's badge was
   return wrap;
+}
+
+/** A grille of dark horizontal slats with a lit top lip (pixel art), as a quad facing +z: covers a removed badge. */
+function grilleSlats(w, h) {
+  const W = Math.round(w * 256), H = Math.round(h * 256), c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#3c4044'; g.fillRect(0, 0, W, H);
+  for (let y = 3; y < H - 2; y += 6) { g.fillStyle = '#16181a'; g.fillRect(2, y, W - 4, 3); g.fillStyle = '#8a9094'; g.fillRect(2, y - 1, W - 4, 1); }
+  g.fillStyle = '#9aa0a4'; g.fillRect(0, 0, W, 1); g.fillStyle = '#202326'; g.fillRect(0, H - 1, W, 1);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter;
+  const m = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 });
+  m.name = 'grilleSlats';
+  const q = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+  q.userData.noRim = true;
+  return q;
 }
 
 export function parkedCar(id, parent, { x = 0, z = 0, ry = 0, plate: pl = {}, cast = true } = {}) {

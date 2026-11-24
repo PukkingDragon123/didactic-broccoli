@@ -4120,15 +4120,6 @@
    "name": "Japanese two-storey house"
   },
   {
-   "id": "house_modern",
-   "src": "sketchfab:d690f83d8e8d48e6a532bebe84901595",
-   "h": 7.0,
-   "ppm": 48,
-   "tris": 2000,
-   "cap": 1024,
-   "name": "Japanese Residential Home 01"
-  },
-  {
    "id": "sleepbag",
    "src": "sketchfab:d2ab6e8a8ffc472e9fca8b920662dafe",
    "h": 0.24,

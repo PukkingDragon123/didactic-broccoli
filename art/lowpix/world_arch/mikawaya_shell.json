@@ -2,7 +2,7 @@
  "name": "mikawaya_shell",
  "description": "MIKAWA-YA shell and shop front",
  "license": "CC0-1.0",
- "density": 32,
+ "density": 112,
  "budget": {
   "tris": 60000,
   "colors": 400

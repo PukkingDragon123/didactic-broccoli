@@ -32,7 +32,7 @@ export const SHOP_TEXT = Object.values(artMods)[0]?.SHOP_TEXT || '';
 const ZN = GARAGE.minZ - 0.2; // museum north wall (back of the garage wall)
 const WALL_H = 3.6;
 // the houses seen across the street through the entrance: [world model, x, z from the entrance, turn]
-const HOUSES_ACROSS = [['house_jp', -6.2, -13.0, 0], ['house_modern', 4.6, -11.5, 0]];
+const HOUSES_ACROSS = [['house_jp', -2.0, -13.0, 0]];
 const CELL = 0.5;
 const ENTRANCE = { x0: -1.0, x1: 1.0, h: 2.35 };
 const DOOR = { x0: -GARAGE.doorHalf, x1: GARAGE.doorHalf, h: GARAGE.doorH };
@@ -371,7 +371,7 @@ export class Museum {
     const sky = new THREE.Mesh(new THREE.PlaneGeometry(40, 16), new THREE.MeshBasicMaterial({ color: 0xffb88a, fog: false }));
     sky.position.set(0, 6, zS - 12);
     g.add(sky);
-    // houses across the street (imported hand-made models, lazily loaded): an old tiled two-storey house and a 1990s one
+    // houses across the street (imported hand-made models, lazily loaded): an old tiled two-storey house
     for (const [id, x, z, ry] of HOUSES_ACROSS) {
       const h = assetSlot(lpAsset(id), { cast: false });
       h.position.set(x, 0, zS + z); h.rotation.y = ry;

@@ -195,6 +195,13 @@ export function treeInstances(kind, parent, list, { cast = false, lod = 0, fog =
   return [...wood, im];
 }
 
+/** One lowpix tree (wood + sprig crown) in its own group, scaled by s: for a tree placed as a prop (the museum's decor
+ *  pine and cherry). null if the wood model is not loaded. */
+export function treeModel(kind, s = 1) {
+  const g = new THREE.Group();
+  return treeInstances(kind, g, [{ x: 0, y: 0, z: 0, ry: 0, s }], { cast: true }) ? g : null;
+}
+
 // ------------------------------------------------------------------ batches of sprigs (bushes, ivy, climbers)
 export class Leaves {
   constructor(seed = 1) { this.cards = []; this.seed = seed; this.n = 0; }

@@ -2,7 +2,7 @@
  "name": "villa",
  "description": "The mangaka's Western-style villa: render, slate hip roof, chimney, porch, balcony, front wall",
  "license": "CC0-1.0",
- "density": 16,
+ "density": 48,
  "budget": {
   "tris": 60000,
   "colors": 400

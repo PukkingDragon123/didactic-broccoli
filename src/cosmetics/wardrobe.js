@@ -21,11 +21,15 @@ function mirrorMesh() {
   add(box(W, T, T, 0, H, 0)); add(box(W, T, T, 0, 0.06, 0));
   add(box(T, H, T, -W / 2, H / 2 + 0.03, 0)); add(box(T, H, T, W / 2, H / 2 + 0.03, 0));
   // the glass: a cool grey-blue with stepped pixel streaks (no smooth reflections)
-  const c = document.createElement('canvas'); c.width = 16; c.height = 48;
+  // (drawn at 256 px/m: 104 x 312 for the 0.4 x 1.2 m glass, docs/ART.md)
+  const c = document.createElement('canvas'); c.width = 104; c.height = 312;
   const x = c.getContext('2d');
-  x.fillStyle = '#7d93a6'; x.fillRect(0, 0, 16, 48);
-  x.fillStyle = '#93a9bb'; for (let i = 0; i < 48; i++) { x.fillRect((i * 0.5 + 2) | 0, 47 - i, 2, 1); x.fillRect((i * 0.5 + 7) | 0, 47 - i, 1, 1); }
-  x.fillStyle = '#6a7f92'; x.fillRect(0, 44, 16, 4);
+  x.fillStyle = '#7d93a6'; x.fillRect(0, 0, 104, 312);
+  x.fillStyle = '#86a0b2'; x.fillRect(0, 0, 104, 120); // the room's lighter top half in the glass, a clean step
+  x.fillStyle = '#93a9bb'; for (let i = 0; i < 312; i++) { x.fillRect((i * 0.5 + 12) | 0, 311 - i, 10, 1); x.fillRect((i * 0.5 + 40) | 0, 311 - i, 4, 1); x.fillRect((i * 0.5 + 50) | 0, 311 - i, 2, 1); }
+  x.fillStyle = '#a8bccb'; for (let i = 0; i < 312; i++) x.fillRect((i * 0.5 + 14) | 0, 311 - i, 3, 1);
+  x.fillStyle = '#6a7f92'; x.fillRect(0, 286, 104, 26);
+  x.fillStyle = '#5e7286'; x.fillRect(0, 0, 104, 3); x.fillRect(0, 0, 3, 312); x.fillRect(101, 0, 3, 312); // the bevel's shadow
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.NearestFilter; tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
   const glass = new THREE.Mesh(new THREE.PlaneGeometry(W - T, H - T), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.25, metalness: 0.3 }));

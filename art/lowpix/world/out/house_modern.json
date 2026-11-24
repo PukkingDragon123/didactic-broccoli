@@ -1,0 +1,45 @@
+{
+ "id": "house_modern",
+ "src": "sketchfab:d690f83d8e8d48e6a532bebe84901595",
+ "credit": {
+  "title": "Japanese Residential Home 01",
+  "author": "Morrissey Alexander",
+  "authorUrl": "https://sketchfab.com/reckzilla",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-residential-home-01-d690f83d8e8d48e6a532bebe84901595",
+  "site": "Sketchfab"
+ },
+ "tris": 1663,
+ "tex": 832,
+ "size": [
+  7.905,
+  7,
+  6.964
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#2a2720",
+   "#35332c",
+   "#403e38",
+   "#4a4945",
+   "#535352",
+   "#6a6a6a",
+   "#828282",
+   "#9a9a9a",
+   "#b1b1b1"
+  ],
+  "m1": [
+   "#3e1917",
+   "#502720",
+   "#60362a",
+   "#704634",
+   "#7f583f",
+   "#997351",
+   "#ab8f6b",
+   "#b8a88a",
+   "#c7bea7"
+  ]
+ },
+ "warnings": []
+}

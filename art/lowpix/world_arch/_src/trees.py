@@ -72,7 +72,7 @@ def bend(a, b, sag, rng, n=4, wob=0.12):
 
 class Tree:
     def __init__(self, id, desc, seed, bark, bark_photo, leaf):
-        self.S = Spec(id, ppm=40, desc=desc)
+        self.S = Spec(id, ppm=96, desc=desc)
         _mats(self.S, bark, bark_photo, leaf)
         self.rng = random.Random(seed)
         self.clumps = []  # [x, y, z, rx, ry, rz]

@@ -17,7 +17,7 @@ def hash2(a, b):
 
 
 def ghost_alley():
-    S = Spec('ghost_alley', ppm=64, desc='Ghost alley fixtures: post box, lamp, shrine offerings, drain, weeds')
+    S = Spec('ghost_alley', ppm=192, desc='Ghost alley fixtures: post box, lamp, shrine offerings, drain, weeds')
     S.ramps(red=ramp('#b82a20', 7, hue=14, sat=0.04, spread=0.8), iron=ramp('#2a2a2c', 6, hue=10, sat=0.02, spread=0.7),
             cream=ramp('#e8e2d2', 6, hue=8, sat=0.02, spread=0.6), wood=ramp('#5a4a3a', 7, hue=12, sat=0.04, spread=0.8),
             enamel=ramp('#2e5a3e', 6, hue=14, sat=0.04, spread=0.75), stone=ramp('#8a8880', 7, hue=8, sat=0.02, spread=0.75),

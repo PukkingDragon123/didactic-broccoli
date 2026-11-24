@@ -3,6 +3,7 @@
 // Models face +z, centred on x=0/z=0, resting on y=0. All noise is hashed (deterministic).
 import { C, shade, mix } from '../../voxel/palette.js';
 import { gloss, glow, glass } from '../../voxel/VoxelModel.js';
+import { treeModel } from '../../world/foliage.js';
 
 // ------------------------------------------------------------------ helpers
 const TAU = Math.PI * 2;
@@ -376,6 +377,7 @@ const PROPS = {
 
   sakura_tree: {
     name: 'Sakura Tree', jp: '桜の木', voxel: 0.04, footprint: [2, 2], themes: ['nature', 'shrine', 'cute'], beauty: 10,
+    mesh: () => treeModel('sakura', 0.3), // drawn as the lane's lowpix cherry (wood + blossom crown); the voxels are only its size
     leaves: { kind: 'blossom', mix: ['blossom2', 0.5], size: 0.7, density: 2.4, coreTone: 0xb88a96, match: (c) => { const r = c >> 16 & 255, g = c >> 8 & 255, b = c & 255; return r > 170 && r > g + 18 && b > g - 12; } },
     build(v) {
       const BARK = bark([0x4a3a36, 0x5a4842, 0x3e302d, 0x66524a], 2);
@@ -436,6 +438,7 @@ const PROPS = {
 
   pine_tree: {
     name: 'Black Pine', jp: '黒松', voxel: 0.035, footprint: [1.5, 1.5], themes: ['nature', 'shrine'], beauty: 8,
+    mesh: () => treeModel('pine', 0.4), // drawn as the lane's lowpix black pine; the voxels are only its size
     leaves: { kind: 'pine', mix: ['pineTop', 0.3], size: 0.55, density: 2.2 },
     build(v) {
       const BARK = bark([0x5a4a42, 0x6e5a4c, 0x4a3c36, 0x7a6252], 2);

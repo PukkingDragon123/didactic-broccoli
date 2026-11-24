@@ -867,7 +867,7 @@
    0.6,
    0.102
   ],
-  "bytes": 138060
+  "bytes": 104816
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -4599,43 +4599,23 @@
   ],
   "bytes": 29464
  },
- "ofuro_wood": {
-  "id": "ofuro_wood",
-  "name": "Wooden Bathtub (game ready asset)",
-  "src": "sketchfab:137881949bb14f78a0ac1fb4d6f3d2f1",
-  "title": "Wooden Bathtub (game ready asset)",
-  "author": "Aparicio Silva 3D",
-  "authorUrl": "https://sketchfab.com/apariciosilva3D",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/wooden-bathtub-game-ready-asset-137881949bb14f78a0ac1fb4d6f3d2f1",
-  "site": "Sketchfab",
-  "tris": 3000,
-  "tex": 304,
+ "ofuro_own": {
+  "id": "ofuro_own",
+  "name": "Tiled ofuro with a hinoki rim (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/ofuro_own.glb",
+  "title": "Tiled ofuro with a hinoki rim (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ofuro_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 600,
+  "tex": 1024,
   "size": [
-   0.838,
+   1.04,
    0.6,
-   1.833
+   0.76
   ],
-  "bytes": 97852
- },
- "old_notebook": {
-  "id": "old_notebook",
-  "name": "My own old notebook",
-  "src": "sketchfab:0f48bdbda70d4fe89fa0477e731dcadc",
-  "title": "My own old notebook",
-  "author": "Neo_minigan",
-  "authorUrl": "https://sketchfab.com/neominigan",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/my-own-old-notebook-0f48bdbda70d4fe89fa0477e731dcadc",
-  "site": "Sketchfab",
-  "tris": 1398,
-  "tex": 476,
-  "size": [
-   2.788,
-   0.03,
-   1.896
-  ],
-  "bytes": 54500
+  "bytes": 262768
  },
  "ottoman": {
   "id": "ottoman",
@@ -5137,7 +5117,7 @@
    0.3,
    0.959
   ],
-  "bytes": 106264
+  "bytes": 84612
  },
  "post_box": {
   "id": "post_box",
@@ -6296,6 +6276,24 @@
   ],
   "bytes": 10648
  },
+ "shopbag_own": {
+  "id": "shopbag_own",
+  "name": "Corner-shop carrier bag (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shopbag.glb",
+  "title": "Corner-shop carrier bag (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shopbag.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 796,
+  "tex": 512,
+  "size": [
+   0.313,
+   0.387,
+   0.146
+  ],
+  "bytes": 36792
+ },
  "showcase": {
   "id": "showcase",
   "name": "shop counter",
@@ -6341,14 +6339,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 196,
+  "tris": 194,
   "tex": 512,
   "size": [
    1.132,
    0.336,
    0.661
   ],
-  "bytes": 56044
+  "bytes": 57600
  },
  "sink_round": {
   "id": "sink_round",
@@ -7505,7 +7503,7 @@
    1.032,
    0.756
   ],
-  "bytes": 91456
+  "bytes": 69816
  },
  "typewriter": {
   "id": "typewriter",
@@ -9284,8 +9282,8 @@
  },
  "yokai_kappa": {
   "id": "yokai_kappa",
-  "name": "Kappa",
-  "src": "sketchfab:136cd1ad671c4b208cdf64aab42ea172",
+  "name": "Kappa (arms lowered)",
+  "src": "art/lowpix/world/made/kappa_posed.glb",
   "title": "Kappa",
   "author": "samnorwoodgo",
   "authorUrl": "https://sketchfab.com/samnorwoodgo",
@@ -9295,11 +9293,11 @@
   "tris": 3499,
   "tex": 512,
   "size": [
-   0.758,
+   0.531,
    0.95,
    0.383
   ],
-  "bytes": 103824
+  "bytes": 101732
  },
  "yokai_kasa": {
   "id": "yokai_kasa",

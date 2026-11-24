@@ -26,11 +26,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DUMP = os.path.join(HERE, '..', 'houses.json')
 
 # block id -> house ids (side + x, z in cm; see houseId in Town.js) and its texel density
-BLOCKS = {  # two shared atlases (near side, far side), 32 px/m (crisp walls up close)
-    'lane_near': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200', 'hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 32),
-    'lane_far': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650', 'hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 32),
+BLOCKS = {  # two shared atlases (near side, far side); the walls are not in them (WALLS_IN_GAME), so 48 px/m fits
+    'lane_near': (['hn-705_340', 'hn-1255_370', 'hn-1800_528', 'hn-2325_200', 'hn705_140', 'hn1395_390', 'hn1935_220', 'hn2420_260'], 48),
+    'lane_far': (['hf-2325_1630', 'hf-1810_1590', 'hf-1242_1490', 'hf-450_1650', 'hf140_1660', 'hf725_1600', 'hf1270_1840', 'hf1820_1600'], 48),
 }
-LITE_PPM = 12  # the second rows behind (background, seen over the roofs): one atlas for all of them
+LITE_PPM = 24  # the second rows behind (background, seen over the roofs): one atlas for all of them
+# The wall faces (wallA, wallB, the tile skirt) are drawn by the game with the HD wall surfaces at 256 px/m
+# (src/world/Town.js house(), src/gfx/hdtex.js), so the atlases only carry roofs, casings, gutters and services.
+WALLS_IN_GAME = True
 
 # ------------------------------------------------------------------ materials -> paint
 WALLS = {  # name: (base colour, kind)
@@ -130,13 +133,15 @@ class House:
         if base:
             self.box('found', W + 0.08, base, D + 0.08, 0, 0, -D / 2, style='found', hide=['bottom', 'top'] + back,
                      paint={'layers': self.vents(W, base, o)})
-        self.box('wallA', W, h1, D, 0, base, -D / 2, style=self.wall_style(wallA), hide=['bottom'] + back + (['top'] if h2 else []),
+        if not WALLS_IN_GAME:
+          self.box('wallA', W, h1, D, 0, base, -D / 2, style=self.wall_style(wallA), hide=['bottom'] + back + (['top'] if h2 else []),
                  paint={'layers': self.streaks(0, W, fy, o) + self.splash(base, 0)})
         top = base + h1
         if h2:
             self.box('band', W + 0.06, 0.12, D + 0.06, 0, top - 0.06, -D / 2, hide=['bottom'] + back, **self.tint(o.get('trim', 0x6a5a4a), 2.8, style='wood'))
-            self.box('wallB', W, h2, D, 0, top, -D / 2, style=self.wall_style(wallB), hide=['bottom'] + back,
-                     paint={'layers': self.streaks(1, W, fy, o) + self.soot(o)})
+            if not WALLS_IN_GAME:
+                self.box('wallB', W, h2, D, 0, top, -D / 2, style=self.wall_style(wallB), hide=['bottom'] + back,
+                         paint={'layers': self.streaks(1, W, fy, o) + self.soot(o)})
             top += h2
         self.top = top
         self.roof(W, D, top, o, wallB)
@@ -149,7 +154,7 @@ class House:
         if o.get('pent') and h2:
             self.pent(W, fy, o)
         sk = o.get('skirt')
-        if isinstance(sk, dict):
+        if isinstance(sk, dict) and not WALLS_IN_GAME:
             mat = mname(sk.get('mat'), 'skirt')
             self.box('skirt', W + 0.02, sk.get('h', 0.9), 0.03, 0, base, 0.012, style=self.wall_style(mat), hide=['bottom', 'back'])
         if o.get('corner') is not None:

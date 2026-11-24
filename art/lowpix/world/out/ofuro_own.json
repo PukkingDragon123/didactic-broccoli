@@ -1,0 +1,44 @@
+{
+ "id": "ofuro_own",
+ "src": "art/lowpix/world/made/ofuro_own.glb",
+ "credit": {
+  "title": "Tiled ofuro with a hinoki rim (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ofuro_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 600,
+ "tex": 1024,
+ "size": [
+  1.04,
+  0.6,
+  0.76
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#8f3d1b",
+   "#b75c27",
+   "#d28240",
+   "#d9a76d",
+   "#e2c698",
+   "#e4d2a8",
+   "#e7ddb7",
+   "#eae6c6",
+   "#eeedd4"
+  ],
+  "m1": [
+   "#1c468b",
+   "#2867b2",
+   "#3e8ccf",
+   "#6aadd6",
+   "#94c9df",
+   "#a5d5e2",
+   "#b4dfe5",
+   "#c4e7e9",
+   "#d3edec"
+  ]
+ },
+ "warnings": []
+}

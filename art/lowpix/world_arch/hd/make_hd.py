@@ -518,16 +518,20 @@ def blocks(W, H, bw, bh, asset, rng, mean, joint=3, k=24, seed=5, std=0.08, mort
 
 
 def cblocks(W, H, bw, bh, rng, mean, joint=3, mortar='#8a867e', seed=5, k=18):
-    """Japanese concrete blocks (ブロック): 40 x 20 cm, stretcher bond. Each face one flat cast tone (+-5 %) with the
-    photo's fine grit only (a high-pass of the scan: no camo blotches), pores as little 2-texel pits with a lit lip,
-    a lit top edge and a shaded underside per block, chipped arrises, raked joints in the shadow of the block above,
-    faint rain runs from the joints."""
+    """Japanese concrete blocks (ブロック): 40 x 20 cm, stretcher bond. Each face its own cast tone (+-5 %) with soft
+    clouding (the scan's broad tone, +-4 %) and the scan's fine grit kept faint (+-2 %): no dark pores, no speckle.
+    Raked joints: the block above throws a shadow into the top of the joint, the mortar, a lit lower lip; each block
+    a lit top arris and a shaded underside; chipped corners. (Stains and moss at the foot are the wall's own decals:
+    town_stainBase / town_stainDrip.)"""
     from PIL import Image as _I, ImageFilter as _F
     src = L.seamless(L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.0))
     g = L.lum(src)
-    blur = np.asarray(_I.fromarray((np.clip(g, 0, 1) * 255).astype(np.uint8)).filter(_F.GaussianBlur(2.5)), np.float32) / 255
-    grit = g - blur
-    grit = grit / max(grit.std(), 1e-3)
+    g8 = _I.fromarray((np.clip(g, 0, 1) * 255).astype(np.uint8))
+    lo = np.asarray(g8.filter(_F.GaussianBlur(10)), np.float32) / 255
+    mid = np.asarray(g8.filter(_F.GaussianBlur(1.5)), np.float32) / 255
+    lo = (lo - lo.mean()) / max(lo.std(), 1e-3)
+    hi = (mid - np.asarray(g8.filter(_F.GaussianBlur(4)), np.float32) / 255)
+    hi = hi / max(hi.std(), 1e-3)
     base = np.array(L.hexrgb(mean), np.float32)
     mort = np.array(L.hexrgb(mortar), np.float32)
     a = np.zeros((H, W, 3), np.float32)
@@ -538,31 +542,89 @@ def cblocks(W, H, bw, bh, rng, mean, joint=3, mortar='#8a867e', seed=5, k=18):
         for c in range(-1, W // bw + 1):
             x0, y0 = c * bw + off + joint // 2, r * bh + joint // 2
             w, h = bw - joint, bh - joint
-            gp = L.cut(grit[..., None], int(rng.integers(0, W)), int(rng.integers(0, H)), w, h)[..., 0]
-            face = base * rng.uniform(0.95, 1.05) * (1 + np.clip(gp, -2.5, 2.5) * 0.045)[..., None]
+            ox, oy = int(rng.integers(0, W)), int(rng.integers(0, H))
+            l_ = L.cut(lo[..., None], ox, oy, w, h)[..., 0]
+            h_ = L.cut(hi[..., None], ox, oy, w, h)[..., 0]
+            face = base * rng.uniform(0.95, 1.05) * (1 + np.clip(l_, -2.5, 2.5) * 0.04 + np.clip(h_, -2, 2) * 0.02)[..., None]
             xs = np.arange(x0, x0 + w) % W
             a[y0:y0 + h][:, xs] = face
             cells.append((x0, y0, w, h))
-    for _ in range(12):  # faint rain runs from the joints, and splash grime
-        L.streak(a, rng.integers(0, W), rng.integers(0, H), rng.integers(20, 120), f=rng.uniform(0.9, 0.95), rng=rng, width=2)
     pal = L.palette(np.clip(a, 0, 1), k, seed)
     b = f32(L.snap(to8(a), pal))
     for (x0, y0, w, h) in cells:
         xs = np.arange(x0, x0 + w) % W
-        for _ in range(int(w * h * 0.006)):  # pores
-            px_, py_ = x0 + int(rng.integers(1, w - 2)), y0 + int(rng.integers(1, h - 2))
-            L.wpx(b, px_, py_, f=0.72); L.wpx(b, px_ + (1 if rng.random() < 0.5 else 0), py_ + 1, f=0.8); L.wpx(b, px_ - 1, py_ - 1, f=1.08)
-        b[y0, xs] *= 1.1
-        b[y0 + h - 1, xs] *= 0.82
-        b[y0:y0 + h, x0 % W] *= 1.05
-        b[y0:y0 + h, (x0 + w - 1) % W] *= 0.88
-        b[(y0 + h) % H, xs] *= 0.7  # the joint below sits in this block's shadow
-        if rng.random() < 0.3:
+        b[y0, xs] *= 1.07                    # the lit top arris
+        b[y0 + h - 1, xs] *= 0.86            # the shaded underside
+        b[y0:y0 + h, (x0 + w - 1) % W] *= 0.92
+        jy = (y0 + h) % H                    # the joint below: shadow of this block, then mortar, then a lit lip
+        b[jy, xs] = mort * 0.62
+        b[(jy + joint - 1) % H, xs] = mort * 1.08
+        if rng.random() < 0.25:              # a chipped corner, mortar-dark
             cx = x0 if rng.random() < 0.5 else x0 + w - 1
             for d in range(int(rng.integers(2, 5))):
                 for e in range(3 - min(d, 2)):
-                    L.wpx(b, cx + (d if cx == x0 else -d), y0 + e, c=mort * 0.92)
-    return L.snap(to8(np.clip(b, 0, 1)), pal)
+                    L.wpx(b, cx + (d if cx == x0 else -d), y0 + e, c=mort * 0.85)
+    for c in range(len(cells)):              # head joints: shadow on the left edge of the gap
+        x0, y0, w, h = cells[c]
+        b[y0:y0 + h, (x0 - joint) % W] = mort * 0.7
+    b = np.clip(b, 0, 1)
+    return L.snap(to8(b), L.palette(b, k + 4, seed + 1))
+
+
+@recipe('town_stainDrip', (1, 1))
+def town_stain_drip():
+    """Rain run-off down a block wall from its coping: soft damp streaks, each its own width and length, darker in
+    two clean steps near the top, no dither. Alpha-cut (the wall shows between)."""
+    rng = np.random.default_rng(1084)
+    W = H = px(1)
+    a = np.zeros((H, W, 3), np.float32)
+    al = np.zeros((H, W), np.float32)
+    c1, c2 = np.array(L.hexrgb('#7c776e'), np.float32), np.array(L.hexrgb('#6c675f'), np.float32)
+    x = 0
+    while x < W:
+        w = int(rng.integers(3, 10))
+        if rng.random() < 0.6:
+            ln = int(H * (0.25 + 0.75 * rng.random() ** 1.4))
+            wob = 0
+            for y in range(ln):
+                if rng.random() < 0.04:
+                    wob += int(rng.choice([-1, 1]))
+                ww = max(1, int(round(w * (1 - 0.6 * y / ln))))
+                xs = np.arange(x + wob, x + wob + ww) % W
+                a[y, xs] = c2 if y < ln * 0.35 else c1
+                al[y, xs] = 1
+        x += w + int(rng.integers(1, 8))
+    a[0:3] = c2 * 0.92; al[0:3] = 1  # the wet line under the coping
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=6, seed=70, paint=0, clean_passes=0)
+    return rgba(img, al)
+
+
+@recipe('town_stainBase', (1.1, 0.5))
+def town_stain_base():
+    """Splash-back grime and moss along the foot of a wall: a dark wet band with a ragged top edge, lighter dried
+    splash above it in clean steps, cushions of moss in the low joints and corners. Alpha-cut, no dither."""
+    rng = np.random.default_rng(1094)
+    W, H = px(1.1), px(0.5)
+    from PIL import Image as _I, ImageFilter as _F
+    n = np.asarray(_I.fromarray((rng.random((H // 6 + 1, W // 6 + 1)) * 255).astype(np.uint8)).resize((W, H), _I.BICUBIC).filter(_F.GaussianBlur(3)), np.float32) / 255
+    y = np.arange(H)[:, None] / H           # 0 at the top of the strip, 1 at the ground
+    top = 0.35 + 0.35 * n                    # ragged edge
+    al = (y > top).astype(np.float32)
+    band = np.clip((y - top) / np.maximum(1 - top, 1e-3), 0, 1)
+    step = np.floor(band * 3) / 3            # three clean steps of darkness toward the ground
+    a = np.array(L.hexrgb('#8a8478'), np.float32) * (1 - 0.32 * step)[..., None]
+    moss = np.zeros((H, W), bool)
+    for _ in range(9):
+        cx, cy = int(rng.integers(0, W)), int(H - rng.integers(4, 30))
+        rx, ry = int(rng.integers(10, 34)), int(rng.integers(5, 12))
+        yy, xx = np.ogrid[0:H, 0:W]
+        d = ((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2 + (n - 0.5) * 0.6
+        moss |= d < 1
+    mc = np.array(L.hexrgb('#5a6a34'), np.float32)
+    a[moss] = mc * (0.85 + 0.3 * (n[moss] > 0.5))[..., None]
+    al[moss] = 1
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=8, seed=71, paint=0, clean_passes=1)
+    return rgba(img, al)
 
 
 @recipe('blockHD', (2, 2))
