@@ -794,7 +794,7 @@
    0.741,
    0.032
   ],
-  "bytes": 16708
+  "bytes": 16796
  },
  "busstop": {
   "id": "busstop",
@@ -867,7 +867,7 @@
    0.6,
    0.102
   ],
-  "bytes": 104816
+  "bytes": 101808
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -1144,7 +1144,7 @@
    0.995,
    0.235
   ],
-  "bytes": 46964
+  "bytes": 47308
  },
  "cash_register": {
   "id": "cash_register",
@@ -1549,7 +1549,7 @@
    0.008,
    0.089
   ],
-  "bytes": 6032
+  "bytes": 6024
  },
  "clock_alarm": {
   "id": "clock_alarm",
@@ -2081,7 +2081,7 @@
    0.11,
    0.904
   ],
-  "bytes": 202356
+  "bytes": 201668
  },
  "dish_rack": {
   "id": "dish_rack",
@@ -3068,7 +3068,7 @@
    0.221,
    0.372
   ],
-  "bytes": 24444
+  "bytes": 25204
  },
  "haunted_well": {
   "id": "haunted_well",
@@ -4597,7 +4597,7 @@
    0.016,
    0.21
   ],
-  "bytes": 29464
+  "bytes": 29568
  },
  "ofuro_own": {
   "id": "ofuro_own",
@@ -4615,7 +4615,7 @@
    0.6,
    0.76
   ],
-  "bytes": 262768
+  "bytes": 259192
  },
  "ottoman": {
   "id": "ottoman",
@@ -5117,7 +5117,7 @@
    0.3,
    0.959
   ],
-  "bytes": 84612
+  "bytes": 84060
  },
  "post_box": {
   "id": "post_box",
@@ -5416,7 +5416,7 @@
    0.891,
    0.63
   ],
-  "bytes": 290756
+  "bytes": 290332
  },
  "rice_bowl2": {
   "id": "rice_bowl2",
@@ -6292,7 +6292,7 @@
    0.387,
    0.146
   ],
-  "bytes": 36792
+  "bytes": 36760
  },
  "showcase": {
   "id": "showcase",
@@ -6346,7 +6346,7 @@
    0.336,
    0.661
   ],
-  "bytes": 57600
+  "bytes": 56328
  },
  "sink_round": {
   "id": "sink_round",
@@ -7503,7 +7503,7 @@
    1.032,
    0.756
   ],
-  "bytes": 77008
+  "bytes": 78872
  },
  "typewriter": {
   "id": "typewriter",

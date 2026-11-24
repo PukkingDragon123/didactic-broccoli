@@ -166,9 +166,10 @@ void main() {`)
     float up = cn.y;
     if (up > 0.5) {
       float edge = max(max(smoothstep(0.6, 0.95, abs(p.x) / uHalf.x), smoothstep(0.75, 0.97, abs(p.z) / uHalf.y)),
-                       max(1.0 - smoothstep(0.0, 0.12, abs(p.y - uBelt)), 1.0 - smoothstep(0.86, 0.97, up)));
-      float lv = cDust(q, p, ax, smoothstep(0.5, 0.8, up) * (0.03 + 0.97 * edge));
-      if (lv > 0.0) col = mix(col, vec3(0.58, 0.55, 0.48), 0.04 + lv * 0.035);
+                       max(1.0 - smoothstep(0.0, 0.12, abs(p.y - uBelt)), 1.0 - smoothstep(0.72, 0.9, up)));
+      float lv = cDust(q, p, ax, smoothstep(0.5, 0.8, up) * (0.02 + 0.98 * edge));
+      float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));   // dust reads stronger on dark paint: hold it back there
+      if (lv > 0.0) col = mix(col, vec3(0.58, 0.55, 0.48), (0.04 + lv * 0.035) * mix(0.45, 1.0, smoothstep(0.05, 0.4, lum)));
     }
     // mud splashed up from each arch lip: a dark band on the lip, tapering splashes and a few drops above it
     if (an.x > 0.25 && abs(p.x) > 0.25) for (int i = 0; i < 4; i++) {
