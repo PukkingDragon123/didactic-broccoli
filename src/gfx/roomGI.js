@@ -228,6 +228,14 @@ export class RoomGI {
         if (c === r.group || c.isLight || c.isCamera || c.userData.giKeep || hasLight(c)) continue;
         hide(c);
       }
+    } else {
+      // a room on the lane: whatever lies wholly beyond the probes' reach stays out (cheaper probes)
+      _sph2.center.copy(r.box.getCenter(_v2)); _sph2.radius = r.box.getSize(_v2).length() / 2 + (r.sky ? 12 : 3);
+      for (const c of this.scene.children) {
+        if (c.isLight || c.isCamera || !c.visible || hasLight(c)) continue;
+        const b = boundsOf(c);
+        if (b && !b.intersectsSphere(_sph2)) hide(c);
+      }
     }
   }
 
@@ -351,6 +359,19 @@ function castShadows(group) {
     if (!m || m.transparent || m.visible === false || !(m.isMeshStandardMaterial || m.isMeshLambertMaterial || m.isMeshPhongMaterial)) return;
     o.castShadow = true;
   });
+}
+
+const _sph2 = new THREE.Sphere(), _v2 = new THREE.Vector3(), BOUNDS = new WeakMap();
+/** A top-level object's world bounds (cached for a minute: most of the lane never moves). */
+function boundsOf(o) {
+  let e = BOUNDS.get(o);
+  const now = performance.now();
+  if (!e || now - e.t > 60000) {
+    const b = new THREE.Box3().setFromObject(o);
+    e = { b: b.isEmpty() ? null : b.getBoundingSphere(new THREE.Sphere()), t: now };
+    BOUNDS.set(o, e);
+  }
+  return e.b;
 }
 
 const LIT = new WeakMap();

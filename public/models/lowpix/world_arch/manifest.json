@@ -20,6 +20,27 @@
   "bytes": 41728,
   "ppm": 160
  },
+ "candy_kit": {
+  "id": "candy_kit",
+  "name": "Gen-san's FREE CANDY van kit: roof sign, side panels, tray of sweets (our own model, Blender, art/blender/vehicles/van_kit.py)",
+  "min": [
+   -0.679,
+   0.44,
+   -1.25
+  ],
+  "max": [
+   0.965,
+   2.3,
+   0.783
+  ],
+  "tris": 908,
+  "tex": [
+   384,
+   102
+  ],
+  "bytes": 61572,
+  "ppm": 256
+ },
  "garage_shell": {
   "id": "garage_shell",
   "name": "garage_shell",
@@ -367,6 +388,48 @@
    2048
   ],
   "bytes": 806580,
+  "ppm": 256
+ },
+ "packer_truck": {
+  "id": "packer_truck",
+  "name": "2-ton packer garbage truck (our own model, Blender, art/blender/vehicles/packer.py)",
+  "min": [
+   -1.08,
+   0.006,
+   -2.64
+  ],
+  "max": [
+   1.08,
+   2.36,
+   2.57
+  ],
+  "tris": 10136,
+  "tex": [
+   2048,
+   2048
+  ],
+  "bytes": 529812,
+  "ppm": 256
+ },
+ "packer_truck_lod": {
+  "id": "packer_truck_lod",
+  "name": "packer truck, far LOD",
+  "min": [
+   -1.08,
+   0.2,
+   -2.64
+  ],
+  "max": [
+   1.08,
+   2.334,
+   2.57
+  ],
+  "tris": 3170,
+  "tex": [
+   0,
+   0
+  ],
+  "bytes": 79156,
   "ppm": 256
  },
  "park_toilet": {

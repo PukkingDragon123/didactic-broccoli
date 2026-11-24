@@ -340,12 +340,13 @@ export function buildRoom() {
 }
 
 /** The set never moves: its plain meshes are merged into one per material (and shadow casting), so a frame is a few
- *  dozen draw calls instead of a few hundred. Voxel props (multi-material) and anything in `keep` stay as they are. */
+ *  dozen draw calls instead of a few hundred. World models (src/kit/assets.js) and anything in `keep` stay as they are. */
 function mergeStatic(root, keep) {
   root.updateMatrixWorld(true);
   const inv = root.matrixWorld.clone().invert(), buckets = new Map(), done = [];
   root.traverse((o) => {
     if (!o.isMesh || keep.has(o) || Array.isArray(o.material) || o.layers.mask !== 1 << LAYER.room) return;
+    if (o.parent?.userData?.asset) return; // a world model's mesh (quantized attributes, its own atlas): left as it is
     const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
     for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
     g.applyMatrix4(o.matrixWorld.clone().premultiply(inv));
@@ -360,5 +361,5 @@ function mergeStatic(root, keep) {
     m.castShadow = cast; m.receiveShadow = rec;
     root.add(m);
   }
-  // (empty groups left behind are harmless; their voxel children stay where they were)
+  // (empty groups left behind are harmless)
 }

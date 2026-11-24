@@ -57,13 +57,14 @@ export function buildEscalators(zone, gap, yo, { open = () => true } = {}) {
   const lanes = [G.up, G.down];
   const xs = [G.up - 0.52, (G.up + G.down) / 2, G.down + 0.52];
   const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat); m.position.copy(Z.o); Z.group.add(m); return m; };
+  const skirtM = Z.mat(new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.35, metalness: 0.6, side: THREE.DoubleSide }));
   // balustrades: glass between the skirting and the handrail, a black handrail on top, steel skirting at the steps
   for (const x of xs) {
     add(sideStrip(G, x, yo, 0.14, 0.88), glass);
     add(sideStrip(G, x + 0.03, yo, 0.88, 0.97), rubber);
     add(sideStrip(G, x - 0.03, yo, 0.88, 0.97), rubber);
-    add(sideStrip(G, x + 0.06, yo, -0.02, 0.14), metal);
-    add(sideStrip(G, x - 0.06, yo, -0.02, 0.14), metal);
+    add(sideStrip(G, x + 0.06, yo, -0.02, 0.14), skirtM); // (plain meshes: a material without vertex colours, else black)
+    add(sideStrip(G, x - 0.06, yo, -0.02, 0.14), skirtM);
     // the newel ends: the handrail curls down at both landings
     for (const u of [0.05, PATH - 0.05]) B.box(rubber, 0.08, 0.95, 0.12, x, ys(u), pathZ(G, u), {});
   }

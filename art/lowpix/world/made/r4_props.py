@@ -134,6 +134,24 @@ def spline(ctrl, n=10):
     out.append(P[-2]); return out
 
 
+def grid(au, av, c, w, h, step=0.05, r=0.00125, mt='rc_wire'):
+    """A welded wire panel centred on c in the plane (au, av): square-section wires every `step`, both ways."""
+    bm = bmesh.new(); uv = bm.loops.layers.uv.new()
+    n = au.cross(av).normalized()
+    def bar(p0, p1, a, b):
+        vs = [bm.verts.new(p + a * sa * r + b * sb * r) for p in (p0, p1) for sa, sb in ((-1, -1), (1, -1), (1, 1), (-1, 1))]
+        for f in ((0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+            fc = bm.faces.new([vs[i] for i in f])
+            for l, q in zip(fc.loops, ((0, 0), (1, 0), (1, 1), (0, 1))): l[uv].uv = q
+    nu, nv = max(1, round(w / step)), max(1, round(h / step))
+    for i in range(nu + 1):
+        u = -w / 2 + i * w / nu; bar(c + au * u - av * h / 2, c + au * u + av * h / 2, au, n)
+    for j in range(nv + 1):
+        v = -h / 2 + j * h / nv; bar(c + av * v - au * w / 2 + n * 2 * r, c + av * v + au * w / 2 + n * 2 * r, av, n)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return obj('wire', bm, [mt])
+
+
 def quad(w, h, loc, mt, rot=(0, 0, 0)):
     """A plane w x h in its local xz (facing -y), the whole texture on it."""
     bm = bmesh.new(); uv = bm.loops.layers.uv.new()
@@ -174,21 +192,23 @@ elif what == 'recycle_cage':
         for y in (-D / 2, D / 2): box(W, t, t, (0, y, z), 'rc_frame')
         for x in (-W / 2, W / 2): box(t, D, t, (x, 0, z), 'rc_frame')
     box(W, t, t, (0, -D / 2, Hc * 0.5), 'rc_frame')                                     # a mid rail on the front
-    for y, ry in ((-D / 2, 0), (D / 2, math.pi)): quad(W - t, Hc - 0.04, (0, y, Hc / 2), 'rc_mesh', (0, 0, ry))
-    for x, ry in ((-W / 2, -math.pi / 2), (W / 2, math.pi / 2)): quad(D - t, Hc - 0.04, (x, 0, Hc / 2), 'rc_mesh', (0, 0, ry))
-    quad(W - t, D - t, (0, 0, 0.03), 'rc_mesh', (math.pi / 2, 0, 0))                     # the floor
+    # welded wire mesh, modelled wire by wire (5 cm squares, 2.5 mm wire): see-through for real
+    X, Y, Z = Vector((1, 0, 0)), Vector((0, 1, 0)), Vector((0, 0, 1))
+    for y in (-D / 2, D / 2): grid(X, Z, Vector((0, y, Hc / 2)), W - t, Hc - 0.04)
+    for x in (-W / 2, W / 2): grid(Y, Z, Vector((x, 0, Hc / 2)), D - t, Hc - 0.04)
+    grid(X, Y, Vector((0, 0, 0.03)), W - t, D - t)                                      # the floor
     # the lid: its own frame, hinged at the back, closed
     for y in (-D / 2, D / 2): box(W, t, t, (0, y, Hc + 0.02), 'rc_frame')
     for x in (-W / 2, W / 2): box(t, D, t, (x, 0, Hc + 0.02), 'rc_frame')
-    quad(W - t, D - t, (0, 0, Hc + 0.02), 'rc_mesh', (math.pi / 2, 0, 0))
+    grid(X, Y, Vector((0, 0, Hc + 0.02)), W - t, D - t)
     box(0.36, 0.006, 0.18, (0, -D / 2 - 0.016, Hc - 0.17), {'front': 'rc_sign', '*': 'rc_frame'})   # the enamel sign
     # inside: PET bottles and cans, laid in loose layers (each in its own cell: nothing passes through anything)
     def bottle(tex, loc, rot):
         P = [(0.0001, 0.0), (0.03, 0.002), (0.033, 0.012), (0.033, 0.13), (0.03, 0.15), (0.018, 0.18), (0.013, 0.19), (0.013, 0.198), (0.015, 0.2), (0.015, 0.214), (0.0001, 0.215)]
-        o = lathe(P, 12, (0, 0, 0), tex, caps=False); o.rotation_euler = rot; o.location = loc
+        o = lathe(P, 10, (0, 0, 0), tex, caps=False); o.rotation_euler = rot; o.location = loc
     def can(tex, loc, rot, crushed=False):
         P = [(0.0001, 0.0), (0.028, 0.0), (0.033, 0.01), (0.033, 0.11), (0.028, 0.12), (0.027, 0.122), (0.0001, 0.122)]
-        o = lathe(P, 12, (0, 0, 0), tex, caps=False)
+        o = lathe(P, 10, (0, 0, 0), tex, caps=False)
         if crushed:
             for v in o.data.vertices:
                 k = 1 - min(1.0, abs(v.co.z - 0.06) / 0.05); v.co.x *= 1 - 0.5 * k; v.co.y *= 1 + 0.1 * k

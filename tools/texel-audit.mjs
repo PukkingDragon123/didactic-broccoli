@@ -112,7 +112,7 @@ function measure([CLOSE, FAR, SCOPE]) {
       if (!mat || !mat.visible || mat.colorWrite === false) continue;
       const why = mat.vertexColors && !geo.attributes.color && !o.isInstancedMesh ? 'vertexColors without a colour attribute'
         : (mat.color && mat.color.r + mat.color.g + mat.color.b < 0.01 && !mat.map && !(mat.emissive && mat.emissive.r + mat.emissive.g + mat.emissive.b > 0.01) && !mat.transparent) ? 'black material, no map' : null;
-      if (why) black.push(`${why}: ${pl?.name ? '[' + pl.name + '] ' : ''}${label(o)} ${mat.name || mat.type}`);
+      if (why) { const c = new (g.camera.position.constructor)(); o.getWorldPosition(c); black.push(`${why}: ${pl?.name ? '[' + pl.name + '] ' : ''}${label(o)} ${mat.name || mat.type} ${geo.type} ${o.name || ''} at ${[c.x, c.y, c.z].map((v) => v.toFixed(1)).join(',')} parent ${o.parent?.name || o.parent?.type}`); }
     }
     const nInst = o.isInstancedMesh ? Math.min(o.count, 6) : 1;
     for (const gr of groupsG) {

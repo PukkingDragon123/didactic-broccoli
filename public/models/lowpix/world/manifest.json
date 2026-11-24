@@ -5409,14 +5409,14 @@
   "license": "CC0 1.0",
   "url": "",
   "site": "Original",
-  "tris": 11652,
-  "tex": 744,
+  "tris": 12088,
+  "tex": 640,
   "size": [
    0.922,
    0.891,
    0.63
   ],
-  "bytes": 473088
+  "bytes": 290756
  },
  "rice_bowl2": {
   "id": "rice_bowl2",

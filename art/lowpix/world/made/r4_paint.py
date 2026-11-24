@@ -55,6 +55,7 @@ def scuffs(d, W, H_, n, col, y0=0.0, y1=1.0, size=(3, 9)):
 
 
 # ------------------------------------------------------------------ twin tub (二槽式洗濯機)
+random.seed('twin tub (二槽式洗濯機)')
 ENAMEL = (238, 234, 222)
 im, d = paint(512, 512, ENAMEL, k=(0.97, 1.02))
 d.rectangle([0, 448, 511, 511], fill=(176, 196, 204))                       # the kick band
@@ -125,6 +126,7 @@ im, d = paint(128, 128, (52, 52, 56)); save(im, 'tt_rubber')
 im, d = paint(256, 128, (92, 96, 100)); scuffs(d, 256, 128, 12, (120, 124, 126)); save(im, 'tt_plinth')
 
 # ------------------------------------------------------------------ recycling cage (缶・ペットボトル回収かご)
+random.seed('recycling cage (缶・ペットボトル回収かご)')
 im, d = paint(256, 64, (52, 108, 84), k=(0.95, 1.05))
 for _ in range(16): dab(d, R(0, 256), R(0, 64), R(3, 8), R(2, 4), (150, 156, 150))  # chipped paint
 save(im, 'rc_frame')
@@ -136,6 +138,7 @@ for k in range(0, 512 + step, step):
 for x in range(0, 512 + step, step):
     for y in range(0, 512 + step, step): d.rectangle([x - 3, y - 3, x + 3, y + 3], fill=(120, 126, 130, 255))  # the welds
 save(im, 'rc_mesh')
+im = Image.new('RGB', (32, 32), (178, 184, 188)); d = ImageDraw.Draw(im); d.line([0, 10, 31, 10], fill=(222, 226, 228), width=3); save(im, 'rc_wire')   # galvanised wire
 im, d = paint(512, 256, (244, 242, 234), k=(0.98, 1.02))
 d.rectangle([0, 0, 511, 64], fill=(46, 120, 80))
 text(d, (256, 32), 'RECYCLING', 32, (250, 250, 246), 'mm')
@@ -171,6 +174,7 @@ for i, (body, ink, word) in enumerate([((200, 44, 40), (250, 250, 246), 'KICK CO
     save(im, f'rc_can{i}')
 
 # ------------------------------------------------------------------ a cigarette (v: filter end -> lit end)
+random.seed('a cigarette (v: filter end -> lit end)')
 im = Image.new('RGB', (64, 256), (244, 242, 236)); d = ImageDraw.Draw(im)
 d.rectangle([0, 0, 63, 70], fill=(206, 142, 70))
 for _ in range(60): dab(d, R(0, 64), R(0, 70), R(2, 4), R(2, 4), (226, 178, 110))         # cork speckle
@@ -181,6 +185,7 @@ for x in range(0, 64, 9): dab(d, x, 252, 5, 4, (255, 170, 60))
 save(im, 'cig')
 
 # ------------------------------------------------------------------ the granny cart (ショッピングカート)
+random.seed('the granny cart (ショッピングカート)')
 im = Image.new('RGB', (512, 512), (36, 58, 46)); d = ImageDraw.Draw(im)
 for k in range(0, 512, 64):                                                                  # an (original) tartan sett
     d.rectangle([k, 0, k + 22, 511], fill=(28, 40, 72)); d.rectangle([0, k, 511, k + 22], fill=(28, 40, 72))
@@ -202,6 +207,7 @@ save(im, 'cart_wheel')
 im, d = paint(128, 64, (34, 34, 38)); save(im, 'cart_rubber')
 
 # ------------------------------------------------------------------ Grandpa's notebook
+random.seed('Grandpas notebook')
 im, d = paint(512, 512, (52, 64, 92), k=(0.93, 1.06), w=(4, 10), h=(4, 10))                # cloth, worn
 for _ in range(120): x, y = R(0, 512), R(0, 512); d.line([x, y, x + R(4, 12), y], fill=(64, 78, 108))
 for y0 in (0, 488): d.rectangle([0, y0, 511, y0 + 23], fill=(70, 84, 112))                 # rubbed edges
@@ -217,6 +223,7 @@ save(im, 'nb_pages')
 im, d = paint(128, 128, (40, 48, 72)); save(im, 'nb_spine')
 
 # ------------------------------------------------------------------ the bush guy's sign: NOT A BUSH (cardboard, marker)
+random.seed('the bush guys sign: NOT A BUSH (cardboa')
 im, d = paint(512, 256, (196, 160, 108), k=(0.94, 1.05))
 for y in range(0, 256, 7): d.line([0, y, 511, y], fill=(186, 150, 100))                    # the corrugation shows through
 for _ in range(14): dab(d, R(0, 512), R(0, 256), R(20, 60), R(6, 14), (182, 144, 96))       # damp patches
@@ -229,6 +236,7 @@ for x in (14, 40): d.line([x, 0, x, 255], fill=(96, 66, 40))
 save(im, 'sign_stick')
 
 # ------------------------------------------------------------------ a hat box (stripes) and its lid
+random.seed('a hat box (stripes) and its lid')
 im = Image.new('RGB', (512, 128), (242, 228, 206)); d = ImageDraw.Draw(im)
 for x in range(0, 512, 64): d.rectangle([x, 0, x + 31, 127], fill=(226, 148, 156))
 for _ in range(500): x, y = R(0, 512), R(0, 128); c = im.getpixel((int(x) % 512, int(y) % 128)); dab(d, x, y, R(6, 14), R(2, 4), tone(c, R(0.96, 1.03)))
@@ -241,6 +249,7 @@ save(im, 'hb_lid')
 im, d = paint(256, 64, (214, 128, 138)); save(im, 'hb_rim')
 
 # ------------------------------------------------------------------ museum: gold-leaf byobu (金屏風), lacquer, brass
+random.seed('museum: gold-leaf byobu (金屏風), lacquer, ')
 im = Image.new('RGB', (512, 1024), (214, 172, 74)); d = ImageDraw.Draw(im)
 S = 128                                                                                     # one leaf: four across a panel
 for j in range(0, 1024, S):
@@ -256,6 +265,7 @@ im, d = paint(128, 128, (30, 22, 20), k=(0.9, 1.2)); d.line([0, 20, 127, 20], fi
 im, d = paint(64, 64, (196, 160, 80), k=(0.9, 1.1)); d.rectangle([4, 4, 60, 60], outline=(150, 118, 56), width=3); save(im, 'by_brass')
 
 # ------------------------------------------------------------------ museum: the shrine case's roof (copper, aged green)
+random.seed('museum: the shrine cases roof (copper, ')
 im = Image.new('RGB', (512, 512), (82, 140, 116)); d = ImageDraw.Draw(im)
 for y in range(0, 512, 32):                                                                 # copper plates, staggered
     off = 32 if (y // 32) % 2 else 0
@@ -271,6 +281,7 @@ save(im, 'sr_wood')
 im, d = paint(64, 64, (204, 166, 76), k=(0.9, 1.1)); save(im, 'sr_gold')
 
 # ------------------------------------------------------------------ museum: the space pod's base
+random.seed('museum: the space pods base')
 im, d = paint(512, 128, (172, 180, 196), k=(0.96, 1.04))
 for x in range(0, 512, 64):
     d.line([x, 0, x, 127], fill=(120, 128, 146), width=2)
@@ -288,6 +299,7 @@ d.ellipse([4, 4, 508, 508], outline=(150, 160, 180), width=14)
 save(im, 'sp_top')
 
 # ------------------------------------------------------------------ a plastic carrier bag from the corner shop (Mikawaya)
+random.seed('a plastic carrier bag from the corner sh')
 im, d = paint(512, 512, (240, 240, 236), k=(0.985, 1.015), w=(20, 40), h=(4, 8))
 for _ in range(26):                                                                         # creases in the thin plastic
     x, y, L, a = R(0, 512), R(0, 512), R(30, 120), R(-0.6, 0.6)
@@ -299,6 +311,7 @@ text(d, (256, 300), 'GROCER  SINCE 1952', 16, (204, 46, 40), 'mm')
 save(im, 'sb_plastic')
 
 # ------------------------------------------------------------------ the ofuro: glazed tiles (5 cm), hinoki, chrome
+random.seed('the ofuro: glazed tiles (5 cm), hinoki, ')
 for name, glaze in (('tb_tile', (120, 182, 210)), ('tb_tile_in', (150, 204, 226))):
     im = Image.new('RGB', (512, 512), (214, 222, 222)); d = ImageDraw.Draw(im)
     S = 51.2
@@ -315,6 +328,7 @@ save(im, 'tb_hinoki')
 im, d = paint(64, 64, (200, 206, 212), k=(0.9, 1.1)); d.line([0, 20, 63, 20], fill=(240, 244, 248), width=3); save(im, 'tb_chrome')
 
 # ------------------------------------------------------------------ museum: diorama landscape (top-down painting)
+random.seed('museum: diorama landscape (top-down pain')
 W, Hh = 1024, 640
 im, d = paint(W, Hh, (104, 168, 76), k=(0.92, 1.08), w=(10, 26), h=(6, 14))
 for _ in range(500): dab(d, R(0, W), R(0, Hh), R(4, 10), R(3, 6), random.choice([(130, 190, 90), (84, 146, 60), (150, 200, 100)]))

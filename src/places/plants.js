@@ -7,6 +7,7 @@
 // Mikawa-ya. Morning glories open in the morning only.
 //   game.places.plants = { pots, water(pot), lessons }   save: game.state.plants (ensureState)
 import * as THREE from 'three';
+import { detailize } from '../world/surfaces.js';
 import { audio } from '../core/audio.js';
 import { ensureState } from '../game/stateExt.js';
 import { propMesh } from '../world/props.js';
@@ -190,7 +191,9 @@ export class Plants {
     const grp = new THREE.Group();
     grp.position.copy(p);
     g.scene.add(grp);
-    const steel = town?.P ? town.P(0.4, 0.6) : new THREE.MeshStandardMaterial({ color: 0x9aa0a6 });
+    // (town.P is vertex-tinted for the batched town; these are plain meshes, so their own material, or they render black)
+    const steel = new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.4, metalness: 0.6 });
+    if (town?.P) detailize(steel, 'metal');
     const pipe = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.75, 0.06).translate(0, 0.375, 0), steel); grp.add(pipe);
     const spout = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.14).translate(0, 0.72, 0.06), steel); grp.add(spout);
     const knob = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, 0.02).translate(0, 0.8, 0), new THREE.MeshStandardMaterial({ color: 0x2a6ad8, roughness: 0.5 })); grp.add(knob);

@@ -4007,9 +4007,8 @@
    "src": "art/lowpix/world/made/recycle_cage.glb",
    "h": 0.891,
    "ppm": 320,
-   "tris": 12000,
+   "tris": 14000,
    "cap": 1024,
-   "alpha": true,
    "name": "Recycle cage with cans and PET bottles (our own model, hand-painted)"
   },
   {

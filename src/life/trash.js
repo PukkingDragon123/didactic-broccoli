@@ -9,7 +9,8 @@ import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
 import { propMesh, propGeometry } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
-import { garbageTruckParts, TRUCK } from '../vehicles/garbageTruck.js';
+import { loadAsset, assetNow } from '../kit/assets.js';
+import { archAsset } from '../kit/lowpixArch.js';
 import { createHuman } from '../people/index.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -34,6 +35,7 @@ export class Trash {
     this.buildCan();
     this.buildStation();
     this.hookShells();
+    setTimeout(() => prewarmTruck(), 15000); // the truck's model, well before its first round
     game.calendar?.addSource((day) => (this.isCollectionDay(day) ? [{ id: 'garbage', name: 'Burnable garbage day', kind: 'event', quiet: true, note: 'Bags out at the station by 8:30' }] : []));
   }
 
@@ -381,32 +383,59 @@ export class Trash {
   }
 }
 
-// ------------------------------------------------------------------ the truck model (src/vehicles/garbageTruck.js)
+// ------------------------------------------------------------------ the truck model (art/blender/vehicles/packer.py)
+// A 2-ton cab-over packer modelled in Blender (public/models/lowpix/world_arch/packer_truck.glb, 10k tris, and a 3k far
+// LOD that borrows its materials). Its moving parts come out by material: the packer plate (`blade`), the four wheels.
+const TRUCK = { WR: 0.37, BLADE: { y: 1.32, z: -2.28 }, WHEELS: { wheel_fl: [0.68, 1.75], wheel_fr: [-0.68, 1.75], wheel_rl: [0.6, -1.0], wheel_rr: [-0.6, -1.0] } };
+const TRUCK_ID = archAsset('packer_truck'), TRUCK_LOD = archAsset('packer_truck_lod');
+let truckGlass = null;
+/** Start loading the truck's model ahead of its first round (idle time). */
+export function prewarmTruck() { return Promise.all([loadAsset(TRUCK_ID), loadAsset(TRUCK_LOD)]).catch(() => null); }
+
 /** The packer truck: root (faces +z), body (dips when it brakes), blade (the rotating packer plate), wheels, roll(d). */
 function buildTruck() {
-  const P = garbageTruckParts(), M = P.mats, T = TRUCK;
+  const T = TRUCK;
   const root = new THREE.Group();
   root.name = 'garbageTruck';
   const body = new THREE.Group();
   root.add(body);
-  const bm = new THREE.Mesh(P.body, M.body);
-  bm.castShadow = true; bm.receiveShadow = true;
-  body.add(bm);
-  const gl = new THREE.Mesh(P.glass, M.glass);
-  gl.renderOrder = 2; gl.raycast = () => {};
-  body.add(gl);
-  const blade = new THREE.Mesh(P.blade, M.body);
+  const blade = new THREE.Group();
   blade.position.set(0, T.BLADE.y, T.BLADE.z);
   body.add(blade);
-  const wheels = [];
-  for (const [x, z, front] of [[-T.TRACKF, T.AXF, 1], [T.TRACKF, T.AXF, 1], [-T.TRACKR, T.AXR, 0], [T.TRACKR, T.AXR, 0]]) {
-    const geo = (front ? P.wheelF : P.wheelR)[x > 0 ? 0 : 1];
-    const wm = new THREE.Mesh(geo, M.body);
-    wm.position.set(x, T.WR, z);
-    wm.castShadow = true;
-    root.add(wm);
-    wheels.push(wm);
-  }
+  const wheels = Object.entries(T.WHEELS).map(([name, [x, z]]) => {
+    const w = new THREE.Group();
+    w.name = name;
+    w.position.set(x, T.WR, z);
+    root.add(w);
+    return w;
+  });
+  const fill = () => {
+    const full = assetNow(TRUCK_ID), far = assetNow(TRUCK_LOD);
+    if (!full) return;
+    const mats = {}, near = new THREE.Group(), lod = new THREE.LOD();
+    for (const m of [...full.children]) {
+      const k = m.name.split(':').pop();
+      mats[k] = m.material;
+      if (k === 'glass') {
+        truckGlass ||= new THREE.MeshPhysicalMaterial({ name: 'truck-glass', color: 0x8fa3ad, roughness: 0.05, transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.6 });
+        m.material = truckGlass; m.renderOrder = 2; m.raycast = () => {}; m.castShadow = false;
+      }
+      const map = m.material.map;
+      if (map && !map.userData.truck) { map.userData.truck = true; map.magFilter = THREE.NearestFilter; map.minFilter = THREE.LinearMipmapLinearFilter; map.generateMipmaps = true; map.needsUpdate = true; }
+      if (k === 'blade') { m.geometry = m.geometry.clone().translate(0, -T.BLADE.y, -T.BLADE.z); blade.add(m); } else if (T.WHEELS[k]) {
+        const w = wheels.find((g) => g.name === k), [x, z] = T.WHEELS[k];
+        m.geometry = m.geometry.clone().translate(-x, -T.WR, -z);
+        w.add(m);
+      } else near.add(m);
+    }
+    lod.addLevel(near, 0);
+    if (far) {
+      for (const m of far.children) { const k = m.name.split(':').pop(); if (mats[k]) m.material = mats[k]; m.castShadow = true; }
+      lod.addLevel(far, 30);
+    }
+    body.add(lod);
+  };
+  if (assetNow(TRUCK_ID)) fill(); else prewarmTruck().then(fill);
   let dist = 0;
   return { root, body, blade, wheels, roll: (d) => { dist += d; for (const w of wheels) w.rotation.x = dist / T.WR; } };
 }

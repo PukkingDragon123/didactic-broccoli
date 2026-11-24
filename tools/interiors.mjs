@@ -23,6 +23,7 @@ const VIEWS = {
   back103: [null, 'dbg.growth.own("home103", "hobby"); dbg.growth.go("home103", 1.6, -0.5, 0.8, -0.12);'],
   kitchen: [null, 'dbg.growth.own("home103"); dbg.growth.go("home103", -0.4, 0.85, Math.PI + 0.25, -0.22);'],
   bath: [null, 'dbg.growth.own("home103"); dbg.growth.go("home103", 1.3, 2.3, -0.35, -0.4);'],
+  lane: [null, 'dbg.view(8, 11.2, Math.PI / 2, 0.02);'], // (exteriors: away from the rooms, nothing to bake)
 };
 const HOURS = { day: 13, night: 21.5 };
 const list = flag('views', Object.keys(VIEWS).flatMap((v) => [v + '_day', v + '_night']).join(',')).split(',');
