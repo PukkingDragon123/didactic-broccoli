@@ -1125,12 +1125,12 @@
   },
   {
    "id": "litter_can",
-   "src": "sketchfab:5ad17d589a6a41fc8905a576871e77ba",
+   "src": "art/lowpix/world/made/can_crushed.glb",
    "h": 0.056,
-   "ppm": 600,
+   "ppm": 900,
    "tris": 400,
    "cap": 256,
-   "name": "Soda Can crushed trash Low-poly",
+   "name": "Crushed can (our own model, hand-painted)",
    "prop": "litter_can"
   },
   {
@@ -3702,15 +3702,6 @@
    "name": "Street Wooden Bench"
   },
   {
-   "id": "showcase_counter",
-   "src": "sketchfab:b8374ff2a22749c59f2281471b00d749",
-   "h": 1.0,
-   "ppm": 250,
-   "tris": 2399,
-   "cap": 512,
-   "name": "Store Counter With Glass Display"
-  },
-  {
    "id": "tomato_plant",
    "src": "sketchfab:e0b559690e384fc0a9f3a05913f609c4",
    "h": 0.5,
@@ -3819,15 +3810,6 @@
    "name": "2x Battteryes AA Package"
   },
   {
-   "id": "squeegee_m",
-   "src": "sketchfab:ddbcdaed4b8f403586fe92a0cd5195e4",
-   "h": 0.12,
-   "ppm": 800,
-   "tris": 800,
-   "cap": 512,
-   "name": "IKEA shower squeegee (Low Poly)"
-  },
-  {
    "id": "heater_gas",
    "src": "sketchfab:63221a93315c4e4e9b3ed8234ff026e7",
    "h": 0.62,
@@ -3837,15 +3819,6 @@
    "name": "Soviet gas water heater KGI-56"
   },
   {
-   "id": "ash_pile",
-   "src": "sketchfab:a9318535ca594af7b32247f11720298e",
-   "h": 0.06,
-   "ppm": 600,
-   "tris": 200,
-   "cap": 512,
-   "name": "Pile of ash decal"
-  },
-  {
    "id": "trash_pile",
    "src": "sketchfab:a441c0d002bc49a59237f8003b5a7eb8",
    "h": 0.08,
@@ -3853,24 +3826,6 @@
    "tris": 600,
    "cap": 512,
    "name": "Pile of Trash and Garbage - 3 Piece Set"
-  },
-  {
-   "id": "sanctuary",
-   "src": "sketchfab:4aff26245c8043f583701a3130af91ba",
-   "h": 0.42,
-   "ppm": 600,
-   "tris": 2400,
-   "cap": 512,
-   "name": "Sanctuary"
-  },
-  {
-   "id": "ashtray_bin",
-   "src": "sketchfab:fd8b772552444e4e8b2afe2254f4ed20",
-   "h": 0.9,
-   "ppm": 300,
-   "tris": 1500,
-   "cap": 512,
-   "name": "UM-16-3 Metal Litter Bin"
   },
   {
    "id": "candy_display",
@@ -3898,6 +3853,60 @@
    "tris": 200,
    "cap": 128,
    "name": "Gumball (our own model, hand-painted)"
+  },
+  {
+   "id": "marble_m",
+   "src": "art/lowpix/world/made/marble.glb",
+   "h": 0.016,
+   "ppm": 2600,
+   "tris": 200,
+   "cap": 128,
+   "name": "Glass marble (our own model, hand-painted)"
+  },
+  {
+   "id": "roller_m",
+   "src": "art/lowpix/world/made/roller.glb",
+   "h": 0.34,
+   "ppm": 900,
+   "tris": 400,
+   "cap": 256,
+   "name": "Paint roller (our own model, hand-painted)"
+  },
+  {
+   "id": "squeegee_own",
+   "src": "art/lowpix/world/made/squeegee.glb",
+   "h": 0.27,
+   "ppm": 900,
+   "tris": 400,
+   "cap": 256,
+   "name": "Window squeegee (our own model, hand-painted)"
+  },
+  {
+   "id": "ashtray_own",
+   "src": "art/lowpix/world/made/ashtray_own.glb",
+   "h": 0.66,
+   "ppm": 500,
+   "tris": 500,
+   "cap": 256,
+   "name": "Standing ashtray (our own model, hand-painted)"
+  },
+  {
+   "id": "dustpile_own",
+   "src": "art/lowpix/world/made/dustpile_own.glb",
+   "h": 0.08,
+   "ppm": 500,
+   "tris": 340,
+   "cap": 256,
+   "name": "Dust pile (our own model, hand-painted)"
+  },
+  {
+   "id": "kamidana_own",
+   "src": "art/lowpix/world/made/kamidana_own.glb",
+   "h": 0.4,
+   "ppm": 500,
+   "tris": 600,
+   "cap": 256,
+   "name": "Kamidana (our own model, hand-painted)"
   }
  ]
 }

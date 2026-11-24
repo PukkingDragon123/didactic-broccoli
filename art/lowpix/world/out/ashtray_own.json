@@ -1,0 +1,99 @@
+{
+ "id": "ashtray_own",
+ "src": "art/lowpix/world/made/ashtray_own.glb",
+ "credit": {
+  "title": "Standing ashtray (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ashtray_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 328,
+ "tex": 156,
+ "size": [
+  0.259,
+  0.66,
+  0.259
+ ],
+ "colours": 51,
+ "palette": {
+  "m0": [
+   "#1b1b26",
+   "#252630",
+   "#2f313a",
+   "#3a3c43",
+   "#45474b",
+   "#606162",
+   "#7a7a7a",
+   "#939393",
+   "#adadad"
+  ],
+  "m1": [
+   "#5d0a23",
+   "#771026",
+   "#911626",
+   "#a91d23",
+   "#c12b25",
+   "#d54b38",
+   "#d8745b",
+   "#dd987c",
+   "#e3b79d"
+  ],
+  "m2": [
+   "#96542a",
+   "#c07a3b",
+   "#cda169",
+   "#dac298",
+   "#e8dec4",
+   "#eae4cd",
+   "#edead6",
+   "#efefdf",
+   "#f2f2e7"
+  ],
+  "m3": [
+   "#47496c",
+   "#606689",
+   "#7f87a0",
+   "#a1a7b5",
+   "#c1c5cb",
+   "#cbced1",
+   "#d5d6d7",
+   "#dedede",
+   "#e5e5e5"
+  ],
+  "m4": [
+   "#741d2a",
+   "#942830",
+   "#b33735",
+   "#c65a4f",
+   "#ce8373",
+   "#d29c89",
+   "#d7b19e",
+   "#ddc4b2",
+   "#e4d5c5"
+  ],
+  "m5": [
+   "#44100f",
+   "#571c15",
+   "#6a2a1c",
+   "#7b3b24",
+   "#8c4e2c",
+   "#ab6b3a",
+   "#bf8b52",
+   "#c9a876",
+   "#d3c198"
+  ],
+  "m6": [
+   "#4a1b27",
+   "#5f252f",
+   "#733036",
+   "#863c3d",
+   "#984f49",
+   "#ac695d",
+   "#b6887a",
+   "#c1a495",
+   "#cebcb0"
+  ]
+ },
+ "warnings": []
+}

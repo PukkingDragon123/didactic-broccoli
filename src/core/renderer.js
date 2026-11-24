@@ -18,7 +18,9 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { LightPool } from '../gfx/lightPool.js';
 import { LensPass } from './lens.js';
-import '../gfx/sunMask.js'; // shared light patch at import: no sun inside Mikawa-ya, lilac shadows, the soft toon ramp
+import '../gfx/sunMask.js'; // shared light patch at import: no sun inside Mikawa-ya, soft tinted shadows
+import '../gfx/giShader.js'; // room light patch at import: bounce light from the probe volume, box-projected reflections
+import { RoomGI } from '../gfx/roomGI.js';
 
 // The look: a bright picture-book afternoon. Gentle pastel saturation, a soft contrast curve in log space (it never
 // clips the darks), and the darkest tones lifted toward a cool lilac so nothing goes pure black.
@@ -369,12 +371,15 @@ export class Renderer {
     this.lens = null;
     this.lightPool = new LightPool(VM_LAYER);
     this.casters = []; this.prevCasters = new Set(); this.moved = []; // shadow casters seen by this frame's walk
+    this.points = []; // particle systems seen by this frame's walk (kept out of the light probes)
+    this.gi = new RoomGI(this); // the interiors' bounce light, reflections and lamps (src/gfx/roomGI.js)
     this.shadowStats = { casters: 0, moved: 0, updates: 0, movers: [] };
   }
 
   setup(scene, camera) {
     this.scene = scene;
     this.camera = camera;
+    this.gi.setup(scene);
     this.buildComposer();
     window.addEventListener('resize', () => this.resize());
     this.resize();
@@ -483,6 +488,7 @@ export class Renderer {
 
   setQuality(name) {
     if (!QUALITY[name]) return;
+    if (QUALITY[name].gi?.spacing !== this.quality.gi?.spacing) this.gi.reset();
     this.qualityName = name;
     this.quality = QUALITY[name];
     if (this.scene) { this.buildComposer(); this.resize(); }
@@ -521,12 +527,13 @@ export class Renderer {
 
   /** One walk over the scene per frame: point lights for the light pool, shadow casters for the shadow policy. */
   scan() {
-    const pool = this.lightPool, casters = this.casters;
-    casters.length = 0;
+    const pool = this.lightPool, casters = this.casters, points = this.points;
+    casters.length = 0; points.length = 0;
     const walk = (o, vis) => {
       vis = vis && o.visible;
       if (o.isPointLight) { if (!o.userData.poolProxy) pool.offer(o, vis); }
-      else if (vis && o.castShadow && (o.isMesh || o.isPoints || o.isLine)) casters.push(o);
+      else if (vis && o.isPoints) { points.push(o); if (o.castShadow) casters.push(o); }
+      else if (vis && o.castShadow && (o.isMesh || o.isLine)) casters.push(o);
       const ch = o.children;
       for (let i = 0; i < ch.length; i++) walk(ch[i], vis);
     };
@@ -625,6 +632,7 @@ export class Renderer {
     this._viewF ||= new THREE.Frustum();
     this._viewF.setFromProjectionMatrix(_vpm.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
     this.scan();
+    this.gi.frame(dt); // (the room's lamps on the rig before the shadow policy sees them)
     this.lightPool.update(s, this.camera, dt);
     this.updateShadows();
     const gu = this.grade.uniforms, fx = this.fx;
@@ -641,5 +649,7 @@ export class Renderer {
     s.matrixWorldAutoUpdate = false;
     try { this.composer.render(dt); } finally { s.matrixWorldAutoUpdate = au; }
     for (const o of this.vmRoots) o.traverse(toMain);
+    // (after the frame: a few light probes of the room you're in, while its light is new or changed)
+    try { this.gi.bake(); } catch (e) { this.gi.enabled = false; console.warn('room light bake off:', e); }
   }
 }

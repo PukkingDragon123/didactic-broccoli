@@ -24,11 +24,15 @@ export function carPaint(i, j, y, R, o = {}) {
   let tv;
   if (y < hz - px * 1.5) {
     const t = Math.max(0, (y - sill) / Math.max(0.05, hz - sill));
-    tv = t > 0.82 ? 1.35 : 1.25 + t * 0.8; // the darker band of the reflected street just under the horizon
-  } else if (y < hz + px * 0.5) tv = 3.3; // the horizon line
-  else if (y < sh) tv = 2.15 + 0.9 * Math.min(1, (y - hz) / Math.max(0.05, sh - hz));
-  else if (y < sh + px * 2) tv = 3.6; // the shoulder crease catching the light
-  else tv = 2.6 + 0.3 * Math.min(1, (y - sh) / Math.max(0.05, top - sh));
+    tv = t > 0.8 ? 1.05 : 0.95 + t * 1.0; // the darker band of the reflected street just under the horizon
+  } else if (y < hz + px * 0.5) tv = 3.7; // the horizon line
+  else if (y < sh) {
+    tv = 2.25 + 1.05 * Math.min(1, (y - hz) / Math.max(0.05, sh - hz));
+    // slanted streaks of reflected sky across the upper panels
+    const u = i * px, v = j * px;
+    if (((u + v * 0.7) % 1.15 + 1.15) % 1.15 < 0.07) tv += 0.55;
+  } else if (y < sh + px * 2) tv = 3.9; // the shoulder crease catching the light
+  else tv = 2.6 + 0.4 * Math.min(1, (y - sh) / Math.max(0.05, top - sh));
   const k = Math.min(3.999, Math.max(0, tv)), lo = Math.floor(k);
   let c = dith(i, j, k - lo) ? R[Math.min(4, lo + 1)] : R[lo];
   // road grime up from the sills

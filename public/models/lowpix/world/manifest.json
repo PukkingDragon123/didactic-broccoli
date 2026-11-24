@@ -91,6 +91,24 @@
   ],
   "bytes": 65884
  },
+ "ashtray_own": {
+  "id": "ashtray_own",
+  "name": "Standing ashtray (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/ashtray_own.glb",
+  "title": "Standing ashtray (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ashtray_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 328,
+  "tex": 156,
+  "size": [
+   0.259,
+   0.66,
+   0.259
+  ],
+  "bytes": 21980
+ },
  "ashtray_stand": {
   "id": "ashtray_stand",
   "name": "Standing ashtray (灰皿)",
@@ -1809,6 +1827,24 @@
   ],
   "bytes": 43572
  },
+ "dustpile_own": {
+  "id": "dustpile_own",
+  "name": "Dust pile (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/dustpile_own.glb",
+  "title": "Dust pile (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dustpile_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 248,
+  "tex": 184,
+  "size": [
+   0.443,
+   0.08,
+   0.332
+  ],
+  "bytes": 18652
+ },
  "elec_meter": {
   "id": "elec_meter",
   "name": "Electric Meter with fuse boxes",
@@ -2838,6 +2874,24 @@
   ],
   "bytes": 14176
  },
+ "kamidana_own": {
+  "id": "kamidana_own",
+  "name": "Kamidana (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/kamidana_own.glb",
+  "title": "Kamidana (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 456,
+  "tex": 256,
+  "size": [
+   0.698,
+   0.4,
+   0.255
+  ],
+  "bytes": 30776
+ },
  "kendama": {
   "id": "kendama",
   "name": "Kendama",
@@ -3249,22 +3303,21 @@
  },
  "litter_can": {
   "id": "litter_can",
-  "name": "Crushed Can",
-  "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
-  "title": "Crushed Can",
-  "author": "jeffleguy",
-  "authorUrl": "https://sketchfab.com/jeffleguy",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb",
-  "site": "Sketchfab",
-  "tris": 1000,
-  "tex": 128,
+  "name": "Crushed can (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/can_crushed.glb",
+  "title": "Crushed can (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 400,
+  "tex": 208,
   "size": [
-   0.132,
+   0.076,
    0.056,
-   0.12
+   0.062
   ],
-  "bytes": 26024
+  "bytes": 14148
  },
  "lpg_small": {
   "id": "lpg_small",
@@ -3396,6 +3449,24 @@
    0.685
   ],
   "bytes": 28260
+ },
+ "marble_m": {
+  "id": "marble_m",
+  "name": "Glass marble (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/marble.glb",
+  "title": "Glass marble (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/marble.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 198,
+  "tex": 128,
+  "size": [
+   0.016,
+   0.016,
+   0.016
+  ],
+  "bytes": 7856
  },
  "microwave": {
   "id": "microwave",
@@ -4766,6 +4837,24 @@
   ],
   "bytes": 78160
  },
+ "roller_m": {
+  "id": "roller_m",
+  "name": "Paint roller (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/roller.glb",
+  "title": "Paint roller (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/roller.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 184,
+  "tex": 192,
+  "size": [
+   0.198,
+   0.34,
+   0.06
+  ],
+  "bytes": 18060
+ },
  "room_ac": {
   "id": "room_ac",
   "name": "Indoor air conditioner unit",
@@ -5514,6 +5603,24 @@
    0.053
   ],
   "bytes": 19924
+ },
+ "squeegee_own": {
+  "id": "squeegee_own",
+  "name": "Window squeegee (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/squeegee.glb",
+  "title": "Window squeegee (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/squeegee.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 240,
+  "tex": 256,
+  "size": [
+   0.277,
+   0.27,
+   0.037
+  ],
+  "bytes": 15532
  },
  "star_lamp": {
   "id": "star_lamp",

@@ -163,7 +163,7 @@ export class Pix {
     if (opts.align === 'center') ox -= Math.round(m.width / 2);
     else if (opts.align === 'right') ox -= Math.round(m.width);
     const oy = Math.round(y * K);
-    if (ox < 0 || ox + m.width > this.W + 1) this.overflow = true; // the caller may retry with a finer grid (k)
+    if (ox < 0 || ox + m.width > this.W + 1 || oy < -1 || oy + size > this.H + 2) this.overflow = true; // the caller may retry with a finer grid (k)
     const col = toRGB(opts.color ?? 0xffffff);
     const mask = [];
     for (let j = 0; j < th; j++) for (let i = 0; i < tw; i++) if (td[(j * tw + i) * 4 + 3] > 110) mask.push([i, j]);

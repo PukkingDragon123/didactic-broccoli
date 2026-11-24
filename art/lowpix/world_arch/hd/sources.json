@@ -14,6 +14,16 @@
   "license": "CC0-1.0",
   "metres": 1.0
  },
+ "blue_metal_plate": {
+  "source": "https://polyhaven.com/a/blue_metal_plate",
+  "license": "CC0-1.0",
+  "metres": 2.5
+ },
+ "brushed_concrete": {
+  "source": "https://polyhaven.com/a/brushed_concrete",
+  "license": "CC0-1.0",
+  "metres": 2.5
+ },
  "cherry_veneer": {
   "source": "https://polyhaven.com/a/cherry_veneer",
   "license": "CC0-1.0",
@@ -24,10 +34,40 @@
   "license": "CC0-1.0",
   "metres": 2.0
  },
+ "concrete_floor_02": {
+  "source": "https://polyhaven.com/a/concrete_floor_02",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
  "concrete_floor_worn_001": {
   "source": "https://polyhaven.com/a/concrete_floor_worn_001",
   "license": "CC0-1.0",
   "metres": 3.0
+ },
+ "concrete_wall_003": {
+  "source": "https://polyhaven.com/a/concrete_wall_003",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "concrete_wall_006": {
+  "source": "https://polyhaven.com/a/concrete_wall_006",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "corrugated_iron_02": {
+  "source": "https://polyhaven.com/a/corrugated_iron_02",
+  "license": "CC0-1.0",
+  "metres": 2.7
+ },
+ "granite_tile_04": {
+  "source": "https://polyhaven.com/a/granite_tile_04",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "green_metal_rust": {
+  "source": "https://polyhaven.com/a/green_metal_rust",
+  "license": "CC0-1.0",
+  "metres": 1.0
  },
  "hinoki_planks": {
   "source": "https://polyhaven.com/a/hinoki_planks",
@@ -39,9 +79,24 @@
   "license": "CC0-1.0",
   "metres": 1.13
  },
+ "marble_01": {
+  "source": "https://polyhaven.com/a/marble_01",
+  "license": "CC0-1.0",
+  "metres": 1.5
+ },
  "oak_veneer_02": {
   "source": "https://polyhaven.com/a/oak_veneer_02",
   "license": "CC0-1.0",
   "metres": 1.0
+ },
+ "painted_metal_shutter": {
+  "source": "https://polyhaven.com/a/painted_metal_shutter",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "rusty_painted_metal": {
+  "source": "https://polyhaven.com/a/rusty_painted_metal",
+  "license": "CC0-1.0",
+  "metres": 2.2
  }
 }

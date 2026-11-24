@@ -40,8 +40,7 @@ export function noteTexture(denom) {
   bust.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '#') R(44 + i, 12 + j, 1, 1, C.dark); }));
   // denomination
   const n = String(denom);
-  drawPx(g, n, 21, 4, { col: C.ink, s: 0.5 });
-  drawPx(g, n, 38, 20, { col: C.dark, s: 0.5, align: 'right' });
+  drawPx(g, n, 30, 6, { col: C.ink, s: 0.5, align: 'center' });
   g.fillStyle = C.ink; g.fillRect(22, 14, 16, 1);
   drawPx(g, 'YEN', 23, 16, { col: C.mid });
   const t = new THREE.CanvasTexture(c);

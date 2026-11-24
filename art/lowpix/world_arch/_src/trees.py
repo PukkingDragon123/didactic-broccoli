@@ -32,7 +32,7 @@ def _mats(S, bark, bark_photo, leaf, moss='#5d6a3e'):
                 {'id': 'base', 'op': 'gradient', 'axis': 'y', 'amount': 0.5},
                 {'id': 'moss', 'op': 'patches', 'scale': 0.25, 'threshold': 0.7, 'ramp': 'moss', 'tone': 2.8}])
     # the inner crown: shaded leaf mass seen through the gaps between the sprig cards (dark, mottled, never flat)
-    S.style('core', ramp='core', tone=1.5, rim={'light_shift': 0.3, 'dark_shift': -0.6},
+    S.style('core', ramp='core', tone=1.1, light=0.35, rim={'light_shift': 0.2, 'dark_shift': -0.5},
             brush={'flow': 'vertical', 'length': 0.14, 'rough': 0.8}, layers=[
                 {'id': 'clusters', 'op': 'spots', 'count': 70, 'radius': [0.07, 0.18], 'shift': 0.8, 'roughness': 0.6},
                 {'id': 'holes', 'op': 'spots', 'count': 40, 'radius': [0.05, 0.12], 'shift': -1.0},
@@ -82,7 +82,7 @@ class Tree:
         self.n += 1
         limb(self.S, f'limb{self.n}', pts, r0, r1, sides)
 
-    def clump(self, c, rx, ry, rz=None, core_k=0.74):
+    def clump(self, c, rx, ry, rz=None, core_k=0.64):
         rz = rx if rz is None else rz
         self.clumps.append([round(c[0], 3), round(c[1], 3), round(c[2], 3), round(rx, 3), round(ry, 3), round(rz, 3)])
         core(self.S, f'core{len(self.clumps)}', c, (rx + rz) / 2 * core_k, ry * core_k)
@@ -161,13 +161,13 @@ def pine():
         base = [trunk[0][0] + (0.3 * k), y, 0.15 * (1 - k)]
         end = [base[0] + dx * L, y + 0.25, base[2] + dz * L]
         T.limb(bend(base, end, 0.25, r, n=4, wob=0.25), 0.09, 0.04, sides=6)
-        T.clump([end[0], end[1] + 0.12, end[2]], 1.0 - i * 0.06, 0.4, core_k=0.7)
+        T.clump([end[0], end[1] + 0.12, end[2]], 1.0 - i * 0.06, 0.4, core_k=0.62)
         # a second smaller pad off the side of the bigger tiers
         if i < 3:
             side = [base[0] + dx * L * 0.55 + dz * 0.6, y + 0.35, base[2] + dz * L * 0.55 - dx * 0.6]
-            T.clump(side, 0.65, 0.3, core_k=0.7)
+            T.clump(side, 0.65, 0.3, core_k=0.62)
             T.reach([base[0] + dx * L * 0.4, y + 0.15, base[2] + dz * L * 0.4], side, 0.04, 0.02)
-    T.clump([0.42, 4.35, -0.1], 1.05, 0.42, core_k=0.7)
+    T.clump([0.42, 4.35, -0.1], 1.05, 0.42, core_k=0.62)
     return T, {'leaf': 'pine', 'mix': ['pineTop', 0.35], 'size': 0.7, 'tint': [0.9, 0.98, 0.92], 'density': 1.45, 'flat': True}
 
 

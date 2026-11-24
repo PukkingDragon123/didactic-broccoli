@@ -158,7 +158,7 @@ function passage(t, mats) {
 // ------------------------------------------------------------------ the old warehouse wall (west side of the park)
 function warehouse(t, mats) {
   const B = t.B, m = t.m, P = PARK, H = 6.3, z0 = -30.0, z1 = -4.93, zc = (z0 + z1) / 2;
-  const rust = t.decal('stainDrip', 16, 48);
+  const rust = t.decal('stainDrip', 48, 144);
   // east wall (corrugated, sun-faded), north end over the passage, eave and gutter, downpipes
   B.box(m.tin, 0.2, H, z1 - z0, P.wx - 0.1, 0, zc, { uv: [0, 0.2], ao: 0.2, tint: 0xd8d0c0 });
   B.box(m.tin, 1.95, H + 0.25, 0.1, (9.6 + P.wx) / 2, 0, -4.98, { uv: [0.4, 0.2], ao: 0.2, tint: 0xd0c8b8 });
@@ -177,7 +177,7 @@ function warehouse(t, mats) {
     const z = z1 - 0.8 - i * 2.0 - hash2(i, 5) * 0.8, k = hash2(i, 6);
     B.quad(rust, 0.4 + k * 0.5, 1.6 + k * 2.4, P.wx + 0.013, H - 1.6 - k * 2.4, z, { ry: Math.PI / 2, tint: 0xb8845a, flipU: k < 0.5 });
   }
-  t.stainRow(t.decal('stainBase', 32, 16), z0, z1, 0, 0.7, P.wx + 0.012, Math.PI / 2, 0xa8a090, 'z');
+  t.stainRow(t.decal('stainBase', 128, 64), z0, z1, 0, 0.7, P.wx + 0.012, Math.PI / 2, 0xa8a090, 'z');
   // the big rolling door onto the back street, a 立入禁止-style notice and a meter
   B.box(m.shutterM, 0.06, 2.6, 1.9, P.wx + 0.02, 0, -18.85, { uv: [0, 0.2] });
   B.box(m.metal, 0.34, 0.3, 2.1, P.wx + 0.17, 2.6, -18.85, { tint: 0x7a7e7a });
@@ -548,7 +548,7 @@ function villa(t, mats) {
     B.box(m.pv, b - a + 0.04, 0.07, 0.28, (a + b) / 2, 1.0, zW, { tint: ink });
     B.box(m.metal, b - a, 0.03, 0.03, (a + b) / 2, 1.62, zW, { tint: 0x1e2024 });
     for (let x = a + 0.06; x < b - 0.02; x += 0.14) { B.box(m.metal, 0.02, 0.56, 0.02, x, 1.07, zW, { tint: 0x1e2024 }); B.box(m.metal, 0.05, 0.08, 0.05, x, 1.6, zW, { tint: 0x1e2024 }); }
-    t.stainRow(t.decal('stainBase', 32, 16), a, b, 0, 0.4, zW + 0.111, 0, 0xc8c4bc);
+    t.stainRow(t.decal('stainBase', 128, 64), a, b, 0, 0.4, zW + 0.111, 0, 0xc8c4bc);
   }
   for (const px of [g0 - 0.1, g1 + 0.1]) {
     if (!lp) {

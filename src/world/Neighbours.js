@@ -501,7 +501,7 @@ function farSide(t) {
       boards(t, -1.3, f.fy[1] + 0.85, 1.5, 1.1);
       // creeper up the east corner and over the downstairs window hood
       t.leaves.ivy(Bq.top, 2.0, 2.65, 0, f.fy[1] + 1.6, { kind: 'ivy', mix: ['pothos', 0.15], size: 0.38, density: 1.4, seed: 21 });
-      for (let i = 0; i < 6; i++) Bq.quad(t.decal('stainDrip', 16, 48), 0.6, 1.4 + hash2(i, 9), -2.2 + i * 0.85, f.fy[1] - 1.2 - hash2(i, 8) * 0.6, 0.013, { tint: 0x9a968c, flipU: i % 2 === 1 });
+      for (let i = 0; i < 6; i++) Bq.quad(t.decal('stainDrip', 48, 144), 0.6, 1.4 + hash2(i, 9), -2.2 + i * 0.85, f.fy[1] - 1.2 - hash2(i, 8) * 0.6, 0.013, { tint: 0x9a968c, flipU: i % 2 === 1 });
       for (let i = 0; i < 4; i++) lp(t, 'weeds', -2.0 + i * 1.3, 0, 0.45, i * 1.7, { scale: 1.3 });
     } });
   t.yard(4.55, 9.95, ZF + 0.15, 16.0, m.ground);
@@ -550,7 +550,7 @@ function farSide(t) {
     B.box(m.metal, 2.2, 0.26, 0.3, dx, 2.3, 0.12, { tint: 0x7a7e7a });
     B.box(m.pv, 0.3, 0.12, 0.02, dx + 0.6, 1.9, 0.06, { tint: 0xf4f0e6 });
     B.box(m.pv, 0.14, 0.18, 0.012, dx - 0.75, 1.75, 0.055, { tint: 0xf4f0e6 });
-    B.quad(t.decal('stainDrip', 16, 48), 1.8, 1.2, dx, 0.95, 0.05, { tint: 0x9a7a5a, flipU: dx > 0 });
+    B.quad(t.decal('stainDrip', 48, 144), 1.8, 1.2, dx, 0.95, 0.05, { tint: 0x9a7a5a, flipU: dx > 0 });
   }
   B.box(m.tinRed, 5.0, 0.08, 5.5, 0, 2.8, -2.6, { rx: 0.06 });
   B.box(m.metal, 0.04, 1.6, 0.04, 1.9, 2.85, -0.8, { tint: 0x8a8a88 });

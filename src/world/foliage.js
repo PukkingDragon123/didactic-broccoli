@@ -171,7 +171,7 @@ export function treeCardGeometry(kind, lod = 0) {
   const c = CROWNS[kind];
   if (!c) return null;
   const cards = [];
-  scatterCrown(cards, c.clumps, { kind: c.leaf, mix: c.mix, size: c.size * (lod ? 1.7 : 1), density: c.density * (lod ? 0.5 : 1), seed: kind.length * 13 + lod, tint: c.tint, flat: c.flat });
+  scatterCrown(cards, c.clumps, { kind: c.leaf, mix: c.mix, size: c.size * (lod ? 1.7 : 1), density: c.density * (lod ? 0.62 : 1), seed: kind.length * 13 + lod, tint: c.tint, flat: c.flat });
   const g = quads(cards);
   TREE_GEO.set(key, g);
   return g;

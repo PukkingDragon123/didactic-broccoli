@@ -1,0 +1,77 @@
+{
+ "id": "marble_m",
+ "src": "art/lowpix/world/made/marble.glb",
+ "credit": {
+  "title": "Glass marble (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/marble.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 198,
+ "tex": 128,
+ "size": [
+  0.016,
+  0.016,
+  0.016
+ ],
+ "colours": 37,
+ "palette": {
+  "m0": [
+   "#2a5b74",
+   "#3a7e94",
+   "#4ca2b3",
+   "#70b8be",
+   "#94cbcb",
+   "#a5d0cc",
+   "#b5d6d0",
+   "#c4dcd6",
+   "#d3e3de"
+  ],
+  "m1": [
+   "#6f0909",
+   "#8e190e",
+   "#ad2e14",
+   "#ca481c",
+   "#de682c",
+   "#df8a4c",
+   "#e2a76b",
+   "#e5bf89",
+   "#ead4a7"
+  ],
+  "m2": [
+   "#6d1211",
+   "#8c2418",
+   "#aa3a21",
+   "#c7552b",
+   "#d37745",
+   "#d69462",
+   "#daad7d",
+   "#dfc398",
+   "#e5d5b2"
+  ],
+  "m3": [
+   "#593729",
+   "#724d39",
+   "#896649",
+   "#a07f5b",
+   "#ac9776",
+   "#b5a88c",
+   "#beb7a0",
+   "#c8c6b4",
+   "#d4d3c7"
+  ],
+  "m4": [
+   "#5f4233",
+   "#795b45",
+   "#927659",
+   "#a49073",
+   "#b3a891",
+   "#bbb5a3",
+   "#c4c1b3",
+   "#cdcdc3",
+   "#d8d8d3"
+  ]
+ },
+ "warnings": []
+}

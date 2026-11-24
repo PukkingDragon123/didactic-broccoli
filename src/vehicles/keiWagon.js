@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import { Atlas, ROUGH } from './atlas.js';
 import { Geo, triplanar, boxMap } from './geom.js';
 import { shell } from './shell.js';
-import { ramp, seamLoop, seal, glassPane, lamp, plate, dent, carPaint } from './paint.js';
+import { ramp, seamLoop, seal, glassPane, lamp, plate, dent, carPaint, dith } from './paint.js';
 import { wheelPatches, wheelGeometry, doorMirror, wiper, vehicleMaterials } from './parts.js';
 
 const W = 0.735, RND = 0.07, YB = 0.3, WR = 0.27, ARCH = 0.325, AXF = 1.12, AXR = -1.22;
@@ -45,7 +45,7 @@ function paintAtlas() {
   V.plate = A.patch('plate', 66, 33); plate(V.plate, { top: 'MORIO 580', num: '21-08', kana: 'sa' });
   for (const [S, sx] of [[V.L, 1], [V.R, -1]]) paintSide(S, sx);
   paintFront(V.F); paintRear(V.B);
-  V.T.A.ink(ROUGH.paint); V.T.fill((ROOF || RED)[2]); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
+  V.T.A.ink(ROUGH.paint); V.T.box(0, 0, V.T.W, V.T.H, (i, j) => { const R = ROOF || RED, c = Math.abs(i / V.T.W - 0.5), k = c < 0.18 ? 0.75 : c < 0.32 ? 0.45 : 0.15; return dith(i, j, k) ? R[3] : R[2]; }); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
   V.I.A.ink(ROUGH.fabric); V.I.fill(0x3a3c42); V.I.rect(-1.72, 1.45, 1.72, 1.64, 0x8a8880); V.IT.fill(0x8a8880); V.IT.rect(-0.74, -1.72, 0.74, 1.0, 0x34363a);
   return { A, V };
 }

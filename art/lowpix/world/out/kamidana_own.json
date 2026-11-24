@@ -1,0 +1,66 @@
+{
+ "id": "kamidana_own",
+ "src": "art/lowpix/world/made/kamidana_own.glb",
+ "credit": {
+  "title": "Kamidana (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 456,
+ "tex": 256,
+ "size": [
+  0.698,
+  0.4,
+  0.255
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#873d1f",
+   "#ad5c2b",
+   "#cb803f",
+   "#d3a36a",
+   "#dcc193",
+   "#dfcea4",
+   "#e3d9b4",
+   "#e7e2c3",
+   "#ebead2"
+  ],
+  "m1": [
+   "#0f2717",
+   "#14321c",
+   "#1a3c20",
+   "#214624",
+   "#284f28",
+   "#41703d",
+   "#5d9053",
+   "#7ea771",
+   "#a1b995"
+  ],
+  "m2": [
+   "#916743",
+   "#b28e62",
+   "#c5b190",
+   "#d9d1bc",
+   "#f0eee6",
+   "#f2f1ea",
+   "#f3f3ee",
+   "#f5f5f1",
+   "#f7f7f5"
+  ],
+  "m3": [
+   "#220b0b",
+   "#2c120f",
+   "#351a14",
+   "#3e2219",
+   "#462c1e",
+   "#6b4a31",
+   "#8f6c46",
+   "#ac8e61",
+   "#bdac89"
+  ]
+ },
+ "warnings": []
+}

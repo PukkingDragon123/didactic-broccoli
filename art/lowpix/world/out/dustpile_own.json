@@ -1,0 +1,66 @@
+{
+ "id": "dustpile_own",
+ "src": "art/lowpix/world/made/dustpile_own.glb",
+ "credit": {
+  "title": "Dust pile (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/dustpile_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 248,
+ "tex": 184,
+ "size": [
+  0.443,
+  0.08,
+  0.332
+ ],
+ "colours": 20,
+ "palette": {
+  "m0": [
+   "#42322b",
+   "#54443a",
+   "#65574a",
+   "#756a5c",
+   "#847c6e",
+   "#928f84",
+   "#a1a09b",
+   "#b0b0b0",
+   "#c3c3c3"
+  ],
+  "m1": [
+   "#6a2a19",
+   "#874123",
+   "#a45b2e",
+   "#bf783b",
+   "#c8965a",
+   "#cdac74",
+   "#d2be8c",
+   "#d9cea4",
+   "#e0dcbb"
+  ],
+  "m2": [
+   "#6d0e28",
+   "#8c152b",
+   "#aa1d2b",
+   "#c72628",
+   "#d6463c",
+   "#d96d5a",
+   "#dc8e77",
+   "#e1ab93",
+   "#e6c4ae"
+  ],
+  "m3": [
+   "#171d5e",
+   "#212f78",
+   "#2b4591",
+   "#375da9",
+   "#4678be",
+   "#6393c4",
+   "#7eabca",
+   "#99bfd2",
+   "#b3d1db"
+  ]
+ },
+ "warnings": []
+}

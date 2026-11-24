@@ -1,55 +1,76 @@
 {
  "id": "litter_can",
- "src": "sketchfab:05fc9a5628d64b5cb89f38a855eeb6fb",
+ "src": "art/lowpix/world/made/can_crushed.glb",
  "credit": {
-  "title": "Crushed Can",
-  "author": "jeffleguy",
-  "authorUrl": "https://sketchfab.com/jeffleguy",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/crushed-can-05fc9a5628d64b5cb89f38a855eeb6fb",
-  "site": "Sketchfab"
+  "title": "Crushed can (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 1000,
- "tex": 128,
+ "tris": 400,
+ "tex": 208,
  "size": [
-  0.132,
+  0.076,
   0.056,
-  0.12
+  0.062
  ],
- "colours": 24,
+ "colours": 40,
  "palette": {
   "m0": [
-   "#17040b",
-   "#1e050d",
-   "#24070e",
-   "#2a0a0e",
-   "#300c0e",
-   "#601c1a",
-   "#8d352a",
-   "#b9553c",
-   "#ca8469"
+   "#600c25",
+   "#7c1128",
+   "#961828",
+   "#b01f26",
+   "#c82e28",
+   "#d55240",
+   "#d97a62",
+   "#dd9c82",
+   "#e3baa1"
   ],
   "m1": [
-   "#261f29",
-   "#322a34",
-   "#3d363f",
-   "#484249",
-   "#524f52",
-   "#686868",
-   "#808080",
-   "#989898",
-   "#b0b0b0"
+   "#474a6e",
+   "#61678c",
+   "#8189a2",
+   "#a3aab7",
+   "#c4c8ce",
+   "#ced0d3",
+   "#d7d8d9",
+   "#dfdfdf",
+   "#e7e7e7"
   ],
   "m2": [
-   "#32000d",
-   "#41010c",
-   "#4f0309",
-   "#5c0505",
-   "#690f07",
-   "#9a240d",
-   "#c94114",
-   "#e66b2e",
-   "#e99a62"
+   "#6d2840",
+   "#8b374d",
+   "#a84759",
+   "#b9646d",
+   "#c48687",
+   "#ca9c99",
+   "#d0b1ab",
+   "#d8c3bd",
+   "#e0d3cd"
+  ],
+  "m3": [
+   "#681d35",
+   "#85293f",
+   "#a13646",
+   "#bb444d",
+   "#c36665",
+   "#c8847d",
+   "#cf9e94",
+   "#d6b6aa",
+   "#decabf"
+  ],
+  "m4": [
+   "#6c3950",
+   "#8a4e63",
+   "#a36778",
+   "#b38991",
+   "#c5aaad",
+   "#cbb8b8",
+   "#d2c5c4",
+   "#d9d2d1",
+   "#e1dedd"
   ]
  },
  "warnings": []

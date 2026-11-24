@@ -854,7 +854,7 @@ export class Town {
   /** Weathering and services on a house's lane face (in the house's frame): splash-back dirt, soot under the eaves,
    *  rain streaks, an address plate, wall-mounted AC units on brackets (o.ac = [[floor, u], ...]). */
   weather(W, D, base, fy, top, seed, two, o) {
-    const B = this.B, m = this.m, drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16);
+    const B = this.B, m = this.m, drip = this.decal('stainDrip', 48, 144), sb = this.decal('stainBase', 128, 64);
     if (this._lp) { // the lowpix model paints its own weathering and has the AC units; the address plate stays
       const ax = (W / 2 - 0.25) * (seed % 2 ? -1 : 1);
       B.box(m.pv, 0.28, 0.12, 0.012, ax, base + 1.68, 0.006, { tint: 0x2a3a6a });
@@ -1035,7 +1035,7 @@ export class Town {
     if (opt.hood) B.box(m.pv, w + 0.3, 0.05, 0.36, x + nx * 0.18, y + h + 0.12, z + nz * 0.18, { ry, tint: 0x6a6a68 });
     // rain streaks under the sill
     const hk = hash2(Math.round(wp.x * 7 + wp.z * 3), Math.round(y * 5));
-    if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 16, 48), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
+    if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 48, 144), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
     this.windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt);
   }
 
@@ -1226,7 +1226,7 @@ export class Town {
    *  (a top course of perforated decorative blocks, 透かしブロック), tint. */
   blockWall(x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [], mat = null, deco = false, tint = 0xffffff } = {}) {
     const B = this.B, m = this.m, t = 0.15, zc = z - side * t / 2, wm = mat || m.block;
-    const drip = this.decal('stainDrip', 16, 48), sb = this.decal('stainBase', 32, 16), ry = side > 0 ? 0 : Math.PI, zf = z + side * 0.011;
+    const drip = this.decal('stainDrip', 48, 144), sb = this.decal('stainBase', 128, 64), ry = side > 0 ? 0 : Math.PI, zf = z + side * 0.011;
     // weathering on the lane face, split around spots that must stay clean (posters)
     const stain = (a, b) => {
       for (const [c0, c1] of clean) if (c1 > a && c0 < b) { stain(a, c0); stain(c1, b); return; }
@@ -1478,7 +1478,7 @@ export class Town {
   /** Lane-side dressing of an underpass mouth (built unmirrored): grime under the girder, notices, conduit, a puddle. */
   tunnelMouth(s) {
     const B = this.B, m = this.m, ry = s > 0 ? -Math.PI / 2 : Math.PI / 2;
-    const fx = s * (XT - 0.39), drip = this.decal('stainDrip', 16, 48), base = this.decal('stainBase', 32, 16);
+    const fx = s * (XT - 0.39), drip = this.decal('stainDrip', 48, 144), base = this.decal('stainBase', 128, 64);
     for (const [za, zb] of [[TZ0 - 1.45, TZ0], [TZ1, TZ1 + 1.45]]) {
       const zc = (za + zb) / 2, w = zb - za - 0.1;
       // splash-back dirt above the plinth

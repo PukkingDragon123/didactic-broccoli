@@ -1,0 +1,66 @@
+{
+ "id": "squeegee_own",
+ "src": "art/lowpix/world/made/squeegee.glb",
+ "credit": {
+  "title": "Window squeegee (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/squeegee.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 240,
+ "tex": 256,
+ "size": [
+  0.277,
+  0.27,
+  0.037
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#0c0f5b",
+   "#121e75",
+   "#19308d",
+   "#2046a5",
+   "#295fbc",
+   "#3c7fd0",
+   "#5e9dd4",
+   "#7fb7da",
+   "#9fcde1"
+  ],
+  "m1": [
+   "#2f3240",
+   "#404452",
+   "#525762",
+   "#646a72",
+   "#787c80",
+   "#8e8e8e",
+   "#a0a0a0",
+   "#b2b2b2",
+   "#c4c4c4"
+  ],
+  "m2": [
+   "#0c0d3f",
+   "#111750",
+   "#172561",
+   "#1d3471",
+   "#244581",
+   "#3263a3",
+   "#4385c1",
+   "#6aa4ca",
+   "#8fbed4"
+  ],
+  "m3": [
+   "#0c0c25",
+   "#11132f",
+   "#161b39",
+   "#1b2542",
+   "#212f4b",
+   "#344d6f",
+   "#496d91",
+   "#668fac",
+   "#8cadbd"
+  ]
+ },
+ "warnings": []
+}

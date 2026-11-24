@@ -29,6 +29,7 @@ RECIPES = {}
 
 
 def recipe(key, metres):
+    """Register a recipe: key (the old recipe key it replaces) and the metres one repeat covers."""
     def deco(fn):
         RECIPES[key] = (fn, metres)
         return fn
@@ -45,7 +46,7 @@ def grid(n_px, count):
 
 
 # ------------------------------------------------------------------ tiles
-def tile_layout(W, H, nx, ny, faces, rng, face_src=None, face_contrast=0.5, jitter=0.05, grout=(0.6, 0.58, 0.54), gw=2):
+def tile_layout(W, H, nx, ny, faces, rng, face_src=None, face_contrast=0.5, jitter=0.05, grout=(0.6, 0.58, 0.54), gw=2, random_faces=False):
     """Faces of nx x ny tiles (each cut from `face_src`, a photo at 256 px/m, at a random spot and toned to
     faces[(i + j) % len(faces)] with its own jitter) over grout. -> (float image, cells [(x0, y0, w, h)])."""
     xs, ys = grid(W, nx), grid(H, ny)
@@ -58,7 +59,8 @@ def tile_layout(W, H, nx, ny, faces, rng, face_src=None, face_contrast=0.5, jitt
             w, h = xs[i + 1] - xs[i] - gw, ys[j + 1] - ys[j] - gw
             if w <= 2 or h <= 2:
                 continue
-            col = np.array(L.hexrgb(faces[(i + j) % len(faces)]), np.float32) * (1 + rng.normal(0, jitter))
+            fi = int(rng.integers(len(faces))) if random_faces else (i + j) % len(faces)
+            col = np.array(L.hexrgb(faces[fi]), np.float32) * (1 + rng.normal(0, jitter))
             if face_src is not None:
                 p = L.cut(face_src, int(rng.integers(0, face_src.shape[1])), int(rng.integers(0, face_src.shape[0])), w, h, int(rng.integers(0, 4)) if w == h else 0)
                 pl = L.lum(p)[..., None]
@@ -307,6 +309,956 @@ def shikkui():
         for _ in range(2):
             L.crack(a, rng.integers(0, W), rng.integers(0, H), rng.integers(30, 90), rng, f=0.85, dx=rng.normal(0, 1), dy=1)
     return plaster('beige_wall_001', W, H, rng, '#e9e2d6', std=0.05, k=18, extra=extra)
+
+
+# ------------------------------------------------------------------ photo surfaces
+def surface(asset, W, H, rng, std=0.08, flat=0.3, sat=0.8, ppm=PPM, blend=None):
+    """A W x H patch of a photo at `ppm`, made seamless and laid with offset copies (no lined-up repeat), its detail set
+    to `std`. blend: (asset2, weight) mixes a second photo's detail in (more unique area per repeat)."""
+    src = L.seamless(L.flatten(L.at_ppm(L.photo(asset), ppm), flat))
+    a = L.tile_to(src, W, H, rng)
+    if blend:
+        b = L.tile_to(L.seamless(L.flatten(L.at_ppm(L.photo(blend[0]), ppm), flat)), W, H, rng)
+        lb = L.lum(b)
+        a = a * (1 + (lb / lb.mean() - 1) * blend[1])[..., None]
+    a = L.grade(a, sat=sat)
+    return detail_std(a, std)
+
+
+def joints(a, xs=(), ys=(), w=2, dark=0.55, lip=1.12, rng=None, spall=0.0):
+    """Saw cuts / panel seams: `w` px dark lines with a lit lip, the odd spalled chip along them."""
+    H, W = a.shape[:2]
+    for x in xs:
+        a[:, x % W:(x % W) + w] *= dark
+        a[:, (x + w) % W] *= lip
+    for y in ys:
+        a[y % H:(y % H) + w] *= dark
+        a[(y + w) % H] *= lip
+    if rng is not None and spall:
+        for x in xs:
+            for _ in range(int(H * spall)):
+                L.dither_patch(a, x + rng.integers(-2, 3), rng.integers(0, H), int(rng.integers(1, 4)), int(rng.integers(1, 3)), f=0.75, k=0.9)
+        for y in ys:
+            for _ in range(int(W * spall)):
+                L.dither_patch(a, rng.integers(0, W), y + rng.integers(-2, 3), int(rng.integers(1, 3)), int(rng.integers(1, 4)), f=0.75, k=0.9)
+    np.clip(a, 0, 1, out=a)
+    return a
+
+
+def stains(a, rng, n, r=(10, 50), f=(0.82, 0.92), k=(0.5, 0.9)):
+    H, W = a.shape[:2]
+    for _ in range(n):
+        L.dither_patch(a, rng.integers(0, W), rng.integers(0, H), int(rng.integers(*r)), int(rng.integers(int(r[0] * 0.7), int(r[1] * 0.8))), f=rng.uniform(*f), k=rng.uniform(*k), rng=rng)
+    return a
+
+
+def cracks(a, rng, n, length=(30, 120), f=0.7):
+    H, W = a.shape[:2]
+    for _ in range(n):
+        ang = rng.uniform(0, 6.28)
+        L.crack(a, rng.integers(0, W), rng.integers(0, H), rng.integers(*length), rng, f=f, dx=np.cos(ang), dy=np.sin(ang))
+    return a
+
+
+def streaks(a, rng, n, length=(20, 120), f=(0.8, 0.9), y0=None):
+    H, W = a.shape[:2]
+    for _ in range(n):
+        L.streak(a, rng.integers(0, W), rng.integers(0, H) if y0 is None else y0 + rng.integers(0, 20), rng.integers(*length), f=rng.uniform(*f), rng=rng, width=int(rng.integers(1, 3)))
+    return a
+
+
+@recipe('garageSlab', (4, 4))
+def garage_slab():
+    """Grandpa's garage slab: power-trowelled concrete, worn, saw-cut control joints every 2 m with spalled lips,
+    hairline cracks off the joints, oil stains and tyre scuffs."""
+    rng = np.random.default_rng(274)
+    W = H = px(4)
+    a = surface('concrete_floor_worn_001', W, H, rng, std=0.07, blend=('brushed_concrete', 0.25))
+    stains(a, rng, 10, r=(20, 70), f=(0.86, 0.94))
+    for _ in range(3):  # oil drips: darker, tighter
+        L.dither_patch(a, rng.integers(0, W), rng.integers(0, H), int(rng.integers(14, 34)), int(rng.integers(10, 24)), f=0.76, k=0.8, rng=rng, wobble=0.5)
+    for _ in range(4):  # tyre scuffs: long faint bands
+        x, y = rng.integers(0, W), rng.integers(0, H)
+        for i in range(int(rng.integers(120, 300))):
+            for w in range(14):
+                if rng.random() < 0.18:
+                    L.wpx(a, x + w, y + i, f=0.9)
+    a = L.grade(a, mean='#989389')
+    img, pal = L.pixel_art(a, k=26, seed=2, paint=1)
+    b = f32(img)
+    joints(b, xs=(0, px(2)), ys=(0, px(2)), w=2, rng=rng, spall=0.02)
+    for x in (0, px(2)):
+        for _ in range(2):
+            L.crack(b, x + 2, rng.integers(0, H), rng.integers(40, 140), rng, f=0.66, dx=rng.choice([-1, 1]), dy=rng.normal(0, 0.6))
+    cracks(b, rng, 3, f=0.7)
+    return L.snap(to8(b), pal)
+
+
+@recipe('floorHD', (2, 2))
+def floor_hd():
+    """A plain garage / shed slab: brushed concrete, joints at the edges, an oil stain, hairline cracks."""
+    rng = np.random.default_rng(43)
+    W = H = px(2)
+    a = surface('brushed_concrete', W, H, rng, std=0.07)
+    stains(a, rng, 5)
+    L.dither_patch(a, W * 0.55, H * 0.6, 40, 28, f=0.78, k=0.8, rng=rng, wobble=0.5)
+    a = L.grade(a, mean='#98948a')
+    img, pal = L.pixel_art(a, k=24, seed=3, paint=1)
+    b = joints(f32(img), xs=(0,), ys=(0,), w=2, rng=rng, spall=0.02)
+    cracks(b, rng, 2)
+    return L.snap(to8(b), pal)
+
+
+@recipe('concreteHD', (2, 4))
+def concrete_hd():
+    """Cast concrete walls and floors: 1 x 2 m form-panel seams, P-cone tie holes (some leaking rust), rain streaks,
+    efflorescence, hairline cracks."""
+    rng = np.random.default_rng(42)
+    W, H = px(2), px(4)
+    a = surface('concrete_wall_003', W, H, rng, std=0.055, sat=0.4, blend=('concrete_wall_006', 0.15))
+    streaks(a, rng, 18, length=(40, 300), f=(0.86, 0.93))
+    a = L.grade(a, mean='#a4a098')
+    img, pal = L.pixel_art(a, k=24, seed=4, paint=1)
+    b = joints(f32(img), xs=(0, px(1)), ys=(0, px(2)), w=1, dark=0.72, lip=1.08)
+    for y in (px(0.5), px(1.5), px(2.5), px(3.5)):
+        for x in (px(0.25), px(0.75), px(1.25), px(1.75)):
+            for dy in range(-3, 4):  # a recessed cone with a mortar plug
+                for dx in range(-3, 4):
+                    d = dx * dx + dy * dy
+                    if d <= 9:
+                        L.wpx(b, x + dx, y + dy, f=0.82 if d > 4 else 0.7)
+            L.wpx(b, x - 2, y - 2, f=0.6); L.wpx(b, x + 2, y + 2, f=1.15)
+            if rng.random() < 0.3:
+                L.streak(b, x, y + 4, rng.integers(20, 90), f=0.78, rng=rng, width=2)
+    cracks(b, rng, 2, f=0.72)
+    return L.snap(to8(b), pal)
+
+
+def blocks(W, H, bw, bh, asset, rng, mean, joint=3, k=24, seed=5, std=0.08, mortar='#7e7a72', tone=(0.9, 1.08), sat=0.5, tints=None, streak_n=10):
+    """Concrete blocks (ブロック): bw x bh px blocks in stretcher bond, each cut from the photo at its own spot and tone,
+    raked mortar joints `joint` px with a lit lower lip, chipped corners, efflorescence, mould streaks."""
+    src = L.seamless(L.flatten(L.at_ppm(L.photo(asset), PPM), 0.3))
+    a = np.zeros((H, W, 3), np.float32)
+    mort = np.array(L.hexrgb(mortar), np.float32)
+    a[:] = mort
+    cells = []
+    rows = H // bh
+    for r in range(rows):
+        off = (bw // 2) * (r % 2)
+        for c in range(-1, W // bw + 1):
+            x0, y0 = c * bw + off + joint // 2, r * bh + joint // 2
+            w, h = bw - joint, bh - joint
+            p = L.cut(src, int(rng.integers(0, src.shape[1])), int(rng.integers(0, src.shape[0])), w, h)
+            p = p * rng.uniform(*tone)
+            if tints:
+                p = p * np.array(L.hexrgb(tints[int(rng.integers(len(tints)))]), np.float32) / max(1e-3, np.mean(L.hexrgb(tints[0])))
+            xs = np.arange(x0, x0 + w) % W
+            a[y0:y0 + h][:, xs] = p
+            cells.append((x0, y0, w, h))
+    a = detail_std(L.grade(a, sat=sat), std)
+    streaks(a, rng, streak_n, length=(30, 160), f=(0.8, 0.9))
+    a = L.grade(a, mean=mean)
+    img, pal = L.pixel_art(a, k=k, seed=seed, paint=1)
+    b = f32(img)
+    for (x0, y0, w, h) in cells:
+        xs = np.arange(x0, x0 + w) % W
+        b[y0, xs] *= 1.08
+        b[y0 + h - 1, xs] *= 0.8
+        b[y0:y0 + h, x0 % W] *= 1.04
+        b[y0:y0 + h, (x0 + w - 1) % W] *= 0.86
+        if rng.random() < 0.3:
+            for d in range(int(rng.integers(2, 5))):
+                L.wpx(b, x0 + d, y0, c=mort * 0.95)
+                L.wpx(b, x0, y0 + d, c=mort * 0.95)
+        if rng.random() < 0.2:  # efflorescence bleeding from the bed joint
+            L.dither_patch(b, x0 + w * rng.uniform(0.3, 0.7), y0 + h - 2, int(w * 0.3), 4, f=1.12, k=0.7, rng=rng)
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
+@recipe('blockHD', (2, 2))
+def block_hd():
+    """Concrete block wall (ブロック塀): 40 x 20 cm porous blocks in stretcher bond."""
+    rng = np.random.default_rng(45)
+    return blocks(px(2), px(2), px(0.4), px(0.2), 'concrete_floor_02', rng, '#99958c')
+
+
+def corrugated(W, H, ribs, asset, rng, mean, ramp=(0.78, 0.92, 1.08, 1.16, 1.1, 0.96, 0.82, 0.72), k=26, seed=6, bolts=(), rust=8, ppm=PPM, courses=0):
+    """Corrugated sheet: rib shading (a lit / shaded ramp across each rib, bent by dents), the photo's paint and rust
+    mottling, fastener rows with washers and rust tears, rust runs down the valleys, an overlap seam."""
+    a = surface(asset, W, H, rng, std=0.06, sat=0.6, ppm=ppm)
+    x = np.arange(W)
+    xs = grid(W, ribs)
+    phase = np.zeros(W, np.float32)
+    for i in range(ribs):
+        phase[xs[i]:xs[i + 1]] = (x[xs[i]:xs[i + 1]] - xs[i]) / max(1, xs[i + 1] - xs[i])
+    yy = np.arange(H)[:, None]
+    dent = (np.sin(yy * 0.03 + x[None] * 0.01) * 0.04)
+    ph = (phase[None, :] + dent) % 1.0
+    rp = np.array(ramp, np.float32)
+    shade = rp[(ph * len(rp)).astype(int) % len(rp)]
+    a = a * shade[..., None]
+    if courses:  # roof-tile courses: a shadow under each overlapping row, a lit lip on it
+        for y in grid(H, courses)[:-1]:
+            a[y:y + 3] *= 0.6
+            a[(y + 3) % H] *= 1.15
+    a = L.grade(a, mean=mean)
+    img, pal = L.pixel_art(a, k=k, seed=seed, paint=0)
+    b = f32(img)
+    rustc = np.array(L.hexrgb('#8a4a26'), np.float32)
+    for y in bolts:
+        for i in range(0, ribs, 2):
+            cx = xs[i] + (xs[1] - xs[0]) // 2
+            for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                L.wpx(b, cx + dx, y + dy, f=0.5)
+            L.wpx(b, cx, y, f=1.35)
+            if rng.random() < 0.5:
+                for j in range(int(rng.integers(10, 60))):
+                    if L.B4[(y + j) % 4, cx % 4] < 1 - j / 60:
+                        L.wpx(b, cx, y + 2 + j, c=rustc, alpha=0.6)
+    for _ in range(rust):
+        cx = xs[int(rng.integers(0, ribs))] + int((xs[1] - xs[0]) * 0.8)
+        y = int(rng.integers(0, H))
+        n = int(rng.integers(60, 260))
+        for j in range(n):
+            if L.B4[(y + j) % 4, cx % 4] < (1 - j / n) * 0.8:
+                L.wpx(b, cx, y + j, c=rustc * 1.1, alpha=0.55)
+                L.wpx(b, cx + 1, y + j, c=rustc, alpha=0.3)
+    b[:, 0] *= 0.45
+    b[:, 1] *= 1.25
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
+@recipe('corrugatedHD', (2, 2))
+def corrugated_hd():
+    """Galvanised corrugated steel, old paint chalking off, rust tears under the fixings."""
+    rng = np.random.default_rng(44)
+    return corrugated(px(2), px(2), 27, 'corrugated_iron_02', rng, '#818a8f', bolts=(px(0.15), px(1.15)))
+
+
+@recipe('shutter', (2, 2))
+def shutter():
+    """A roller shutter: 7.5 cm slats, each with its ribbed profile and the curl joint between, paint worn on the edges."""
+    rng = np.random.default_rng(149)
+    W = H = px(2)
+    a = surface('painted_metal_shutter', W, H, rng, std=0.07, sat=0.5)
+    ys = grid(H, 26)
+    prof = np.array([1.12, 1.18, 1.1, 1.0, 0.95, 0.92, 0.9, 0.92, 0.95, 1.0, 1.05, 1.0, 0.95, 0.9, 0.86, 0.82, 0.74, 0.6, 0.78], np.float32)
+    for i in range(26):
+        h = ys[i + 1] - ys[i]
+        t = (np.arange(h) / h * len(prof)).astype(int)
+        a[ys[i]:ys[i + 1]] *= prof[t][:, None, None]
+    stains(a, rng, 8, r=(20, 60), f=(0.86, 0.94))
+    streaks(a, rng, 12, length=(30, 200))
+    return finish(a, None, '#989c95', k=26)
+
+
+def painted_metal(asset, mean, seed, blend=None):
+    rng = np.random.default_rng(seed)
+    W = H = px(2)
+    a = surface(asset, W, H, rng, std=0.06, sat=0.7, blend=blend)
+    for _ in range(30):  # scratches: short lit strokes through the paint
+        x, y, ang, n = rng.integers(0, W), rng.integers(0, H), rng.uniform(0, 3.14), int(rng.integers(6, 30))
+        for i in range(n):
+            L.wpx(a, x + np.cos(ang) * i, y + np.sin(ang) * i, f=1.12)
+    stains(a, rng, 6, r=(14, 50), f=(0.86, 0.94))
+    a = L.grade(a, mean=mean)
+    img, pal = L.pixel_art(a, k=24, seed=seed, paint=1)
+    return img
+
+
+@recipe('steel', (2, 2))
+def steel():
+    """Painted sheet steel (racks, hoods, appliances, doors): grey-blue paint, scratches, worn patches."""
+    return painted_metal('blue_metal_plate', '#707c81', 184)
+
+
+@recipe('steelGreen', (2, 2))
+def steel_green():
+    """Green-painted steel (the side door, old machines): chipped paint, rust freckles."""
+    return painted_metal('green_metal_rust', '#607f6a', 191)
+
+
+@recipe('girder', (2, 2))
+def girder():
+    """Painted girders of the railway bridge: old paint over rust, streaked."""
+    return painted_metal('rusty_painted_metal', '#898377', 447)
+
+
+@recipe('pTile', (1.8, 1.8))
+def p_tile():
+    """Shōwa vinyl P-tiles, 30 cm, cream and sage in a checker, marbled, scuffed, a burn mark, a lifted corner."""
+    rng = np.random.default_rng(312)
+    W = H = 462
+    face = L.flatten(L.at_ppm(L.photo('clay_floor_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 6, 6, ['#e4dcc4', '#9fb39a'], rng, face_src=face, face_contrast=1.1, grout=(0.38, 0.36, 0.32), gw=1, jitter=0.03)
+    stains(a, rng, 8, r=(10, 40), f=(0.88, 0.94))
+    a = L.grade(a, mean='#a4a691')
+    img, pal = L.pixel_art(a, k=28, seed=7, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.36, 0.34, 0.3), gw=1, bevel=(1.06, 0.8), chip=0.1, crackp=0.02)
+    return L.snap(to8(b), pal)
+
+
+@recipe('bathTile', (2, 2))
+def bath_tile():
+    """The bathroom of flat 103: 10 cm glazed tiles, pale blue, white grout gone grey, lime scale low down."""
+    rng = np.random.default_rng(81)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('clay_floor_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 20, 20, ['#d4e6ec', '#cfe2e8', '#d8eaee'], rng, face_src=face, face_contrast=0.25, grout=(0.7, 0.74, 0.74), gw=2, jitter=0.02)
+    a = L.grade(a, mean='#cfe0e4')
+    img, pal = L.pixel_art(a, k=20, seed=8, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.62, 0.66, 0.66), gw=2, bevel=(1.08, 0.88), chip=0.03, crackp=0.01)
+    for (x0, y0, w, h) in cells:  # a glaze highlight in the top-left corner of each tile
+        b[y0 + 2, x0 + 2:x0 + 6] = np.clip(b[y0 + 2, x0 + 2:x0 + 6] * 1.12, 0, 1)
+        b[y0 + 3, x0 + 2] = np.clip(b[y0 + 3, x0 + 2] * 1.12, 0, 1)
+    return L.snap(to8(b), pal)
+
+
+@recipe('genkanTile', (2, 2))
+def genkan_tile():
+    """The sunken genkan floor: 20 cm grey stoneware tiles, gritty, scuffed by shoes."""
+    rng = np.random.default_rng(71)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 10, 10, ['#9a948a', '#a49c90', '#948e84'], rng, face_src=face, face_contrast=0.8, grout=(0.42, 0.4, 0.38), gw=3)
+    stains(a, rng, 6)
+    a = L.grade(a, mean='#958f85')
+    img, pal = L.pixel_art(a, k=24, seed=9, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.4, 0.38, 0.36), gw=3, chip=0.12)
+    return L.snap(to8(b), pal)
+
+
+# ------------------------------------------------------------------ the rooms
+def tatami_mat(W, H, horiz, rng, weave):
+    """One tatami mat: igusa weave from the photo (rows across the short side), sun-faded, heri borders down the long
+    edges (dark fabric with a woven pattern), a sewn short edge."""
+    a = np.zeros((H, W, 3), np.float32)
+    base = np.array(L.hexrgb('#c8c27a'), np.float32) * rng.uniform(0.95, 1.05)
+    p = L.cut(weave, int(rng.integers(0, weave.shape[1])), int(rng.integers(0, weave.shape[0])), W, H)
+    pl = L.lum(p)
+    d = (pl - pl.mean()) / max(pl.std(), 1e-3)
+    a[:] = base * (1 + np.clip(d, -2.5, 2.5) * 0.08)[..., None]
+    # the weave: a darker line every 3 px across the long axis, stitches every 12 px along it
+    if horiz:
+        a[np.arange(H) % 3 == 0] *= 0.9
+        a[:, np.arange(W) % 14 == 0] *= 0.95
+    else:
+        a[:, np.arange(W) % 3 == 0] *= 0.9
+        a[np.arange(H) % 14 == 0] *= 0.95
+    hb = max(4, px(0.035))
+    heri = np.array(L.hexrgb('#24301e'), np.float32)
+    heri2 = np.array(L.hexrgb('#3a4a30'), np.float32)
+    for t in range(hb):
+        if horiz:
+            for y in (t, H - 1 - t):
+                a[y] = heri
+                a[y, (np.arange(W) + t) % 4 == 0] = heri2
+        else:
+            for x in (t, W - 1 - t):
+                a[:, x] = heri
+                a[(np.arange(H) + t) % 4 == 0, x] = heri2
+    edge = np.array(L.hexrgb('#8a8450'), np.float32)
+    if horiz:
+        a[:, 0] = edge; a[:, -1] = edge
+    else:
+        a[0] = edge; a[-1] = edge
+    return a
+
+
+def tatami_weave():
+    w = L.at_ppm(L.photo('tatami_mat'), PPM)
+    return grain_along_x(L.seamless(L.flatten(w, 0.2)))
+
+
+@recipe('tatamiFloor', (3.6, 2.7))
+def tatami_floor():
+    """The six-mat floor of room 102 (one texture over 3.6 x 2.7 m): the mats laid so four corners never meet."""
+    rng = np.random.default_rng(31)
+    W, H = px(3.6), px(2.7)
+    u = PPM * 0.9
+    weave = tatami_weave()
+    a = np.zeros((H, W, 3), np.float32)
+    for (x0, y0, x1, y1) in [[0, 0, 2, 1], [2, 0, 4, 1], [0, 1, 1, 3], [1, 1, 3, 2], [1, 2, 3, 3], [3, 1, 4, 3]]:
+        X0, Y0, X1, Y1 = round(x0 * u), round(y0 * u), round(x1 * u), round(y1 * u)
+        horiz = (x1 - x0) > (y1 - y0)
+        a[Y0:Y1, X0:X1] = tatami_mat(X1 - X0, Y1 - Y0, horiz, rng, weave if horiz else np.ascontiguousarray(np.rot90(weave)))
+    L.dither_patch(a, W * 0.55, H * 0.55, 40, 30, f=0.9, k=0.6, rng=rng)  # worn where you sit
+    L.dither_patch(a, W * 0.8, H * 0.4, 16, 12, f=0.82, k=0.6, rng=rng)   # a faint tea stain
+    return finish(a, None, '#b5ac72', k=26)
+
+
+@recipe('tatami', (1, 2))
+def tatami_single():
+    """One mat (0.9 x 1.8 m, with a 5 cm margin), for pixMat('tatami')."""
+    rng = np.random.default_rng(199)
+    a = tatami_mat(px(1), px(2), False, rng, np.ascontiguousarray(np.rot90(tatami_weave())))
+    return finish(a, None, '#a39b63', k=24)
+
+
+@recipe('tatamiMat', (1.8, 0.9))
+def tatami_wide():
+    """One mat lying across (1.8 x 0.9 m): Mikawa-ya's back room."""
+    rng = np.random.default_rng(107)
+    a = tatami_mat(px(1.8), px(0.9), True, rng, tatami_weave())
+    return finish(a, None, '#b2aa70', k=24)
+
+
+@recipe('wallpaper', (2, 2))
+def wallpaper():
+    """Off-white cloth wallpaper: a fine woven texture, a little yellowed, the odd scuff."""
+    rng = np.random.default_rng(41)
+    W = H = px(2)
+    a = surface('terlenka', W, H, rng, std=0.035, sat=0.3, flat=0.0)
+    stains(a, rng, 5, r=(20, 60), f=(0.94, 0.97))
+    return finish(a, None, '#eae2d0', k=14)
+
+
+@recipe('juraku', (2, 2))
+def juraku():
+    """聚楽壁 sand plaster: warm sandy finish with fine grit, a few darker grains."""
+    rng = np.random.default_rng(17)
+    W = H = px(2)
+    a = surface('clay_plaster', W, H, rng, std=0.06, sat=0.6, blend=('sand_01', 0.15))
+    return finish(a, None, '#d6c6a2', k=18, paint=1)
+
+
+@recipe('ceilingBoards', (1.8, 1.8))
+def ceiling_boards():
+    """Room 102's ceiling: light boards 45 cm wide with a thin batten between them."""
+    rng = np.random.default_rng(51)
+    W = H = px(1.8)
+    a, st = planks(W, H, 4, wood_src('okoume_veneer'), rng, ['#d8b888', '#d0ae80', '#d4b384'], vertical=True, length=(1.8, 1.8), joint=0.0)
+
+    def strokes(b):
+        b = st(b)
+        for x in grid(W, 4)[:-1]:
+            b[:, x:x + 3] *= 0.7
+            b[:, (x + 3) % W] *= 1.15
+        return np.clip(b, 0, 1)
+    return finish(a, strokes, '#cbaa7d', k=24)
+
+
+@recipe('flooring', (2, 2))
+def flooring():
+    """The kitchen strip's light-oak flooring: 12 cm boards, staggered joints, varnish worn in front of the sink."""
+    rng = np.random.default_rng(61)
+    W = H = px(2)
+    a, st = planks(W, H, 16, wood_src('oak_veneer_01'), rng, ['#c89a68', '#d0a470', '#c49464'], vertical=True, length=(0.8, 1.6), contrast=0.9)
+    stains(a, rng, 4, r=(30, 70), f=(0.9, 0.95))
+    return finish(a, st, '#bb9162', k=26)
+
+
+@recipe('woodFloor', (2, 2))
+def wood_floor():
+    """Old varnished floorboards (the museum's raised floor and the back rooms)."""
+    rng = np.random.default_rng(21)
+    W = H = px(2)
+    a, st = planks(W, H, 14, wood_src('oak_veneer_05'), rng, ['#9a6a3f', '#8e6038', '#a37244'], length=(0.9, 1.8), nails=0.4)
+    stains(a, rng, 5, r=(30, 70), f=(0.88, 0.94))
+    return finish(a, st, '#8d613a', k=26)
+
+
+@recipe('plaster', (2, 2))
+def plaster_hd():
+    """Painted plaster (room walls, painted parts tinted per part): warm cream, a faint roller texture."""
+    rng = np.random.default_rng(13)
+    W = H = px(2)
+    a = surface('painted_plaster_wall', W, H, rng, std=0.05, sat=0.5)
+    stains(a, rng, 4, r=(20, 60), f=(0.93, 0.96))
+    return finish(a, None, '#d8ccb3', k=18, paint=1)
+
+
+@recipe('cardboard', (1, 1))
+def cardboard():
+    """Corrugated cardboard: brown kraft with the flute ridges showing through, scuffs, a bit of tape residue."""
+    rng = np.random.default_rng(169)
+    W = H = px(1)
+    a = surface('hessian_380', W, H, rng, std=0.03, sat=0.4)
+    a = a * (1 + 0.035 * np.sin(np.arange(W) * 2 * np.pi / 4))[None, :, None]  # the flutes, 4 px apart
+    stains(a, rng, 5, r=(10, 40), f=(0.88, 0.94))
+    for _ in range(2):
+        x, y = rng.integers(0, W), rng.integers(0, H)
+        a[y:y + 12, :] = a[y:y + 12, :] * 1.08 if y + 12 < H else a[y:y + 12, :]
+    return finish(a, None, '#b58753', k=18, paint=1)
+
+
+# ------------------------------------------------------------------ the lane: walls, ground, roofs
+def lap_boards(W, H, rows, src, rng, tones, mean, contrast=0.6, k=24, lap=(0.5, 0.75, 1.18), battens=0, paint=None):
+    """Horizontal lap boards (下見板 / siding): each board's lower edge throws a shadow on the one below, its top
+    catches the light; optional vertical battens (押縁) every 1/battens of the width."""
+    a, st = planks(W, H, rows, src, rng, tones, length=(1.5, 3.5), contrast=contrast, joint=0.5, nails=0.3)
+    if paint is not None:
+        lp = L.lum(paint)
+        a = a * (1 + (lp / lp.mean() - 1))[..., None]
+    streaks(a, rng, 10, length=(40, 200), f=(0.86, 0.94))
+
+    def strokes(b):
+        b = st(b)
+        ys = grid(H, rows)
+        for y in ys[:-1]:
+            b[(y + 1) % H] *= lap[0]
+            b[(y + 2) % H] *= lap[1]
+            b[(y - 1) % H] *= lap[2]
+        if battens:
+            for x in grid(W, battens)[:-1]:
+                b[:, x:x + 10] = b[:, x:x + 10] * 0.9
+                b[:, x] *= 1.25
+                b[:, (x + 10) % W] *= 0.55
+                b[:, (x + 11) % W] *= 0.8
+                for y in ys[:-1]:  # a nail through the batten into each board
+                    L.wpx(b, x + 5, y + (ys[1] - ys[0]) // 2, f=0.5)
+        return np.clip(b, 0, 1)
+    return finish(a, strokes, mean, k=k)
+
+
+@recipe('houseWall', (2, 2))
+def house_wall():
+    """Painted lap siding (cream) on the old houses: 18 cm boards, paint chalking, dirt runs from the sills."""
+    rng = np.random.default_rng(278)
+    W = H = px(2)
+    paint = surface('beige_wall_001', W, H, rng, std=0.04, sat=0.3)
+    return lap_boards(W, H, 11, wood_src('ash_veneer'), rng, ['#cac1ad', '#c6bda8', '#cec5b2'], '#cac1ad', contrast=0.35, paint=paint)
+
+
+@recipe('siding', (2, 2))
+def siding():
+    """Dark weathered clapboard (焼杉 style): 16 cm boards, the grain raised by weather, grey where the sun hits."""
+    rng = np.random.default_rng(345)
+    W = H = px(2)
+    return lap_boards(W, H, 12, wood_src('weathered_planks'), rng, ['#34271e', '#3a2c22', '#2e231b'], '#34271e', contrast=1.3)
+
+
+@recipe('boardWall', (2, 2))
+def board_wall():
+    """Board fence / shed wall: horizontal boards with a batten every 90 cm-ish, nails, weathering."""
+    rng = np.random.default_rng(475)
+    W = H = px(2)
+    return lap_boards(W, H, 12, wood_src('brown_planks_08'), rng, ['#554231', '#5c4836', '#4e3c2c'], '#554231', contrast=1.2, battens=2)
+
+
+@recipe('mortar', (2, 2))
+def mortar():
+    """モルタル rendered walls: rough float finish, hairline map cracks, rain streaks under the eaves."""
+    rng = np.random.default_rng(464)
+    W = H = px(2)
+    a = surface('concrete_wall_004', W, H, rng, std=0.06, sat=0.4, blend=('beige_wall_002', 0.2))
+    streaks(a, rng, 14, length=(40, 260), f=(0.86, 0.93))
+    stains(a, rng, 4, r=(20, 60), f=(0.9, 0.95))
+    a = L.grade(a, mean='#d3ccbd')
+    img, pal = L.pixel_art(a, k=20, seed=10, paint=1)
+    b = cracks(f32(img), rng, 5, length=(30, 140), f=0.78)
+    return L.snap(to8(b), pal)
+
+
+@recipe('tunnelWall', (2, 2))
+def tunnel_wall():
+    """The underpass walls: old cast concrete, soot and seep streaks from the deck, efflorescence."""
+    rng = np.random.default_rng(425)
+    W = H = px(2)
+    a = surface('concrete_wall_006', W, H, rng, std=0.07, sat=0.3)
+    streaks(a, rng, 30, length=(60, 400), f=(0.75, 0.9))
+    a = L.grade(a, mean='#848076')
+    img, pal = L.pixel_art(a, k=22, seed=11, paint=1)
+    b = joints(f32(img), xs=(0,), ys=(), w=1, dark=0.7)
+    cracks(b, rng, 2)
+    return L.snap(to8(b), pal)
+
+
+@recipe('prefabPanel', (2, 2))
+def prefab_panel():
+    """Prefab steel wall panels (cream): 50 cm panels with a folded seam, a shallow rib, rust at the screw heads."""
+    rng = np.random.default_rng(495)
+    W = H = px(2)
+    a = surface('beige_wall_001', W, H, rng, std=0.04, sat=0.4)
+    streaks(a, rng, 12, length=(40, 220), f=(0.88, 0.94))
+    a = L.grade(a, mean='#dcd4c1')
+    img, pal = L.pixel_art(a, k=18, seed=12, paint=1)
+    b = f32(img)
+    for x in grid(W, 4)[:-1]:
+        b[:, x] *= 0.55
+        b[:, (x + 1) % W] *= 1.12
+        b[:, (x + 64) % W] *= 0.9  # the rib
+        b[:, (x + 65) % W] *= 1.06
+        for y in range(20, H, 128):
+            L.wpx(b, x + 4, y, f=0.6)
+            L.streak(b, x + 4, y + 1, rng.integers(4, 30), f=0.85)
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
+@recipe('brickHD', (2, 2))
+def brick_hd():
+    """Red brick (the old works, the bathhouse chimney base): 22 x 7 cm bricks, each its own fired colour, sunk mortar."""
+    rng = np.random.default_rng(377)
+    return blocks(px(2), px(2), px(2) // 9, px(2) // 27, 'clay_floor_001', rng, '#8f5a46', joint=3, mortar='#9a948a',
+                  tone=(0.82, 1.12), sat=0.9, tints=['#9a5a44', '#8a4e3a', '#a8664a', '#7a4636'], std=0.1, streak_n=4)
+
+
+@recipe('oyaStone', (2, 2))
+def oya_stone():
+    """大谷石 Oya tuff walls: soft greenish stone blocks with the brown 'miso' pockets, weathered edges."""
+    rng = np.random.default_rng(517)
+    W = H = px(2)
+    img = blocks(W, H, W // 3, H // 8, 'clay_plaster', rng, '#a7a27e', joint=3, mortar='#8a8670', tone=(0.92, 1.06), sat=0.5, std=0.08)
+    b = f32(img)
+    for _ in range(700):  # the miso: small brown pockets
+        x, y = rng.integers(0, W), rng.integers(0, H)
+        r = int(rng.integers(1, 3))
+        L.dither_patch(b, x, y, r, r, c=(0.55, 0.4, 0.26), k=0.9)
+    pal = L.palette(b, 24, 13)
+    return L.snap(to8(b), pal)
+
+
+@recipe('kenchi', (2, 2))
+def kenchi():
+    """間知石 retaining wall: square granite stones laid on the diagonal, deep joints, moss in the low corners."""
+    rng = np.random.default_rng(402)
+    W = H = px(2)
+    s_ = 64  # stone pitch along the diagonals (wraps: 512 / 64)
+    src = L.seamless(L.flatten(L.at_ppm(L.photo('granite_tile_04'), PPM), 0.3))
+    y, x = np.mgrid[0:H, 0:W]
+    u, v = (x + y) / s_, (x - y) / s_
+    cu, cv = np.floor(u).astype(int), np.floor(v).astype(int)
+    fu, fv = u - cu, v - cv
+    a = np.zeros((H, W, 3), np.float32)
+    tones = {}
+    for key in set(zip(cu.ravel() % 16, cv.ravel() % 16)):
+        tones[key] = (rng.uniform(0.86, 1.1), int(rng.integers(0, src.shape[1])), int(rng.integers(0, src.shape[0])))
+    T = np.array([[tones.get((i, j), (1, 0, 0)) for j in range(16)] for i in range(16)], dtype=object)
+    tone = np.vectorize(lambda i, j: tones[(i, j)][0] if (i, j) in tones else 1.0)(cu % 16, cv % 16).astype(np.float32)
+    ox = np.vectorize(lambda i, j: tones[(i, j)][1] if (i, j) in tones else 0)(cu % 16, cv % 16)
+    oy = np.vectorize(lambda i, j: tones[(i, j)][2] if (i, j) in tones else 0)(cu % 16, cv % 16)
+    a = src[(y + oy) % src.shape[0], (x + ox) % src.shape[1]] * tone[..., None]
+    # pillowed faces: lit towards the top-left, shaded bottom-right
+    a *= (1 + (0.5 - fu) * 0.0 + (fv - 0.5) * 0.12 - (fu - 0.5) * 0.12)[..., None]
+    a = detail_std(L.grade(a, sat=0.4), 0.08)
+    joint = (np.minimum(fu, 1 - fu) * s_ < 1.6) | (np.minimum(fv, 1 - fv) * s_ < 1.6)
+    a[joint] = np.array(L.hexrgb('#4a4842'), np.float32)
+    a = L.grade(a, mean='#9e998d')
+    img, pal = L.pixel_art(a, k=24, seed=14, paint=0)
+    return img
+
+
+@recipe('paving', (2, 2))
+def paving():
+    """Concrete paving slabs, 33 cm, gritty, uneven tones, weeds' dirt in the joints."""
+    rng = np.random.default_rng(346)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 6, 6, ['#9d988f', '#a39e94', '#97928a'], rng, face_src=face, face_contrast=1.0, grout=(0.36, 0.35, 0.3), gw=3, random_faces=True)
+    stains(a, rng, 8)
+    a = L.grade(a, mean='#9d988f')
+    img, pal = L.pixel_art(a, k=24, seed=15, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.34, 0.34, 0.28), gw=3, bevel=(1.06, 0.84), chip=0.2, crackp=0.08)
+    return L.snap(to8(b), pal)
+
+
+@recipe('gutterLid', (2, 0.5))
+def gutter_lid():
+    """Concrete U-gutter lids (側溝の蓋): 50 cm lids, two grip slots each, worn edges, dirt in the gaps."""
+    rng = np.random.default_rng(355)
+    W, H = px(2), px(0.5)
+    face = L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 4, 1, ['#97938b', '#9c978e', '#928e86'], rng, face_src=face, face_contrast=1.0, grout=(0.25, 0.24, 0.22), gw=3, random_faces=True)
+    a = L.grade(a, mean='#97938b')
+    img, pal = L.pixel_art(a, k=20, seed=16, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.25, 0.24, 0.22), gw=3, chip=0.3, crackp=0.1)
+    for (x0, y0, w, h) in cells:
+        for cx in (x0 + w // 4, x0 + 3 * w // 4):
+            b[y0 + h // 2 - 4:y0 + h // 2 + 4, cx - 10:cx + 10] = (0.1, 0.1, 0.09)
+            b[y0 + h // 2 - 5, cx - 10:cx + 10] *= 0.8
+            b[y0 + h // 2 + 4, cx - 10:cx + 10] = np.clip(b[y0 + h // 2 + 4, cx - 10:cx + 10] * 1.3, 0, 1)
+    return L.snap(to8(np.clip(b, 0, 1)), pal)
+
+
+@recipe('grate', (0.5, 0.5))
+def grate():
+    """Steel drain grating: 3 cm bearing bars, a cross bar every 10 cm, rust and grime, dark below."""
+    rng = np.random.default_rng(368)
+    W = H = px(0.5)
+    a = surface('rusty_metal_02', W, H, rng, std=0.08, sat=0.6)
+    gap = np.zeros((H, W), bool)
+    for x in range(0, W, 8):
+        gap[:, x + 3:x + 8] = True
+    for y in grid(H, 5)[:-1]:
+        gap[y:y + 3] = False
+    a[gap] = (0.06, 0.06, 0.055)
+    a = L.grade(a, mean='#5a5c5a')
+    img, pal = L.pixel_art(a, k=16, seed=17, paint=0)
+    return img
+
+
+@recipe('roadPaint', (1, 1))
+def road_paint():
+    """Road paint (white lines, letters): thick thermoplastic, worn through to the asphalt in specks and patches."""
+    rng = np.random.default_rng(329)
+    W = H = px(1)
+    a = surface('concrete_wall_003', W, H, rng, std=0.03, sat=0.2)
+    for _ in range(60):
+        L.dither_patch(a, rng.integers(0, W), rng.integers(0, H), int(rng.integers(2, 12)), int(rng.integers(2, 9)), c=(0.36, 0.35, 0.34), k=rng.uniform(0.4, 0.9), rng=rng)
+    return finish(a, None, '#ddd9ce', k=14)
+
+
+@recipe('hazard', (1, 1))
+def hazard():
+    """Tiger stripes (yellow / black, 45 degrees, 12.5 cm), scuffed and chipped."""
+    rng = np.random.default_rng(338)
+    W = H = px(1)
+    base = surface('blue_metal_plate', W, H, rng, std=0.05, sat=0.0)
+    y, x = np.mgrid[0:H, 0:W]
+    band = ((x + y) // 32) % 2 == 0
+    a = np.where(band[..., None], np.array(L.hexrgb('#e0b418'), np.float32), np.array(L.hexrgb('#1e1c1a'), np.float32)) * (L.lum(base) / L.lum(base).mean())[..., None]
+    for _ in range(40):
+        L.dither_patch(a, rng.integers(0, W), rng.integers(0, H), int(rng.integers(2, 10)), int(rng.integers(2, 8)), c=(0.5, 0.48, 0.44), k=rng.uniform(0.3, 0.8), rng=rng)
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=16, seed=18, paint=0)
+    return img
+
+
+@recipe('tile', (2, 2))
+def tile_white():
+    """White glazed wall tiles, 15 cm, grey grout, a crazed or chipped one here and there."""
+    rng = np.random.default_rng(244)
+    W = H = px(2)
+    face = L.flatten(L.at_ppm(L.photo('clay_floor_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 13, 13, ['#e2e0d8', '#dcdad2', '#e6e4dc'], rng, face_src=face, face_contrast=0.25, grout=(0.66, 0.65, 0.61), gw=2, random_faces=True, jitter=0.015)
+    a = L.grade(a, mean='#dcdad2')
+    img, pal = L.pixel_art(a, k=18, seed=19, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.6, 0.59, 0.55), gw=2, bevel=(1.06, 0.88), chip=0.05, crackp=0.03)
+    return L.snap(to8(b), pal)
+
+
+@recipe('tileSkirt', (2, 1))
+def tile_skirt():
+    """The tiled 腰壁 skirt of the old shops and houses: 5 x 5 cm mosaic tiles in mixed browns."""
+    rng = np.random.default_rng(506)
+    W, H = px(2), px(1)
+    face = L.flatten(L.at_ppm(L.photo('clay_floor_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 40, 20, ['#8a5a3a', '#a06a42', '#7a4e34', '#b07a4c', '#6e4630'], rng, face_src=face, face_contrast=0.6, grout=(0.72, 0.68, 0.6), gw=2, random_faces=True)
+    a = L.grade(a, mean='#846147')
+    img, pal = L.pixel_art(a, k=24, seed=20, paint=0)
+    b = tile_strokes(f32(img), cells, rng, (0.66, 0.62, 0.55), gw=2, bevel=(1.1, 0.84), chip=0.04, crackp=0.0)
+    return L.snap(to8(b), pal)
+
+
+@recipe('asphaltHD', (2, 2))
+def asphalt_hd():
+    """Asphalt (lane patches, forecourts): fine aggregate, tar-sealed cracks, an old cut-in repair."""
+    rng = np.random.default_rng(311)
+    W = H = px(2)
+    a = surface('asphalt_01', W, H, rng, std=0.12, sat=0.3)
+    stains(a, rng, 6, f=(0.85, 0.92))
+    a = L.grade(a, mean='#4c4a48')
+    img, pal = L.pixel_art(a, k=24, seed=21, paint=1)
+    b = cracks(f32(img), rng, 4, length=(40, 160), f=0.55)
+    return L.snap(to8(b), pal)
+
+
+@recipe('asphalt', (2, 2))
+def asphalt_px():
+    rng = np.random.default_rng(212)
+    W = H = px(2)
+    a = surface('asphalt_02', W, H, rng, std=0.12, sat=0.3)
+    stains(a, rng, 6, f=(0.85, 0.92))
+    a = L.grade(a, mean='#4b4947')
+    img, pal = L.pixel_art(a, k=24, seed=22, paint=1)
+    b = cracks(f32(img), rng, 3, length=(40, 160), f=0.55)
+    return L.snap(to8(b), pal)
+
+
+@recipe('concrete', (2, 2))
+def concrete_px():
+    """Plain concrete (foundations, kerbs, steps)."""
+    rng = np.random.default_rng(11)
+    W = H = px(2)
+    a = surface('concrete_floor_02', W, H, rng, std=0.07, sat=0.4)
+    stains(a, rng, 6)
+    a = L.grade(a, mean='#8d8882')
+    img, pal = L.pixel_art(a, k=22, seed=23, paint=1)
+    b = cracks(f32(img), rng, 3)
+    return L.snap(to8(b), pal)
+
+
+@recipe('ballast', (2, 2))
+def ballast():
+    """Track ballast: grey crushed stone, rust-brown near the rails."""
+    rng = np.random.default_rng(457)
+    W = H = px(2)
+    a = surface('gravel', W, H, rng, std=0.16, sat=0.5)
+    return finish(a, None, '#69645e', k=22, paint=1)
+
+
+@recipe('roofTile', (2, 2))
+def roof_tile():
+    """Kawara (瓦) roofs, seen from the lane: rows of S-profile clay tiles, 128 px/m (roofs are far surfaces)."""
+    rng = np.random.default_rng(437)
+    return corrugated(256, 256, 7, 'grey_roof_tiles', rng, '#80868e', ramp=(0.7, 0.86, 1.02, 1.14, 1.18, 1.1, 0.98, 0.84, 0.72, 0.62),
+                      rust=0, ppm=128, courses=8, k=22)
+
+
+@recipe('slateRoof', (2, 2))
+def slate_roof():
+    """Slate / cement-shingle roofs, 128 px/m (far)."""
+    rng = np.random.default_rng(542)
+    a = surface('grey_roof_tiles_02', 256, 256, rng, std=0.1, sat=0.4, ppm=128)
+    return finish(a, None, '#484c56', k=20, paint=1)
+
+
+@recipe('metalRoof', (2, 2))
+def metal_roof():
+    """Rusty standing-seam / corrugated roofs, 128 px/m (far)."""
+    rng = np.random.default_rng(532)
+    return corrugated(256, 256, 8, 'rusty_corrugated_iron', rng, '#8a5b43', rust=4, ppm=128, k=20)
+
+
+@recipe('felt', (1, 1))
+def felt():
+    """Green felt (display boards, the card table): fine wool nap."""
+    rng = np.random.default_rng(297)
+    a = surface('caban', px(1), px(1), rng, std=0.05, sat=0.0)
+    a = a * np.array(L.hexrgb('#2e5b39'), np.float32) / 0.4
+    return finish(a, None, '#2e5b39', k=14, paint=1)
+
+
+@recipe('velvet', (1, 1))
+def velvet():
+    """Red velvet (display plinths): soft pile with crushed shading."""
+    rng = np.random.default_rng(303)
+    a = surface('knitted_fleece', px(1), px(1), rng, std=0.07, sat=0.0)
+    a = a * np.array(L.hexrgb('#8a1f2a'), np.float32) / 0.4
+    return finish(a, None, '#8a1f2a', k=14, paint=1)
+
+
+@recipe('shopFloor', (2, 2))
+def shop_floor():
+    """The museum's old varnished floorboards, darker where feet have worn the varnish."""
+    rng = np.random.default_rng(31)
+    W = H = px(2)
+    a, st = planks(W, H, 14, wood_src('oak_veneer_05'), rng, ['#7a5434', '#70502f', '#84593a'], length=(0.9, 2.0), nails=0.4)
+    stains(a, rng, 8, r=(30, 80), f=(0.86, 0.93))
+    return finish(a, st, '#76522f', k=26)
+
+
+# ------------------------------------------------------------------ src/world/surfaces.js (were 128 px/m PNGs)
+@recipe('sf_asphalt', (4, 4))
+def sf_asphalt():
+    """The lane's road surface: worn asphalt, tar-sealed cracks, an old trench repair, oil drips."""
+    rng = np.random.default_rng(1001)
+    W = H = px(4)
+    a = surface('asphalt_01', W, H, rng, std=0.12, sat=0.35, blend=('asphalt_04', 0.2))
+    stains(a, rng, 12, r=(20, 80), f=(0.86, 0.93))
+    x0 = int(rng.integers(0, W))  # a trench repair: darker, smoother band with sealed edges
+    a[:, x0:x0 + 70] = a[:, x0:x0 + 70] * 0.86 if x0 + 70 <= W else a[:, x0:x0 + 70]
+    a = L.grade(a, contrast=0.8, gain=(0.97, 0.98, 1.02), mean=(0.33, 0.33, 0.33), sat=0.35)
+    img, pal = L.pixel_art(a, k=28, seed=24, paint=1)
+    b = f32(img)
+    if x0 + 70 <= W:
+        b[:, x0] *= 0.6; b[:, x0 + 69] *= 0.6
+    cracks(b, rng, 7, length=(60, 260), f=0.5)
+    return L.snap(to8(b), pal)
+
+
+@recipe('sf_concrete', (4, 4))
+def sf_concrete():
+    rng = np.random.default_rng(1002)
+    W = H = px(4)
+    a = surface('concrete_wall_003', W, H, rng, std=0.07, sat=0.4, blend=('concrete_floor_02', 0.2))
+    stains(a, rng, 8)
+    a = L.grade(a, gain=(1.0, 0.99, 0.96), mean=(0.62, 0.62, 0.62), sat=0.4)
+    img, pal = L.pixel_art(a, k=24, seed=25, paint=1)
+    b = cracks(f32(img), rng, 4)
+    return L.snap(to8(b), pal)
+
+
+@recipe('sf_cblock', (4, 4))
+def sf_cblock():
+    rng = np.random.default_rng(1964)
+    return blocks(px(4), px(4), px(0.4), px(0.2), 'concrete_floor_02', rng, '#9a9890', mortar='#76736c')
+
+
+@recipe('sf_park_ground', (4, 4))
+def sf_park_ground():
+    rng = np.random.default_rng(1003)
+    a = surface('rocky_trail_02', px(4), px(4), rng, std=0.1, sat=0.8, blend=('dirt', 0.2))
+    a = L.grade(a, gain=(1.08, 1.02, 0.92), mean=(0.56, 0.53, 0.47))
+    return finish(a, None, (0.56, 0.53, 0.47), k=26, paint=1)
+
+
+@recipe('sf_sand', (4, 4))
+def sf_sand():
+    rng = np.random.default_rng(1004)
+    a = surface('sand_01', px(4), px(4), rng, std=0.07, sat=0.8)
+    return finish(a, None, (0.68, 0.64, 0.56), k=20, paint=1)
+
+
+@recipe('sf_paving', (4, 4))
+def sf_paving():
+    rng = np.random.default_rng(1005)
+    W = H = px(4)
+    face = L.flatten(L.at_ppm(L.photo('concrete_floor_02'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 8, 8, ['#9e9a92', '#a6a298', '#96928a'], rng, face_src=face, face_contrast=1.0, grout=(0.4, 0.39, 0.35), gw=3, random_faces=True)
+    stains(a, rng, 12)
+    a = L.grade(a, mean=(0.62, 0.61, 0.59))
+    img, pal = L.pixel_art(a, k=24, seed=26, paint=1)
+    b = tile_strokes(f32(img), cells, rng, (0.38, 0.37, 0.33), gw=3, bevel=(1.06, 0.84), chip=0.2, crackp=0.06)
+    return L.snap(to8(b), pal)
+
+
+@recipe('sf_plywood', (3.64, 3.64))
+def sf_plywood():
+    """Eight 91 x 182 cm lauan sheets, each cut from its own place in the grain, seams and nail rows."""
+    rng = np.random.default_rng(1999)
+    src = grain_along_x(L.seamless(L.flatten(L.at_ppm(L.photo('plywood'), PPM), 0.2)))
+    src = np.ascontiguousarray(np.rot90(src))
+    pw, ph = 233, 466
+    W, H = 4 * pw, 2 * ph
+    a = np.zeros((H, W, 3), np.float32)
+    for j in range(2):
+        for i in range(4):
+            sh_ = L.cut(src, int(rng.integers(0, src.shape[1])), int(rng.integers(0, src.shape[0])), pw, ph, 0, rng.random() < 0.5)
+            sh_ = detail_std(L.grade(sh_, sat=0.55), 0.05) * rng.uniform(0.95, 1.05)
+            a[j * ph:(j + 1) * ph, i * pw:(i + 1) * pw] = sh_
+    a = L.grade(a, mean=(0.72, 0.6, 0.46))
+    img, pal = L.pixel_art(a, k=24, seed=27, paint=0)
+    b = f32(img)
+    for i in range(4):
+        b[:, i * pw] *= 0.55; b[:, (i * pw + 1) % W] *= 1.08
+    for j in range(2):
+        b[j * ph] *= 0.55; b[(j * ph + 1) % H] *= 1.08
+    for i in range(4):
+        for j in range(2):
+            for y in range(j * ph + 24, (j + 1) * ph - 12, 38):
+                for x in (i * pw + 6, (i + 1) * pw - 7):
+                    L.wpx(b, x, y, f=0.6); L.wpx(b, x, y - 1, f=1.1)
+    return L.snap(to8(b), pal)
+
+
+def detail_map(asset, std, seed):
+    rng = np.random.default_rng(seed)
+    a = surface(asset, px(2), px(2), rng, std=std, sat=0.0)
+    g = L.lum(a)
+    g = 0.85 + (g - g.mean()) / max(g.std(), 1e-3) * std
+    a = np.repeat(np.clip(g, 0, 1)[..., None], 3, 2)
+    img, pal = L.pixel_art(a, k=10, seed=seed, paint=1)
+    return img
+
+
+@recipe('sf_detail_paint', (2, 2))
+def sf_detail_paint():
+    return detail_map('painted_plaster_wall', 0.06, 1006)
+
+
+@recipe('sf_detail_metal', (2, 2))
+def sf_detail_metal():
+    return detail_map('rusty_metal_02', 0.06, 1007)
+
+
+@recipe('sf_detail_wood', (2, 2))
+def sf_detail_wood():
+    rng = np.random.default_rng(1008)
+    a, st = planks(px(2), px(2), 14, wood_src('weathered_planks'), rng, ['#d8d8d8'], contrast=0.8, joint=0.0)
+    g = L.lum(a)
+    g = 0.85 + (g - g.mean()) / max(g.std(), 1e-3) * 0.07
+    img, pal = L.pixel_art(np.repeat(np.clip(g, 0, 1)[..., None], 3, 2), k=10, seed=1008, paint=0)
+    return img
 
 
 # ------------------------------------------------------------------ main

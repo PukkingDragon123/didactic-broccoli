@@ -1,0 +1,66 @@
+{
+ "id": "roller_m",
+ "src": "art/lowpix/world/made/roller.glb",
+ "credit": {
+  "title": "Paint roller (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/roller.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 184,
+ "tex": 192,
+ "size": [
+  0.198,
+  0.34,
+  0.06
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#905333",
+   "#b87746",
+   "#c69e73",
+   "#d5bfa0",
+   "#e6ddca",
+   "#e8e3d2",
+   "#ebe9da",
+   "#eeede2",
+   "#f2f2e9"
+  ],
+  "m1": [
+   "#0e114d",
+   "#141e63",
+   "#1b2f78",
+   "#22428c",
+   "#2b579f",
+   "#3875bd",
+   "#5695c9",
+   "#79b0d0",
+   "#9ac7d9"
+  ],
+  "m2": [
+   "#424461",
+   "#5a5f7b",
+   "#737b93",
+   "#9299a6",
+   "#b0b4ba",
+   "#bdbfc2",
+   "#c9c9ca",
+   "#d4d4d4",
+   "#dedede"
+  ],
+  "m3": [
+   "#491915",
+   "#5e281d",
+   "#713926",
+   "#844c30",
+   "#96613b",
+   "#b07d4a",
+   "#bb9969",
+   "#c5b188",
+   "#d1c6a6"
+  ]
+ },
+ "warnings": []
+}
