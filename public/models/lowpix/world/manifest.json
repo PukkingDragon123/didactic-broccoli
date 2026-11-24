@@ -1286,14 +1286,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/chabudai-table-176eb5a05ea948bb82cb951cb817ab8d",
   "site": "Sketchfab",
-  "tris": 3000,
-  "tex": 512,
+  "tris": 19995,
+  "tex": 1024,
   "size": [
-   1.064,
+   1.056,
    0.32,
-   0.481
+   0.473
   ],
-  "bytes": 70908
+  "bytes": 673528
  },
  "chair_barber": {
   "id": "chair_barber",
@@ -6953,14 +6953,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812",
   "site": "Sketchfab",
-  "tris": 2998,
-  "tex": 512,
+  "tris": 15736,
+  "tex": 1024,
   "size": [
-   1.102,
+   1.108,
    1,
-   0.721
+   0.723
   ],
-  "bytes": 128052
+  "bytes": 493108
  },
  "tanuki_statue": {
   "id": "tanuki_statue",
@@ -7515,13 +7515,13 @@
   "url": "https://polyhaven.com/a/Television_01",
   "site": "Poly Haven",
   "tris": 975,
-  "tex": 512,
+  "tex": 1024,
   "size": [
    0.6,
    0.457,
    0.471
   ],
-  "bytes": 34712
+  "bytes": 291368
  },
  "twin_tub_own": {
   "id": "twin_tub_own",

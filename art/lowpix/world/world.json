@@ -1,5 +1,5 @@
 {
- "_about": "lowpix conversions for the world props and the furniture catalogue: node tools/lowpix-world.mjs (header there). ids are the file names in public/models/lowpix/world/; h = height in metres (Poly Haven: the model's real height), ppm = texels per metre.",
+ "_about": "lowpix conversions for the world props and the furniture catalogue: node tools/lowpix-world.mjs (header there). ids are the file names in public/models/lowpix/world/; h = height in metres (Poly Haven: the model's real height), ppm = texels per metre. style 'realistic' (imports): the source's own photo texture kept, resampled to the item's atlas cap and shown with nearest filtering: photo-real detail on a fine pixel grid.",
  "defaults": {
   "style": "pixel-hd",
   "ppm": 160
@@ -10,97 +10,137 @@
    "src": "polyhaven:CashRegister_01",
    "ppm": 200,
    "cap": 512,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tv_wood",
    "src": "polyhaven:Television_01",
    "cap": 1024,
    "tris": 1000,
-   "ppm": 240
+   "ppm": 240,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "boombox",
    "src": "polyhaven:boombox",
    "ppm": 220,
-   "cap": 512
+   "cap": 512,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "cassette_player",
    "src": "polyhaven:cassette_player",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fan_floor",
    "src": "sketchfab:feabb8d50d304af082461b9289289c92",
-   "h": 0.85
+   "h": 0.85,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "extinguisher",
    "src": "polyhaven:korean_fire_extinguisher_01",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "desk_lamp",
    "src": "polyhaven:desk_lamp_arm_01",
-   "ppm": 220
+   "ppm": 220,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "toolbox",
    "src": "polyhaven:metal_toolbox",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tool_chest",
    "src": "polyhaven:metal_tool_chest",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "broom",
    "src": "polyhaven:wooden_broom",
-   "ppm": 200
+   "ppm": 200,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "dustpan",
    "src": "polyhaven:dustpan",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ladder",
    "src": "polyhaven:wooden_ladder",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "stool_wood",
    "src": "polyhaven:wooden_stool_01",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "chair_folding",
    "src": "sketchfab:7a99fce4bdbd40e1b2949cdeb39a8fba",
-   "h": 0.82
+   "h": 0.82,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "watering_can",
    "src": "polyhaven:watering_can_metal_01",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "jerrycan_plastic",
    "src": "polyhaven:plastic_jerrycan",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "jerrycan_metal",
    "src": "polyhaven:metal_jerrycan",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "clock_wall",
@@ -108,123 +148,184 @@
    "ppm": 240,
    "yaw": 180,
    "cap": 512,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "clock_alarm",
    "src": "polyhaven:alarm_clock_01",
    "ppm": 260,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lamp_hanging",
    "src": "polyhaven:hanging_industrial_lamp",
-   "ppm": 200
+   "ppm": 200,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "lamp_caged",
    "src": "polyhaven:caged_hanging_light",
-   "ppm": 220
+   "ppm": 220,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "lamp_fluoro",
    "src": "polyhaven:mounted_fluorescent_lights",
-   "ppm": 160
+   "ppm": 160,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "crate_wood",
-   "src": "polyhaven:wooden_crate_01"
+   "src": "polyhaven:wooden_crate_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "crate_wood2",
-   "src": "polyhaven:wooden_crate_02"
+   "src": "polyhaven:wooden_crate_02",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "crate_plastic",
    "src": "polyhaven:plastic_crate_01",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "crate_plastic2",
    "src": "polyhaven:plastic_crate_02",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "box_cardboard",
    "src": "polyhaven:cardboard_box_01",
    "tris": 1000,
    "ppm": 340,
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bin_metal",
    "src": "polyhaven:metal_trash_can",
-   "keep": "^metal_trash_can$"
+   "keep": "^metal_trash_can$",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "shelf_steel",
    "src": "polyhaven:steel_frame_shelves_01",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "shelf_steel2",
    "src": "polyhaven:steel_frame_shelves_02",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "shelf_display",
    "src": "polyhaven:wooden_display_shelves_01",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "shelf_painted",
    "src": "polyhaven:painted_wooden_shelves",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "rack_worn",
    "src": "polyhaven:worn_metal_rack",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "power_box",
    "src": "polyhaven:power_box_01",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fire_alarm",
    "src": "polyhaven:fire_alarm",
    "ppm": 260,
    "cap": 512,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "chalkboard",
    "src": "polyhaven:standing_chalkboard_01",
    "ppm": 270,
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "hand_truck",
    "src": "polyhaven:hand_truck",
-   "ppm": 140
+   "ppm": 140,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "ac_unit",
    "src": "polyhaven:exterior_aircon_unit",
-   "keep": "rusted"
+   "keep": "rusted",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "utility_box",
    "src": "polyhaven:utility_box_01",
    "ppm": 320,
    "tris": 3000,
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "utility_box2",
-   "src": "polyhaven:utility_box_02"
+   "src": "polyhaven:utility_box_02",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "gas_cylinder",
@@ -232,383 +333,566 @@
    "h": 1.25,
    "ppm": 140,
    "roty": 35.6,
-   "rotx": -90
+   "rotx": -90,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "lpg_small",
    "src": "polyhaven:small_lpg_tank",
    "ppm": 180,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bicycle_old",
    "src": "sketchfab:17ab00cb733443a2b552a2b620a68087",
    "h": 1.05,
    "tris": 3000,
-   "ppm": 150
+   "ppm": 150,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "post_box",
    "src": "sketchfab:5e0f504bb5d144809390dac8c66a6dd5",
    "h": 1.0,
    "ppm": 160,
-   "cap": 512
+   "cap": 512,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "cone",
    "src": "sketchfab:1cbffb4169684e5a84ba186882bd55d7",
    "h": 0.7,
-   "tris": 1200
+   "tris": 1200,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "manhole",
    "src": "polyhaven:water_manhole_cover",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "trash_jp",
    "src": "sketchfab:477e8292037043508fcfcaed32805ca8",
-   "h": 0.9
+   "h": 0.9,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "plant_pot1",
    "src": "polyhaven:potted_plant_01",
-   "alpha": true
+   "alpha": true,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "plant_pot2",
    "src": "polyhaven:potted_plant_02",
-   "alpha": true
+   "alpha": true,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "plant_pot4",
    "src": "polyhaven:potted_plant_04",
    "alpha": true,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "planter_clay",
    "src": "polyhaven:planter_pot_clay",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "planter_box",
-   "src": "polyhaven:planter_box_01"
+   "src": "polyhaven:planter_box_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "tyre",
    "src": "polyhaven:old_tyre",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "beer_crates",
    "src": "sketchfab:2be722c87cfd404698506f33f575b219",
-   "h": 0.62
+   "h": 0.62,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "bucket_wood",
    "src": "polyhaven:wooden_bucket_01",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kotatsu",
    "src": "sketchfab:1e976c78d1eb4d2faa590316b0d38e24",
    "h": 0.45,
-   "tris": 3000
+   "tris": 3000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "chabudai",
    "src": "sketchfab:176eb5a05ea948bb82cb951cb817ab8d",
-   "h": 0.32
+   "h": 0.32,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chochin",
    "src": "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316",
    "h": 0.55,
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "chochin2",
    "src": "sketchfab:4450069fee444ae0920aa5babd5d9239",
    "h": 0.45,
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kettle",
    "src": "sketchfab:0eb111108b4f40d9881a29d7a073c6b4",
    "h": 0.22,
    "ppm": 260,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "phone_rotary",
    "src": "sketchfab:52fb9ffd3bc241979f7192326e52aad8",
    "h": 0.13,
    "ppm": 300,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tansu",
    "src": "sketchfab:48bbd9962cc04725907c14a1a98fb812",
    "h": 1.0,
    "ppm": 380,
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "tea_set",
    "src": "polyhaven:tea_set_01",
-   "ppm": 260
+   "ppm": 260,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "thermos",
    "src": "polyhaven:plastic_thermos",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kettle_electric",
    "src": "polyhaven:vintage_electric_kettle",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "microwave",
    "src": "polyhaven:vintage_microwave",
-   "ppm": 200
+   "ppm": 200,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_painted",
-   "src": "polyhaven:painted_wooden_chair_01"
+   "src": "polyhaven:painted_wooden_chair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_wood",
-   "src": "polyhaven:WoodenChair_01"
+   "src": "polyhaven:WoodenChair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_school",
-   "src": "polyhaven:SchoolChair_01"
+   "src": "polyhaven:SchoolChair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "desk_school",
-   "src": "polyhaven:SchoolDesk_01"
+   "src": "polyhaven:SchoolDesk_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_rocking",
-   "src": "polyhaven:Rockingchair_01"
+   "src": "polyhaven:Rockingchair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_barber",
-   "src": "polyhaven:BarberShopChair_01"
+   "src": "polyhaven:BarberShopChair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_green",
-   "src": "polyhaven:GreenChair_01"
+   "src": "polyhaven:GreenChair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "chair_lounge",
-   "src": "polyhaven:mid_century_lounge_chair"
+   "src": "polyhaven:mid_century_lounge_chair",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "armchair",
-   "src": "polyhaven:ArmChair_01"
+   "src": "polyhaven:ArmChair_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "armchair_cn",
-   "src": "polyhaven:chinese_armchair"
+   "src": "polyhaven:chinese_armchair",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "sofa_02",
    "src": "polyhaven:sofa_02",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "sofa_03",
    "src": "polyhaven:sofa_03",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "sofa_wood",
    "src": "polyhaven:painted_wooden_sofa",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "daybed",
    "src": "polyhaven:vintage_day_bed",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "ottoman",
-   "src": "polyhaven:Ottoman_01"
+   "src": "polyhaven:Ottoman_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "table_wood",
    "src": "polyhaven:WoodenTable_01",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "table_round",
    "src": "polyhaven:round_wooden_table_01",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "table_coffee",
    "src": "polyhaven:coffee_table_round_01",
-   "ppm": 140
+   "ppm": 140,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "table_tea_cn",
    "src": "polyhaven:chinese_tea_table",
-   "ppm": 140
+   "ppm": 140,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "table_side",
    "src": "polyhaven:side_table_01",
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "desk_office",
    "src": "polyhaven:metal_office_desk",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "bookshelf",
    "src": "polyhaven:wooden_bookshelf_worn",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "cabinet_drawer",
    "src": "polyhaven:drawer_cabinet",
-   "ppm": 140
+   "ppm": 140,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "cabinet_vintage",
    "src": "polyhaven:vintage_cabinet_01",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "cabinet_cn",
    "src": "polyhaven:chinese_cabinet",
-   "ppm": 130
+   "ppm": 130,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "nightstand",
-   "src": "polyhaven:ClassicNightstand_01"
+   "src": "polyhaven:ClassicNightstand_01",
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "lamp_pipe",
    "src": "polyhaven:industrial_pipe_lamp",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lamp_oil",
    "src": "polyhaven:vintage_oil_lamp",
-   "ppm": 240
+   "ppm": 240,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "lantern_wood",
    "src": "polyhaven:wooden_lantern_01",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lantern",
    "src": "polyhaven:Lantern_01",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "vase_ceramic",
    "src": "polyhaven:antique_ceramic_vase_01",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "vase_brass",
    "src": "polyhaven:brass_vase_01",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bust_marble",
    "src": "polyhaven:marble_bust_01",
    "ppm": 220,
    "tris": 1000,
-   "cap": 512
+   "cap": 512,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cat_statue",
    "src": "polyhaven:concrete_cat_statue",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "elephant",
    "src": "polyhaven:carved_wooden_elephant",
    "ppm": 220,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "chess",
    "src": "polyhaven:chess_set",
    "ppm": 240,
    "tris": 1000,
-   "cap": 512
+   "cap": 512,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "dartboard",
    "src": "polyhaven:dartboard",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mirror",
    "src": "polyhaven:ornate_mirror_01",
-   "ppm": 180
+   "ppm": 180,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "ukulele",
    "src": "polyhaven:Ukulele_01",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "basket",
    "src": "polyhaven:wicker_basket_01",
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "clock_mantel",
    "src": "polyhaven:mantel_clock_01",
    "ppm": 240,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "clock_grandfather",
    "src": "polyhaven:vintage_grandfather_clock_01",
-   "ppm": 120
+   "ppm": 120,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "screen_folding",
    "src": "polyhaven:chinese_screen_panels",
-   "ppm": 110
+   "ppm": 110,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "extinguisher_jp",
    "src": "sketchfab:68068b0dcc9c45388f958aef24e26c92",
    "h": 0.5,
    "ppm": 200,
-   "tris": 1000
+   "tris": 1000,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bench_station",
    "src": "sketchfab:68d9b8434ee6407da1e6fda1166d3ad2",
    "h": 0.8,
-   "ppm": 140
+   "ppm": 140,
+   "style": "realistic",
+   "atlas": 1024,
+   "tris": 6000
   },
   {
    "id": "robot_vacuum",
@@ -617,7 +901,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Robot vacuum cleaner low poly",
-   "prop": "robot_vacuum"
+   "prop": "robot_vacuum",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cat_cushion",
@@ -626,7 +912,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Pet Bed",
-   "prop": "cat_cushion"
+   "prop": "cat_cushion",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_ice_freezer",
@@ -636,7 +924,9 @@
    "tris": 3000,
    "name": "Deep Freezer V1",
    "prop": "mk_ice_freezer",
-   "cap": 2048
+   "cap": 2048,
+   "style": "realistic",
+   "atlas": 2048
   },
   {
    "id": "mk_ramune_tub",
@@ -646,7 +936,9 @@
    "tris": 3000,
    "name": "Ice Bucket",
    "prop": "mk_ramune_tub",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_peg_stand",
@@ -655,7 +947,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Wood Display Rack",
-   "prop": "mk_peg_stand"
+   "prop": "mk_peg_stand",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_snack_carton",
@@ -665,7 +959,9 @@
    "tris": 1000,
    "name": "Carton Box_03_Open",
    "prop": "mk_snack_carton",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_ashtray",
@@ -674,7 +970,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Ashtray with Cigarettes",
-   "prop": "mk_ashtray"
+   "prop": "mk_ashtray",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_zabuton",
@@ -684,7 +982,9 @@
    "tris": 1000,
    "name": "Zafu and zabuton",
    "prop": "mk_zabuton",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_phone",
@@ -694,7 +994,9 @@
    "tris": 1000,
    "name": "Classic Telephone",
    "prop": "mk_phone",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_cigar_box",
@@ -704,7 +1006,9 @@
    "tris": 500,
    "cap": 256,
    "name": "Cigar Box",
-   "prop": "mk_cigar_box"
+   "prop": "mk_cigar_box",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cupcake",
@@ -713,7 +1017,9 @@
    "ppm": 180,
    "tris": 2500,
    "name": "Hand painted cupcake",
-   "prop": "cupcake"
+   "prop": "cupcake",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "candy_cane",
@@ -722,7 +1028,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Candy Cane",
-   "prop": "candy_cane"
+   "prop": "candy_cane",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "macaron_tower",
@@ -731,7 +1039,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Macaron tower",
-   "prop": "macaron_tower"
+   "prop": "macaron_tower",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rocket",
@@ -740,7 +1050,9 @@
    "ppm": 100,
    "tris": 3000,
    "name": "Toy Rocket 4K Free 3D model",
-   "prop": "rocket"
+   "prop": "rocket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "planet_lamp",
@@ -749,7 +1061,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Planet lamp",
-   "prop": "planet_lamp"
+   "prop": "planet_lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ufo",
@@ -758,7 +1072,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "ufo flying saucer",
-   "prop": "ufo"
+   "prop": "ufo",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "star_lamp",
@@ -767,7 +1083,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Star Lamp",
-   "prop": "star_lamp"
+   "prop": "star_lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "arcade_cabinet",
@@ -776,7 +1094,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Arcade Cabinet",
-   "prop": "arcade_cabinet"
+   "prop": "arcade_cabinet",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "phone_booth",
@@ -785,7 +1105,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Old Green Payphone",
-   "prop": "phone_booth"
+   "prop": "phone_booth",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "anchor",
@@ -794,7 +1116,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Old Anchor",
-   "prop": "anchor"
+   "prop": "anchor",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "beach_parasol",
@@ -803,7 +1127,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Beach Umbrella",
-   "prop": "beach_parasol"
+   "prop": "beach_parasol",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sofa_retro",
@@ -812,7 +1138,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Game Ready American 50s Style Retro Sofa",
-   "prop": "sofa_retro"
+   "prop": "sofa_retro",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "floor_lamp",
@@ -821,7 +1149,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Wooden Floor Lamp",
-   "prop": "floor_lamp"
+   "prop": "floor_lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cat_tower",
@@ -830,7 +1160,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Cat Tree Ready for your game",
-   "prop": "cat_tower"
+   "prop": "cat_tower",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "haunted_well",
@@ -839,7 +1171,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Old Stone Well",
-   "prop": "haunted_well"
+   "prop": "haunted_well",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "plant_pothos",
@@ -848,7 +1182,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Pothos Plant",
-   "prop": "plant_pothos"
+   "prop": "plant_pothos",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "plant_monstera",
@@ -857,7 +1193,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Monstera Deliciosa Potted Mid-Century pl",
-   "prop": "plant_monstera"
+   "prop": "plant_monstera",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bamboo",
@@ -866,7 +1204,9 @@
    "ppm": 100,
    "tris": 3000,
    "name": "Bamboo with plant pot",
-   "prop": "bamboo"
+   "prop": "bamboo",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "flower_bed",
@@ -875,7 +1215,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Hydrangea",
-   "prop": "flower_bed"
+   "prop": "flower_bed",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "stone_lantern",
@@ -884,7 +1226,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Japanese Stone Lantern",
-   "prop": "stone_lantern"
+   "prop": "stone_lantern",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "torii",
@@ -893,7 +1237,9 @@
    "ppm": 100,
    "tris": 3000,
    "name": "Japanese Torii Gate",
-   "prop": "torii"
+   "prop": "torii",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bamboo_fence",
@@ -902,7 +1248,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "BFBBR - Bamboo Fence 01",
-   "prop": "bamboo_fence"
+   "prop": "bamboo_fence",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fuji_diorama",
@@ -911,7 +1259,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Mount Fuji Volcano - Japan",
-   "prop": "fuji_diorama"
+   "prop": "fuji_diorama",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shishi_odoshi",
@@ -920,7 +1270,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Shishi Odoshi",
-   "prop": "shishi_odoshi"
+   "prop": "shishi_odoshi",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "manekineko",
@@ -929,7 +1281,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Maneki neko",
-   "prop": "manekineko"
+   "prop": "manekineko",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "daruma",
@@ -938,7 +1292,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Daruma Doll",
-   "prop": "daruma"
+   "prop": "daruma",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "helmet",
@@ -947,7 +1303,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Construction Helmet (Orange)",
-   "prop": "helmet"
+   "prop": "helmet",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "stove_kettle",
@@ -956,7 +1314,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Gas Stove",
-   "prop": "stove_kettle"
+   "prop": "stove_kettle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "noodle_box",
@@ -965,7 +1325,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Cardboard Box",
-   "prop": "noodle_box"
+   "prop": "noodle_box",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "umbrella_stand",
@@ -974,7 +1336,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Umbrellas holder with umbrellas",
-   "prop": "umbrella_stand"
+   "prop": "umbrella_stand",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tires",
@@ -992,7 +1356,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Metal bucket",
-   "prop": "bucket"
+   "prop": "bucket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rice_sack",
@@ -1001,7 +1367,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Rice Sack Pot",
-   "prop": "rice_sack"
+   "prop": "rice_sack",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "utility_sink",
@@ -1010,7 +1378,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Utility Sink",
-   "prop": "utility_sink"
+   "prop": "utility_sink",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "paint_tins",
@@ -1019,7 +1389,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Spray Paint Can",
-   "prop": "paint_tins"
+   "prop": "paint_tins",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cactus_pot",
@@ -1028,7 +1400,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Cactus Concrete Pot",
-   "prop": "cactus_pot"
+   "prop": "cactus_pot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "furin",
@@ -1037,7 +1411,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Wind Chimes",
-   "prop": "furin"
+   "prop": "furin",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rag",
@@ -1046,7 +1422,9 @@
    "ppm": 240,
    "tris": 1500,
    "name": "Folded Towel",
-   "prop": "rag"
+   "prop": "rag",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bin_bags",
@@ -1059,7 +1437,9 @@
    "smooth": 3.0,
    "grain": 0.0,
    "detail": 0.55,
-   "spread": 0.45
+   "spread": 0.45,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "coin_float",
@@ -1068,7 +1448,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Rusty Cash box",
-   "prop": "coin_float"
+   "prop": "coin_float",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cardboard_flat",
@@ -1077,7 +1459,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Old Paper & Cardboard Boxes",
-   "prop": "cardboard_flat"
+   "prop": "cardboard_flat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cardboard_bundle",
@@ -1086,7 +1470,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Old Paper & Cardboard Boxes",
-   "prop": "cardboard_bundle"
+   "prop": "cardboard_bundle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "junk_box",
@@ -1096,7 +1482,9 @@
    "tris": 3000,
    "name": "Junk Box",
    "prop": "junk_box",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "junk_box_open",
@@ -1105,7 +1493,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Wooden Dirty Crates - Broken Whole 2 Pie",
-   "prop": "junk_box_open"
+   "prop": "junk_box_open",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wash_bucket",
@@ -1114,7 +1504,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Old Bucket - 2MB",
-   "prop": "wash_bucket"
+   "prop": "wash_bucket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sponge",
@@ -1123,7 +1515,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Sponge",
-   "prop": "sponge"
+   "prop": "sponge",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "spray_bottle",
@@ -1132,7 +1526,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Spray Bottle",
-   "prop": "spray_bottle"
+   "prop": "spray_bottle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "litter_can",
@@ -1151,7 +1547,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Kumade - XYZ Speedraft",
-   "prop": "mk_kumade"
+   "prop": "mk_kumade",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_ema",
@@ -1160,7 +1558,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Ema Wish board from Japan",
-   "prop": "mk_ema"
+   "prop": "mk_ema",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_koban",
@@ -1169,7 +1569,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Low-Poly Gold Coin",
-   "prop": "mk_koban"
+   "prop": "mk_koban",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_hyotan",
@@ -1178,7 +1580,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Gourd Bottle",
-   "prop": "mk_hyotan"
+   "prop": "mk_hyotan",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_kitsune",
@@ -1187,7 +1591,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Kitsune Fox Shrine Statue",
-   "prop": "mk_kitsune"
+   "prop": "mk_kitsune",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_jar_pickle",
@@ -1196,7 +1602,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Voxel Breakable Pickle Jar",
-   "prop": "mk_jar_pickle"
+   "prop": "mk_jar_pickle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_jar_ramen",
@@ -1205,7 +1613,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "RAMEN BOWL",
-   "prop": "mk_jar_ramen"
+   "prop": "mk_jar_ramen",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_trinket_cassette",
@@ -1214,7 +1624,9 @@
    "ppm": 240,
    "tris": 1500,
    "name": "Cassette tapes",
-   "prop": "mk_trinket_cassette"
+   "prop": "mk_trinket_cassette",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mk_outbox",
@@ -1224,7 +1636,9 @@
    "tris": 1000,
    "name": "Wooden Crate",
    "prop": "mk_outbox",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "park_bench",
@@ -1233,7 +1647,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Park Bench",
-   "prop": "park_bench"
+   "prop": "park_bench",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "drinking_fountain",
@@ -1242,7 +1658,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Drinking Fountain",
-   "prop": "drinking_fountain"
+   "prop": "drinking_fountain",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "park_lamp",
@@ -1251,7 +1669,9 @@
    "ppm": 100,
    "tris": 3000,
    "name": "Classic Street Lamp Post",
-   "prop": "park_lamp"
+   "prop": "park_lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "trash_basket",
@@ -1260,7 +1680,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "UM-16-3 Metal Litter Bin | RGR pluss",
-   "prop": "trash_basket"
+   "prop": "trash_basket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bollard_u",
@@ -1269,7 +1691,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Car Barricade 2　車止めポール バリカー",
-   "prop": "bollard_u"
+   "prop": "bollard_u",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "trash_bag_b",
@@ -1282,7 +1706,9 @@
    "smooth": 3.0,
    "grain": 0.0,
    "detail": 0.55,
-   "spread": 0.45
+   "spread": 0.45,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "newspaper_stack",
@@ -1291,7 +1717,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "[CC0] Newspaper Stack - Ready to Unity H",
-   "prop": "newspaper_stack"
+   "prop": "newspaper_stack",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cat_bowl",
@@ -1300,7 +1728,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Pet Bowl",
-   "prop": "cat_bowl"
+   "prop": "cat_bowl",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cat_bed",
@@ -1310,7 +1740,9 @@
    "tris": 1000,
    "name": "Cardboard Box",
    "prop": "cat_bed",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "flyer_stack",
@@ -1319,7 +1751,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Paper Stack",
-   "prop": "flyer_stack"
+   "prop": "flyer_stack",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_futon",
@@ -1328,7 +1762,9 @@
    "ppm": 100,
    "tris": 3000,
    "name": "Japanese futon/bed",
-   "prop": "room_futon"
+   "prop": "room_futon",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_zabuton",
@@ -1337,7 +1773,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Unhyun_ Floor Cushion",
-   "prop": "room_zabuton"
+   "prop": "room_zabuton",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_desk",
@@ -1346,7 +1784,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Japanese Study Desk",
-   "prop": "room_desk"
+   "prop": "room_desk",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_chair",
@@ -1355,7 +1795,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Office Swivel Chair",
-   "prop": "room_chair"
+   "prop": "room_chair",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_bookshelf",
@@ -1364,7 +1806,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "LP Furniture - Cube Shelf Sq",
-   "prop": "room_bookshelf"
+   "prop": "room_bookshelf",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_tvrack",
@@ -1373,7 +1817,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Small Tv Stand",
-   "prop": "room_tvrack"
+   "prop": "room_tvrack",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_kitchen",
@@ -1382,7 +1828,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Low Poly Kitchenette Pack",
-   "prop": "room_kitchen"
+   "prop": "room_kitchen",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_ac",
@@ -1391,7 +1839,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Indoor air conditioner unit",
-   "prop": "room_ac"
+   "prop": "room_ac",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_trash",
@@ -1400,7 +1850,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Plastic Waste Bin",
-   "prop": "room_trash"
+   "prop": "room_trash",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_shoes",
@@ -1409,7 +1861,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "sneakers",
-   "prop": "room_shoes"
+   "prop": "room_shoes",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_boxes",
@@ -1418,7 +1872,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Stacked Cardboard Boxes | Crafted by jer",
-   "prop": "room_boxes"
+   "prop": "room_boxes",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_mug",
@@ -1427,7 +1883,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Coffee Mug (School Project)",
-   "prop": "room_mug"
+   "prop": "room_mug",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_cupnoodle",
@@ -1436,7 +1894,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Noodle Cup",
-   "prop": "room_cupnoodle"
+   "prop": "room_cupnoodle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "room_phone",
@@ -1445,7 +1905,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Corded Public Phone - Low Poly",
-   "prop": "room_phone"
+   "prop": "room_phone",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pendulum_clock",
@@ -1455,7 +1917,9 @@
    "tris": 1000,
    "name": "Antique Wall Pendulum Clock",
    "prop": "pendulum_clock",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lucky_cat_big",
@@ -1464,7 +1928,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Maneki neko",
-   "prop": "lucky_cat_big"
+   "prop": "lucky_cat_big",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mirror_pole",
@@ -1483,7 +1949,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Plant pots",
-   "prop": "potted_row"
+   "prop": "potted_row",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mamachari",
@@ -1492,7 +1960,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "City bike low poly",
-   "prop": "mamachari"
+   "prop": "mamachari",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "jizo_shrine",
@@ -1501,7 +1971,9 @@
    "ppm": 160,
    "tris": 3000,
    "name": "Jizo Shrine",
-   "prop": "jizo_shrine"
+   "prop": "jizo_shrine",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "goods_shelf",
@@ -1510,7 +1982,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Grocery store Shelf",
-   "prop": "goods_shelf"
+   "prop": "goods_shelf",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "moon_rock",
@@ -1518,7 +1992,9 @@
    "h": 0.68,
    "ppm": 180,
    "tris": 3000,
-   "prop": "moon_rock"
+   "prop": "moon_rock",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shell_giant",
@@ -1526,7 +2002,9 @@
    "h": 0.48,
    "ppm": 180,
    "tris": 3000,
-   "prop": "shell_giant"
+   "prop": "shell_giant",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rock_moss",
@@ -1534,7 +2012,9 @@
    "h": 0.36,
    "ppm": 180,
    "tris": 3000,
-   "prop": "rock_moss"
+   "prop": "rock_moss",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rock_zen",
@@ -1542,7 +2022,9 @@
    "h": 0.96,
    "ppm": 180,
    "tris": 3000,
-   "prop": "rock_zen"
+   "prop": "rock_zen",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "trash_bag",
@@ -1555,7 +2037,9 @@
    "grain": 0.0,
    "detail": 0.55,
    "spread": 0.45,
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "grass_tuft",
@@ -1563,7 +2047,9 @@
    "h": 0.35,
    "ppm": 180,
    "tris": 3000,
-   "prop": "grass_tuft"
+   "prop": "grass_tuft",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "heater",
@@ -1572,7 +2058,9 @@
    "ppm": 180,
    "tris": 1000,
    "name": "Old Oil Heater_Gas stove_24_MB",
-   "prop": "heater"
+   "prop": "heater",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "milk_fridge",
@@ -1581,7 +2069,9 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Beverages refrigerator",
-   "prop": "milk_fridge"
+   "prop": "milk_fridge",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "call_bell_p",
@@ -1590,7 +2080,9 @@
    "ppm": 240,
    "tris": 1000,
    "name": "Reception Bell. Wood, shiny copper",
-   "prop": "call_bell"
+   "prop": "call_bell",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sandals",
@@ -1599,7 +2091,9 @@
    "ppm": 240,
    "tris": 1500,
    "name": "Geta",
-   "prop": "sandals"
+   "prop": "sandals",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "screw_jars",
@@ -1609,7 +2103,9 @@
    "tris": 1500,
    "name": "Mason Jars",
    "prop": "screw_jars",
-   "keep": "^(Jar|Lid)"
+   "keep": "^(Jar|Lid)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ladle",
@@ -1618,7 +2114,9 @@
    "ppm": 180,
    "tris": 3000,
    "name": "Wooden Ladle",
-   "prop": "ladle"
+   "prop": "ladle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wall_shelf_jars",
@@ -1628,7 +2126,9 @@
    "tris": 3000,
    "name": "Jar Shelf",
    "prop": "wall_shelf_jars",
-   "cap": 1024
+   "cap": 1024,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bonsai",
@@ -1637,7 +2137,9 @@
    "ppm": 180,
    "tris": 3000,
    "prop": "bonsai",
-   "alpha": true
+   "alpha": true,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tomare",
@@ -1981,7 +2483,9 @@
    "ppm": 800,
    "tris": 1000,
    "prop": "pocket_watch",
-   "cap": 256
+   "cap": 256,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "goodsmilk",
@@ -2029,7 +2533,9 @@
    "ppm": 1000,
    "tris": 1500,
    "cap": 512,
-   "name": "Bun"
+   "name": "Bun",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_onigiri2",
@@ -2038,7 +2544,9 @@
    "ppm": 1000,
    "tris": 1500,
    "cap": 512,
-   "name": "Onigiri"
+   "name": "Onigiri",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_purin",
@@ -2047,7 +2555,9 @@
    "ppm": 1000,
    "tris": 1500,
    "cap": 512,
-   "name": "Japanese Pudding"
+   "name": "Japanese Pudding",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_ramen",
@@ -2056,7 +2566,9 @@
    "ppm": 700,
    "tris": 2500,
    "cap": 512,
-   "name": "Japanese Ramen"
+   "name": "Japanese Ramen",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_ramen3",
@@ -2065,7 +2577,9 @@
    "ppm": 700,
    "tris": 2500,
    "cap": 512,
-   "name": "RAMEN BOWL"
+   "name": "RAMEN BOWL",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bowl_empty",
@@ -2074,7 +2588,9 @@
    "ppm": 700,
    "tris": 1000,
    "cap": 512,
-   "name": "Bowl"
+   "name": "Bowl",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_gyoza",
@@ -2084,7 +2600,9 @@
    "tris": 2000,
    "cap": 512,
    "name": "Free lowpoly gyoza composition",
-   "keep": "Plate|Sauce|Gyoza"
+   "keep": "Plate|Sauce|Gyoza",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_curry",
@@ -2093,7 +2611,9 @@
    "ppm": 700,
    "tris": 1200,
    "cap": 512,
-   "name": "Curry Rice"
+   "name": "Curry Rice",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "beer_bottle",
@@ -2102,7 +2622,9 @@
    "ppm": 500,
    "tris": 1200,
    "cap": 512,
-   "name": "Dusty Beer Bottle"
+   "name": "Dusty Beer Bottle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "piggy_bank_c",
@@ -2111,7 +2633,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Piggy Bank"
+   "name": "Piggy Bank",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fridge_old",
@@ -2120,7 +2644,9 @@
    "ppm": 220,
    "tris": 3000,
    "cap": 512,
-   "name": "Old Fridge"
+   "name": "Old Fridge",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ricecooker_old",
@@ -2129,7 +2655,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Old Rusty Rice Cooker"
+   "name": "Old Rusty Rice Cooker",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "frying_pan",
@@ -2138,7 +2666,9 @@
    "ppm": 600,
    "tris": 1500,
    "cap": 512,
-   "name": "Old Frying Pan"
+   "name": "Old Frying Pan",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kendama",
@@ -2147,7 +2677,9 @@
    "ppm": 600,
    "tris": 1500,
    "cap": 512,
-   "name": "Kendama"
+   "name": "Kendama",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "teddy",
@@ -2156,7 +2688,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Teddy Bear"
+   "name": "Teddy Bear",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "teddy2",
@@ -2165,7 +2699,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Teddy bear"
+   "name": "Teddy bear",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toy_train",
@@ -2174,7 +2710,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Wooden Train Toy"
+   "name": "Wooden Train Toy",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "radio_old",
@@ -2183,7 +2721,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Radio"
+   "name": "Radio",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "radio_ussr",
@@ -2192,7 +2732,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Radio from the USSR 1967"
+   "name": "Radio from the USSR 1967",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_cap",
@@ -2201,7 +2743,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Baseball Cap"
+   "name": "Baseball Cap",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_boater",
@@ -2210,7 +2754,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "straw boater hat w/ black silk ribbon"
+   "name": "straw boater hat w/ black silk ribbon",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_strawhat",
@@ -2219,7 +2765,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Fun Cowboy Straw Hat"
+   "name": "Fun Cowboy Straw Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_bucket",
@@ -2228,7 +2776,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Bucket Hat"
+   "name": "Bucket Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_boonie",
@@ -2238,7 +2788,9 @@
    "tris": 2000,
    "cap": 512,
    "name": "Bucket hat",
-   "keep": "LOD0"
+   "keep": "LOD0",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_beanie_pom",
@@ -2247,7 +2799,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Beanie With Pom-Pom"
+   "name": "Beanie With Pom-Pom",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_beanie",
@@ -2256,7 +2810,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Beanie"
+   "name": "Beanie",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_reindeer",
@@ -2265,7 +2821,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Christmas Reindeer Headband"
+   "name": "Christmas Reindeer Headband",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_flatcap",
@@ -2274,7 +2832,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Flat Cap"
+   "name": "Flat Cap",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_flatcap2",
@@ -2283,7 +2843,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Flat_cap"
+   "name": "Flat_cap",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_sailor",
@@ -2292,7 +2854,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Sailor hat"
+   "name": "Sailor hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_round",
@@ -2301,7 +2865,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Glasses 09"
+   "name": "Glasses 09",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_frames",
@@ -2310,7 +2876,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Black Glasses"
+   "name": "Black Glasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_aviator",
@@ -2319,7 +2887,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Aviator sunglasses"
+   "name": "Aviator sunglasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_goggles",
@@ -2328,7 +2898,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Steampunk Glasses"
+   "name": "Steampunk Glasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_shades",
@@ -2337,7 +2909,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Mustang Sunglasses"
+   "name": "Mustang Sunglasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_heartpink",
@@ -2346,7 +2920,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Heart Glasses"
+   "name": "Heart Glasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_neckerchief",
@@ -2356,7 +2932,9 @@
    "tris": 2000,
    "cap": 512,
    "name": "Neckerchief",
-   "keep": "[Ss]hawl"
+   "keep": "[Ss]hawl",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_backpack",
@@ -2365,7 +2943,9 @@
    "ppm": 400,
    "tris": 2000,
    "cap": 512,
-   "name": "Backpack low-poly"
+   "name": "Backpack low-poly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_satchel",
@@ -2374,7 +2954,9 @@
    "ppm": 400,
    "tris": 2000,
    "cap": 512,
-   "name": "A Backpack For An Adventure"
+   "name": "A Backpack For An Adventure",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_rucksack",
@@ -2383,7 +2965,9 @@
    "ppm": 400,
    "tris": 2000,
    "cap": 512,
-   "name": "Old Soviet Backpack"
+   "name": "Old Soviet Backpack",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_beret",
@@ -2392,7 +2976,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Headwear"
+   "name": "Headwear",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_chef",
@@ -2401,7 +2987,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Chef's Hat"
+   "name": "Chef's Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_chef2",
@@ -2410,7 +2998,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Chef Hat"
+   "name": "Chef Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_crown",
@@ -2419,7 +3009,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Crown rich (gold)"
+   "name": "Crown rich (gold)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_tophat",
@@ -2428,7 +3020,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Top Hat"
+   "name": "Top Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_tophat2",
@@ -2437,7 +3031,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Top-Hat"
+   "name": "Top-Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_cowboy",
@@ -2446,7 +3042,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Cowboy Hat"
+   "name": "Cowboy Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_cowboy2",
@@ -2455,7 +3053,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Hat"
+   "name": "Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_hardhat",
@@ -2464,7 +3064,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Hard hat"
+   "name": "Hard hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_fedora",
@@ -2473,7 +3075,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Fedora"
+   "name": "Fedora",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_fedora2",
@@ -2482,7 +3086,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Fedora Hat"
+   "name": "Fedora Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_trilby",
@@ -2491,7 +3097,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Fedora"
+   "name": "Fedora",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_fedora3",
@@ -2500,7 +3108,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Fedora Hat"
+   "name": "Fedora Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toy_robot",
@@ -2509,7 +3119,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Smoking Robot"
+   "name": "Smoking Robot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toy_robot2",
@@ -2518,7 +3130,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "classic_robot"
+   "name": "classic_robot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toy_robot3",
@@ -2527,7 +3141,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Vintage Toy Robot"
+   "name": "Vintage Toy Robot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "payphone_red",
@@ -2536,7 +3152,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Vintage retro payphone"
+   "name": "Vintage retro payphone",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kokeshi",
@@ -2545,7 +3163,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Akira and Tetsuko's Celebration Kokeshi "
+   "name": "Akira and Tetsuko's Celebration Kokeshi ",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kokeshi2",
@@ -2555,7 +3175,9 @@
    "tris": 1500,
    "cap": 512,
    "name": "kokeshi",
-   "rotx": 90
+   "rotx": 90,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "books_stack",
@@ -2564,7 +3186,9 @@
    "ppm": 400,
    "tris": 1500,
    "cap": 512,
-   "name": "Stack of Books"
+   "name": "Stack of Books",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "books_old",
@@ -2573,7 +3197,9 @@
    "ppm": 400,
    "tris": 1000,
    "cap": 512,
-   "name": "Stack Of Old Books"
+   "name": "Stack Of Old Books",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lamp_pendant",
@@ -2582,7 +3208,9 @@
    "ppm": 300,
    "tris": 2000,
    "cap": 512,
-   "name": "Lamp_02 lowpoly"
+   "name": "Lamp_02 lowpoly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lamp_dome",
@@ -2591,7 +3219,9 @@
    "ppm": 400,
    "tris": 2000,
    "cap": 512,
-   "name": "Ceiling Lamp"
+   "name": "Ceiling Lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "hanger_shirt",
@@ -2600,7 +3230,9 @@
    "ppm": 300,
    "tris": 2500,
    "cap": 512,
-   "name": "Hangers and Long Sleeve Shirt"
+   "name": "Hangers and Long Sleeve Shirt",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "hanger_tee",
@@ -2609,7 +3241,9 @@
    "ppm": 300,
    "tris": 2500,
    "cap": 512,
-   "name": "Hangers and Tee-shirt"
+   "name": "Hangers and Tee-shirt",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "hanger_wood",
@@ -2618,7 +3252,9 @@
    "ppm": 400,
    "tris": 1000,
    "cap": 512,
-   "name": "Wood Clothes Hanger"
+   "name": "Wood Clothes Hanger",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "laundry_basket",
@@ -2627,7 +3263,9 @@
    "ppm": 300,
    "tris": 3000,
    "cap": 512,
-   "name": "laundry basket"
+   "name": "laundry basket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "geta",
@@ -2636,7 +3274,9 @@
    "ppm": 600,
    "tris": 1000,
    "cap": 512,
-   "name": "Wood Geta"
+   "name": "Wood Geta",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "slippers",
@@ -2645,7 +3285,9 @@
    "ppm": 500,
    "tris": 1500,
    "cap": 512,
-   "name": "house slippers"
+   "name": "house slippers",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toaster",
@@ -2654,7 +3296,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Vintage Toaster"
+   "name": "Vintage Toaster",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toaster_deco",
@@ -2663,7 +3307,9 @@
    "ppm": 500,
    "tris": 1200,
    "cap": 512,
-   "name": "Art Deco Toaster"
+   "name": "Art Deco Toaster",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "teapot_jp",
@@ -2672,7 +3318,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Japanese teapot"
+   "name": "Japanese teapot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "teapot_enamel",
@@ -2681,7 +3329,9 @@
    "ppm": 500,
    "tris": 1500,
    "cap": 512,
-   "name": "Old Soviet teapot"
+   "name": "Old Soviet teapot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "dish_rack",
@@ -2690,7 +3340,9 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "Dish Rack with Dishes"
+   "name": "Dish Rack with Dishes",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cutting_board",
@@ -2699,7 +3351,9 @@
    "ppm": 500,
    "tris": 400,
    "cap": 512,
-   "name": "Wooden Cutting Board"
+   "name": "Wooden Cutting Board",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pots_pans",
@@ -2708,7 +3362,9 @@
    "ppm": 400,
    "tris": 3000,
    "cap": 512,
-   "name": "3DDecember 2021 - Copper Pots and Pans"
+   "name": "3DDecember 2021 - Copper Pots and Pans",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pot_cooking",
@@ -2717,7 +3373,9 @@
    "ppm": 500,
    "tris": 800,
    "cap": 512,
-   "name": "Cooking Pot (Game-Ready)"
+   "name": "Cooking Pot (Game-Ready)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pot_a",
@@ -2726,7 +3384,9 @@
    "ppm": 500,
    "tris": 1500,
    "cap": 512,
-   "name": "a pot"
+   "name": "a pot",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bath_stool_set",
@@ -2735,7 +3395,9 @@
    "ppm": 400,
    "tris": 2000,
    "cap": 512,
-   "name": "Japanese Bath Stool and Bucket"
+   "name": "Japanese Bath Stool and Bucket",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "jam_jar",
@@ -2744,7 +3406,9 @@
    "ppm": 600,
    "tris": 1500,
    "cap": 512,
-   "name": "Casual Jar of Raspberry Jam"
+   "name": "Casual Jar of Raspberry Jam",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pickle_jar",
@@ -2753,7 +3417,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "pickles"
+   "name": "pickles",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "stock_pot",
@@ -2762,7 +3428,9 @@
    "ppm": 400,
    "tris": 3000,
    "cap": 512,
-   "name": "Indonesian Style Meatball Pot / Stock Po"
+   "name": "Indonesian Style Meatball Pot / Stock Po",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ladle_steel",
@@ -2771,7 +3439,9 @@
    "ppm": 500,
    "tris": 1200,
    "cap": 512,
-   "name": "Steel Soup Ladle"
+   "name": "Steel Soup Ladle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ladles_wood",
@@ -2780,7 +3450,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Wooden ladles and spoons"
+   "name": "Wooden ladles and spoons",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "stool_retro",
@@ -2789,7 +3461,9 @@
    "ppm": 300,
    "tris": 2500,
    "cap": 512,
-   "name": "Retro bar stool"
+   "name": "Retro bar stool",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_sweatband",
@@ -2798,7 +3472,9 @@
    "ppm": 600,
    "tris": 1200,
    "cap": 512,
-   "name": "Sweat Band For Gorilla Tag Fan Game NO T"
+   "name": "Sweat Band For Gorilla Tag Fan Game NO T",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_kitsune",
@@ -2807,7 +3483,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Inari Fox Mask"
+   "name": "Inari Fox Mask",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_kitsune2",
@@ -2816,7 +3494,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Japanese Fox Mask 02 (Kitsune)"
+   "name": "Japanese Fox Mask 02 (Kitsune)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_usagi_mask",
@@ -2825,7 +3505,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Japanese rabit Mask 07"
+   "name": "Japanese rabit Mask 07",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_frog_mask",
@@ -2834,7 +3516,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Japanese frog Mask 06"
+   "name": "Japanese frog Mask 06",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_onimask2",
@@ -2843,7 +3527,9 @@
    "ppm": 600,
    "tris": 1600,
    "cap": 512,
-   "name": "Oni Mask Low Poly"
+   "name": "Oni Mask Low Poly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_onimask3",
@@ -2852,7 +3538,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Oni Mask"
+   "name": "Oni Mask",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_facemask",
@@ -2861,7 +3549,9 @@
    "ppm": 600,
    "tris": 800,
    "cap": 512,
-   "name": "Generic Face Mask"
+   "name": "Generic Face Mask",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_monocle",
@@ -2870,7 +3560,9 @@
    "ppm": 600,
    "tris": 1500,
    "cap": 512,
-   "name": "Monocle"
+   "name": "Monocle",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_headphones",
@@ -2879,7 +3571,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Headphones"
+   "name": "Headphones",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_catears",
@@ -2888,7 +3582,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Cat Ears"
+   "name": "Cat Ears",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_catears2",
@@ -2897,7 +3593,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Cat Ears"
+   "name": "Cat Ears",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "gramophone",
@@ -2906,7 +3604,9 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "Old Gramophone"
+   "name": "Old Gramophone",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "music_box",
@@ -2915,7 +3615,9 @@
    "ppm": 600,
    "tris": 1900,
    "cap": 512,
-   "name": "Old Music Box"
+   "name": "Old Music Box",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tape_recorder",
@@ -2924,7 +3626,9 @@
    "ppm": 600,
    "tris": 700,
    "cap": 512,
-   "name": "70s Tape Recorder"
+   "name": "70s Tape Recorder",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sewing_machine2",
@@ -2933,7 +3637,9 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "grandma's sewing machine"
+   "name": "grandma's sewing machine",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "toy_box2",
@@ -2942,7 +3648,9 @@
    "ppm": 300,
    "tris": 900,
    "cap": 512,
-   "name": "Toy box"
+   "name": "Toy box",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_wagasa2",
@@ -2951,7 +3659,9 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "Fenshui Oil‑Paper Umbrella (Luzhou, Chin"
+   "name": "Fenshui Oil‑Paper Umbrella (Luzhou, Chin",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_paperbag",
@@ -2960,7 +3670,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Paper Bag Sack Lunch"
+   "name": "Paper Bag Sack Lunch",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_paperbag2",
@@ -2969,7 +3681,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Paper bag"
+   "name": "Paper bag",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_towel",
@@ -2978,7 +3692,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Folded Towel Set"
+   "name": "Folded Towel Set",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_octopus",
@@ -2987,7 +3703,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Low Poly Octopus Plush (free)"
+   "name": "Low Poly Octopus Plush (free)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_octopus2",
@@ -2996,7 +3714,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Octopus Plush"
+   "name": "Octopus Plush",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_moto",
@@ -3005,7 +3725,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "motorcycle helmet classic"
+   "name": "motorcycle helmet classic",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_moto2",
@@ -3014,7 +3736,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Vintage Motorcycle Helmet"
+   "name": "Vintage Motorcycle Helmet",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_astro2",
@@ -3023,7 +3747,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Astronaut Helmet"
+   "name": "Astronaut Helmet",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_propeller",
@@ -3032,7 +3758,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Propeller Hat"
+   "name": "Propeller Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_propeller2",
@@ -3041,7 +3769,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "propeller cap"
+   "name": "propeller cap",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_propeller3",
@@ -3050,7 +3780,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Propeller Hat"
+   "name": "Propeller Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_3d",
@@ -3059,7 +3791,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "3D Glasses"
+   "name": "3D Glasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_party",
@@ -3068,7 +3802,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Party Hat"
+   "name": "Party Hat",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_bow",
@@ -3077,7 +3813,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Hair Bow, Hair Ribbon"
+   "name": "Hair Bow, Hair Ribbon",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_nigiri2",
@@ -3086,7 +3824,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Salmon Nigiri"
+   "name": "Salmon Nigiri",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_stars",
@@ -3095,7 +3835,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "PartyResidentsExtraLargeSunglasses_Star"
+   "name": "PartyResidentsExtraLargeSunglasses_Star",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_groucho",
@@ -3104,7 +3846,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "groucho glasses"
+   "name": "groucho glasses",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_rubberchicken",
@@ -3113,7 +3857,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Funny Rubber Chicken - Lowpoly"
+   "name": "Funny Rubber Chicken - Lowpoly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_woodchicken",
@@ -3122,7 +3868,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Pecking Chicken Wooden Toy"
+   "name": "Pecking Chicken Wooden Toy",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_duck",
@@ -3131,7 +3879,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Duck Plush"
+   "name": "Duck Plush",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_shark",
@@ -3140,7 +3890,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Stuffed animal of Shark (サメのぬいぐるみ)"
+   "name": "Stuffed animal of Shark (サメのぬいぐるみ)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_frog",
@@ -3149,7 +3901,9 @@
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Frog Plush"
+   "name": "Frog Plush",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "food_melonpan2",
@@ -3158,7 +3912,9 @@
    "ppm": 1000,
    "tris": 2000,
    "cap": 512,
-   "name": "Pan"
+   "name": "Pan",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sake_set2",
@@ -3167,7 +3923,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Sake Set"
+   "name": "Sake Set",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tokkuri",
@@ -3176,7 +3934,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Tokkuri"
+   "name": "Tokkuri",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cup_noodle2",
@@ -3185,7 +3945,9 @@
    "ppm": 900,
    "tris": 1500,
    "cap": 512,
-   "name": "Tau Noodle Cup"
+   "name": "Tau Noodle Cup",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fertiliser_bag",
@@ -3203,7 +3965,9 @@
    "ppm": 200,
    "tris": 3000,
    "cap": 512,
-   "name": "Japanese futon/bed"
+   "name": "Japanese futon/bed",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "blanket_pillows",
@@ -3212,7 +3976,9 @@
    "ppm": 200,
    "tris": 2700,
    "cap": 512,
-   "name": "Blanket and Pillows - Low Poly"
+   "name": "Blanket and Pillows - Low Poly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "hair_dryer",
@@ -3221,7 +3987,9 @@
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Hair Dryer"
+   "name": "Hair Dryer",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shogi",
@@ -3230,7 +3998,9 @@
    "ppm": 500,
    "tris": 200,
    "cap": 512,
-   "name": "Japan Retro \"Shogi\" Free / 日本 レトロ \"将棋\" 無"
+   "name": "Japan Retro \"Shogi\" Free / 日本 レトロ \"将棋\" 無",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "mahjong",
@@ -3239,7 +4009,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Japanese mahjong tiles"
+   "name": "Japanese mahjong tiles",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tanuki_statue",
@@ -3248,7 +4020,9 @@
    "ppm": 400,
    "tris": 2400,
    "cap": 512,
-   "name": "Statue Tanuki"
+   "name": "Statue Tanuki",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "typewriter",
@@ -3257,7 +4031,9 @@
    "ppm": 500,
    "tris": 3000,
    "cap": 512,
-   "name": "1930s style typewriter - w/o branding"
+   "name": "1930s style typewriter - w/o branding",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "camera_retro",
@@ -3266,7 +4042,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Retro Camera"
+   "name": "Retro Camera",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "camera_vintage",
@@ -3275,7 +4053,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Vintage  Camera"
+   "name": "Vintage  Camera",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "iron_antique",
@@ -3284,7 +4064,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Antique Iron"
+   "name": "Antique Iron",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "ironing_board",
@@ -3293,7 +4075,9 @@
    "ppm": 300,
    "tris": 2500,
    "cap": 512,
-   "name": "Ironing Board with Iron"
+   "name": "Ironing Board with Iron",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bento",
@@ -3302,7 +4086,9 @@
    "ppm": 700,
    "tris": 3000,
    "cap": 512,
-   "name": "Low Poly Bento | 弁当"
+   "name": "Low Poly Bento | 弁当",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "bento_sushi",
@@ -3311,7 +4097,9 @@
    "ppm": 700,
    "tris": 3000,
    "cap": 512,
-   "name": "Simple Bento Box With Sushi"
+   "name": "Simple Bento Box With Sushi",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "kotatsu2",
@@ -3320,7 +4108,9 @@
    "ppm": 200,
    "tris": 3000,
    "cap": 512,
-   "name": "Kotatsu"
+   "name": "Kotatsu",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lantern_paper",
@@ -3338,7 +4128,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "pencil case Model"
+   "name": "pencil case Model",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "umbrella",
@@ -3347,7 +4139,9 @@
    "ppm": 300,
    "tris": 1200,
    "cap": 512,
-   "name": "Elegant umbrella"
+   "name": "Elegant umbrella",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shoe_rack",
@@ -3356,7 +4150,9 @@
    "ppm": 250,
    "tris": 3000,
    "cap": 512,
-   "name": "Shoe Rack with Shoes | Crafted by jerovd"
+   "name": "Shoe Rack with Shoes | Crafted by jerovd",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_peaked",
@@ -3365,7 +4161,9 @@
    "ppm": 600,
    "tris": 1000,
    "cap": 512,
-   "name": "The cap is leather. peaked visor"
+   "name": "The cap is leather. peaked visor",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_pith",
@@ -3374,7 +4172,9 @@
    "ppm": 600,
    "tris": 1000,
    "cap": 512,
-   "name": "NVA PITH HELMET - Mũ Cối Sao Vàng"
+   "name": "NVA PITH HELMET - Mũ Cối Sao Vàng",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wagon_trolley",
@@ -3383,7 +4183,9 @@
    "ppm": 250,
    "tris": 2500,
    "cap": 512,
-   "name": "Old serving trolley"
+   "name": "Old serving trolley",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "rice_bowl2",
@@ -3392,7 +4194,9 @@
    "ppm": 700,
    "tris": 2500,
    "cap": 512,
-   "name": "Sakura set Japanese (bowl and chopstick)"
+   "name": "Sakura set Japanese (bowl and chopstick)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "udon_meal",
@@ -3401,7 +4205,9 @@
    "ppm": 600,
    "tris": 3000,
    "cap": 512,
-   "name": "Udon Meal"
+   "name": "Udon Meal",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tea_glass",
@@ -3410,7 +4216,9 @@
    "ppm": 700,
    "tris": 2000,
    "cap": 512,
-   "name": "Glass of Tea"
+   "name": "Glass of Tea",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "seed_bag",
@@ -3419,7 +4227,9 @@
    "ppm": 700,
    "tris": 2500,
    "cap": 512,
-   "name": "Bag of Seeds"
+   "name": "Bag of Seeds",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "seed_bag2",
@@ -3428,7 +4238,9 @@
    "ppm": 700,
    "tris": 800,
    "cap": 512,
-   "name": "Bag of carrot seeds"
+   "name": "Bag of carrot seeds",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pot_small2",
@@ -3437,7 +4249,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Potted Plant(small)"
+   "name": "Potted Plant(small)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pot_small3",
@@ -3446,7 +4260,9 @@
    "ppm": 500,
    "tris": 1300,
    "cap": 512,
-   "name": "Potted Plant(small)"
+   "name": "Potted Plant(small)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sushi_pack",
@@ -3455,7 +4271,9 @@
    "ppm": 700,
    "tris": 2900,
    "cap": 512,
-   "name": "Japanese food pack sushi - FREE"
+   "name": "Japanese food pack sushi - FREE",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "dango",
@@ -3464,7 +4282,9 @@
    "ppm": 700,
    "tris": 1000,
    "cap": 512,
-   "name": "Japanese snack Dango handpainted"
+   "name": "Japanese snack Dango handpainted",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "dango2",
@@ -3473,7 +4293,9 @@
    "ppm": 700,
    "tris": 2100,
    "cap": 512,
-   "name": "Dango"
+   "name": "Dango",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "taiyaki",
@@ -3482,7 +4304,9 @@
    "ppm": 800,
    "tris": 2600,
    "cap": 512,
-   "name": "Taiyaki"
+   "name": "Taiyaki",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "senbei",
@@ -3491,7 +4315,9 @@
    "ppm": 700,
    "tris": 3000,
    "cap": 512,
-   "name": "japanese sweets"
+   "name": "japanese sweets",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_kabuto",
@@ -3500,7 +4326,9 @@
    "ppm": 600,
    "tris": 3000,
    "cap": 512,
-   "name": "Traditional Samurai Helmet (Kabuto)"
+   "name": "Traditional Samurai Helmet (Kabuto)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_flowerclip",
@@ -3509,7 +4337,9 @@
    "ppm": 800,
    "tris": 2500,
    "cap": 512,
-   "name": "Flower Hair Clip"
+   "name": "Flower Hair Clip",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_kagami",
@@ -3518,7 +4348,9 @@
    "ppm": 700,
    "tris": 2400,
    "cap": 512,
-   "name": "Kagami-mochi💮📷"
+   "name": "Kagami-mochi💮📷",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "wear_eyepatch",
@@ -3527,7 +4359,9 @@
    "ppm": 600,
    "tris": 1500,
    "cap": 512,
-   "name": "EyePatch"
+   "name": "EyePatch",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "gas_stove_top",
@@ -3536,7 +4370,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Burner Gas Stove"
+   "name": "Burner Gas Stove",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "elec_meter",
@@ -3545,7 +4381,9 @@
    "ppm": 300,
    "tris": 2500,
    "cap": 512,
-   "name": "Electric Meter with fuse boxes"
+   "name": "Electric Meter with fuse boxes",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "fire_box",
@@ -3563,7 +4401,9 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Dog leash"
+   "name": "Dog leash",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sink_round",
@@ -3572,7 +4412,9 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "Round Steel Sink"
+   "name": "Round Steel Sink",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "paper_crumpled",
@@ -3581,7 +4423,9 @@
    "ppm": 700,
    "tris": 512,
    "cap": 512,
-   "name": "Crumpled Up Paper"
+   "name": "Crumpled Up Paper",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "plastic_bag",
@@ -3590,7 +4434,9 @@
    "ppm": 500,
    "tris": 1647,
    "cap": 512,
-   "name": "plastic Bag"
+   "name": "plastic Bag",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "breaker_lever_m",
@@ -3599,7 +4445,9 @@
    "ppm": 500,
    "tris": 2500,
    "cap": 512,
-   "name": "Old Circiut Breaker Lever"
+   "name": "Old Circiut Breaker Lever",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cig_butt",
@@ -3608,7 +4456,9 @@
    "ppm": 1500,
    "tris": 252,
    "cap": 512,
-   "name": "cigarette butt"
+   "name": "cigarette butt",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shelf_wall4",
@@ -3617,7 +4467,9 @@
    "ppm": 400,
    "tris": 352,
    "cap": 512,
-   "name": "CC0 - Wall Shelf 4"
+   "name": "CC0 - Wall Shelf 4",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "band_aid",
@@ -3626,7 +4478,9 @@
    "ppm": 1500,
    "tris": 200,
    "cap": 512,
-   "name": "Band Aid"
+   "name": "Band Aid",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pigeon_lp2",
@@ -3635,7 +4489,9 @@
    "ppm": 600,
    "tris": 752,
    "cap": 512,
-   "name": "Pigeon - Low poly"
+   "name": "Pigeon - Low poly",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "milk_carton2",
@@ -3653,7 +4509,9 @@
    "ppm": 300,
    "tris": 969,
    "cap": 512,
-   "name": "Japanese Garden Bench"
+   "name": "Japanese Garden Bench",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tomato_plant",
@@ -3662,7 +4520,9 @@
    "ppm": 400,
    "tris": 3000,
    "cap": 512,
-   "name": "Tomato Plant"
+   "name": "Tomato Plant",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "tomato_plant2",
@@ -3671,7 +4531,9 @@
    "ppm": 400,
    "tris": 3000,
    "cap": 512,
-   "name": "Tomato plant"
+   "name": "Tomato plant",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "softserve_m",
@@ -3680,7 +4542,9 @@
    "ppm": 500,
    "tris": 3000,
    "cap": 512,
-   "name": "Low-Poly Stylized Ice Cream Cone"
+   "name": "Low-Poly Stylized Ice Cream Cone",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "lollipop_m",
@@ -3689,7 +4553,9 @@
    "ppm": 500,
    "tris": 2816,
    "cap": 512,
-   "name": "A lollipop"
+   "name": "A lollipop",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "street_lamp_v",
@@ -3698,7 +4564,9 @@
    "ppm": 160,
    "tris": 894,
    "cap": 512,
-   "name": "Victorian Street Lamp"
+   "name": "Victorian Street Lamp",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "spoon_old",
@@ -3707,7 +4575,9 @@
    "ppm": 600,
    "tris": 2579,
    "cap": 512,
-   "name": "Old spoon"
+   "name": "Old spoon",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "keychain_m",
@@ -3716,7 +4586,9 @@
    "ppm": 700,
    "tris": 3000,
    "cap": 512,
-   "name": "Key & Keychain"
+   "name": "Key & Keychain",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "button_m",
@@ -3725,7 +4597,9 @@
    "ppm": 1000,
    "tris": 3000,
    "cap": 512,
-   "name": "Simple Button"
+   "name": "Simple Button",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "condiments",
@@ -3734,7 +4608,9 @@
    "ppm": 600,
    "tris": 2956,
    "cap": 512,
-   "name": "Condiment Bottles Set | Crafted by jerov"
+   "name": "Condiment Bottles Set | Crafted by jerov",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "gumball_m",
@@ -3833,7 +4709,9 @@
    "ppm": 900,
    "tris": 2000,
    "cap": 512,
-   "name": "Abacus"
+   "name": "Abacus",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "pumpkin_trio",
@@ -3842,7 +4720,9 @@
    "ppm": 400,
    "tris": 3000,
    "cap": 512,
-   "name": "Carved Pumpkin Trio"
+   "name": "Carved Pumpkin Trio",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "swingset",
@@ -3851,7 +4731,9 @@
    "ppm": 140,
    "tris": 3000,
    "cap": 512,
-   "name": "Swing Set"
+   "name": "Swing Set",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "gumball_own",
@@ -3969,7 +4851,9 @@
    "tris": 1800,
    "cap": 512,
    "name": "Wooden Playground Horse",
-   "rotx": 90
+   "rotx": 90,
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "twin_tub_own",
@@ -4098,7 +4982,9 @@
    "tris": 4000,
    "cap": 512,
    "name": "kitsune",
-   "keep": "^(?!Sphere\\.007)"
+   "keep": "^(?!Sphere\\.007)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "yokai_kasa",
@@ -4108,7 +4994,9 @@
    "tris": 4000,
    "cap": 512,
    "name": "Kasa-obake",
-   "keep": "^(?!Object_15$)"
+   "keep": "^(?!Object_15$)",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "yokai_kappa",
@@ -4134,7 +5022,9 @@
    "ppm": 48,
    "tris": 6000,
    "cap": 1024,
-   "name": "Japanese two-storey house"
+   "name": "Japanese two-storey house",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "sleepbag",
@@ -4143,7 +5033,9 @@
    "ppm": 520,
    "tris": 1500,
    "cap": 1024,
-   "name": "Camping sleeping bag"
+   "name": "Camping sleeping bag",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "loafers",
@@ -4152,7 +5044,9 @@
    "ppm": 500,
    "tris": 1800,
    "cap": 512,
-   "name": "Shoes loafers"
+   "name": "Shoes loafers",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "clothes_folded",
@@ -4161,7 +5055,9 @@
    "ppm": 420,
    "tris": 2000,
    "cap": 512,
-   "name": "Stack of Folded Clothes"
+   "name": "Stack of Folded Clothes",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "cig_own",
@@ -4251,7 +5147,9 @@
    "ppm": 300,
    "tris": 2400,
    "cap": 512,
-   "name": "Statue Tanuki"
+   "name": "Statue Tanuki",
+   "style": "realistic",
+   "atlas": 1024
   },
   {
    "id": "shopbag_own",
