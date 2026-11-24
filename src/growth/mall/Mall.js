@@ -72,6 +72,7 @@ function farMats(c) {
   tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false; tex.colorSpace = THREE.SRGBColorSpace;
   const side = bright(new THREE.MeshStandardMaterial({ color: body, roughness: 0.45 }));
   const front = bright(new THREE.MeshStandardMaterial({ map: tex, roughness: 0.4 }));
+  front.userData.backdrop = true; // a far impostor (tools/texel-audit.mjs)
   const top = bright(new THREE.MeshStandardMaterial({ color: trim, roughness: 0.4 }));
   farCache[c] = [side, side, top, side, front, side];
   return farCache[c];
@@ -205,7 +206,10 @@ export class Mall {
   /** The front wall: 1F the entrance and the display windows, upstairs big windows over the station. */
   front(Z, n, paint, metal, glow, wall) {
     const B = Z.B, T = THEMES[n];
-    const view = canvasMat(160, 64, (x, w, h) => this.drawView(x, w, h, n), { glow: true });
+    // the view out: a real photo as HD pixel art (src/gfx/hdtex.js 'view_plaza' / 'view_tracks'), else the drawn one
+    const vk = n === 1 ? 'view_plaza' : 'view_tracks';
+    const view = hasHD(vk) ? new THREE.MeshBasicMaterial({ map: hdMap(vk, true), toneMapped: true }) : canvasMat(160, 64, (x, w, h) => this.drawView(x, w, h, n), { glow: true });
+    view.userData.backdrop = true; // scenery seen through the glass (tools/texel-audit.mjs judges it as far)
     this.views ||= [];
     this.views.push(view);
     const vq = new THREE.Mesh(new THREE.PlaneGeometry(34, 13.6), view);

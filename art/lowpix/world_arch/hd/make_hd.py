@@ -1248,6 +1248,314 @@ def grass_floor():
     return finish(a, None, '#60af46', k=22, paint=1, sat=0.9)
 
 
+# ------------------------------------------------------------------ room 102: fusuma, the door, the curtain, the glass
+def tint_detail(asset, W, H, rng, colour, std=0.05, ppm=PPM):
+    """A photo's detail (luminance, normalised to `std`) on a flat `colour`: fabric, paint, paper."""
+    a = surface(asset, W, H, rng, std=1.0, sat=0.0, ppm=ppm)
+    g = L.lum(a)
+    d = (g - g.mean()) / max(g.std(), 1e-3)
+    return np.clip(np.array(L.hexrgb(colour), np.float32) * (1 + np.clip(d, -3, 3) * std)[..., None], 0, 1)
+
+
+def fusuma(seed):
+    """One fusuma leaf (0.9 x 1.74 m): woven fusuma paper, drifting kumo in gold leaf (painted in pixel strokes with a
+    lit top edge), a mountain range in pale celadon along the foot, the black lacquered frame, a round hikite."""
+    rng = np.random.default_rng(80 + seed)
+    W, H = px(0.9), px(1.74)
+    a = tint_detail('terlenka', W, H, rng, '#f0e6cc', std=0.03)
+    gold, gold2 = np.array(L.hexrgb('#d8c08a'), np.float32), np.array(L.hexrgb('#e8d4a2'), np.float32)
+    for k in range(5):  # kumo: long low cloud bands made of stacked rounded strokes
+        cy = int(H * (0.1 + k * 0.17 + rng.uniform(0, 0.04)))
+        cx = int(W * rng.uniform(0.15, 0.85))
+        ln = int(rng.integers(60, 120))
+        for row, (half, col) in enumerate(((ln // 2 - 18, gold2), (ln // 2, gold), (ln // 2 - 6, gold), (ln // 2 - 26, gold2))):
+            y = cy + row * 3 - 4
+            for x in range(cx - half, cx + half):
+                wob = int(round(np.sin((x + k * 11) * 0.09) * 2))
+                for t in range(3):
+                    if 0 <= y + wob + t < H:
+                        a[y + wob + t, x % W] = col * (1.06 if t == 0 else 1.0)
+    for x in range(W):  # the mountains
+        m = int(H * 0.86 - max(0, 60 - abs(x - W * (0.7 if seed % 2 else 0.3)) * 0.9) - np.sin(x * 0.07) * 6 - np.sin(x * 0.019 + seed) * 10)
+        for y in range(max(0, m), H - 10):
+            a[y, x] = np.array(L.hexrgb('#9ab0a0'), np.float32) * (0.94 + 0.08 * ((y - m) < 3))
+    img, pal = L.pixel_art(a, k=22, seed=40 + seed, paint=0)
+    b = f32(img)
+    fr = np.array(L.hexrgb('#2a2018'), np.float32)
+    for t in range(9):  # the lacquered frame (lit inner edge)
+        c = fr * (1.4 if t == 7 else 1.0) if t < 8 else fr * 0.8
+        b[t, :] = c; b[H - 1 - t, :] = c; b[:, t] = c; b[:, W - 1 - t] = c
+    hx, hy = (24 if seed % 2 else W - 26), H // 2
+    for y in range(-9, 10):
+        for x in range(-9, 10):
+            d = (x * x + y * y) ** 0.5
+            if d <= 9:
+                b[hy + y, hx + x] = (np.array(L.hexrgb('#3a2a1a')) if d > 6 else np.array(L.hexrgb('#7a6040')) * (1.2 if x + y < -3 else 1.0))
+    pal2 = L.palette(b, 26, 41 + seed)
+    return L.snap(to8(b), pal2)
+
+
+recipe('fusuma1', (0.9, 1.74))(lambda: fusuma(1))
+recipe('fusuma2', (0.9, 1.74))(lambda: fusuma(2))
+
+
+@recipe('doorInside', (0.86, 1.9))
+def door_inside():
+    """The inside face of flat 102's steel door: cream baked paint over pressed steel, the lever and the thumb-turn,
+    the door chain hanging in a loop, the peephole, the newspaper flap, a reminder note taped on, scuffs at the foot."""
+    rng = np.random.default_rng(91)
+    W, H = px(0.86), px(1.9)
+    a = tint_detail('blue_metal_plate', W, H, rng, '#d8ccb0', std=0.03)
+    stains(a, rng, 4, r=(20, 50), f=(0.94, 0.97))
+    for y in range(H - 40, H - 4):  # scuffs from shoes
+        for x in range(6, W - 6):
+            if rng.random() < 0.06:
+                L.wpx(a, x, y, f=0.85)
+    img, pal = L.pixel_art(a, k=16, seed=50, paint=0)
+    b = f32(img)
+    steel, dark, lit = np.array(L.hexrgb('#b8bcc2'), np.float32), np.array(L.hexrgb('#5a5e64'), np.float32), np.array(L.hexrgb('#e8ecf0'), np.float32)
+    b[0:6] *= 0.7; b[-6:] *= 0.7; b[:, 0:6] *= 0.7; b[:, -6:] *= 0.7  # the pressed frame
+    b[6] *= 1.12; b[:, 6] *= 1.12
+    hy = int(H * 0.48)
+    b[hy:hy + 7, 12:44] = steel; b[hy, 12:44] = lit; b[hy + 6, 12:44] = dark  # the lever
+    b[hy - 10:hy + 16, 14:26] = steel * 0.95; b[hy - 10, 14:26] = lit; b[hy - 10:hy + 16, 25] = dark  # the rose plate
+    b[hy - 40:hy - 26, 16:24] = steel; b[hy - 36:hy - 30, 19:21] = dark  # the thumb-turn
+    for i in range(60):  # the chain, hanging in a loop
+        x = 22 + i
+        y = int(H * 0.33 + np.sin(i / 60 * np.pi) * 26)
+        b[y:y + 2, x:x + 2] = lit if i % 4 < 2 else steel
+    b[int(H * 0.29):int(H * 0.29) + 5, W // 2 - 2:W // 2 + 3] = (0.12, 0.12, 0.12)  # the peephole
+    b[int(H * 0.29), W // 2 - 2:W // 2 + 3] = steel
+    sy = int(H * 0.66)
+    b[sy:sy + 14, W // 2 - 28:W // 2 + 28] = np.array(L.hexrgb('#b8ac94'), np.float32); b[sy + 14:sy + 17, W // 2 - 28:W // 2 + 28] = np.array(L.hexrgb('#8a8070'), np.float32)
+    nx, ny = W - 70, int(H * 0.16)  # the reminder note: yellow paper, ink lines, a strip of tape
+    b[ny:ny + 56, nx:nx + 48] = np.array(L.hexrgb('#fff2a0'), np.float32)
+    for k in range(5):
+        y = ny + 12 + k * 8
+        for x in range(nx + 5, nx + 5 + int(rng.integers(24, 40))):
+            if rng.random() < 0.8:
+                b[y + (1 if rng.random() < 0.2 else 0), x] = np.array(L.hexrgb('#4a4a7a'), np.float32)
+    b[ny - 3:ny + 4, nx + 14:nx + 34] = np.array(L.hexrgb('#f0ead8'), np.float32)
+    b[ny + 44:ny + 52, nx + 34:nx + 42] = np.array(L.hexrgb('#e5383b'), np.float32)
+    return L.snap(to8(np.clip(b, 0, 1)), L.palette(np.clip(b, 0, 1), 26, 51))
+
+
+@recipe('curtain', (0.5, 1.5))
+def curtain():
+    """Room 102's curtains: mint cotton with a faint woven check, a cream stripe every so often."""
+    rng = np.random.default_rng(9)
+    W, H = px(0.5), px(1.5)
+    a = tint_detail('rough_linen', W, H, rng, '#8ac8b4', std=0.05, ppm=PPM * 2)
+    for y in range(0, H, 96):
+        a[y:y + 3] = a[y:y + 3] * 0.0 + np.array(L.hexrgb('#f4ecd4'), np.float32) * (1 + (L.lum(a[y:y + 3]) - L.lum(a[y:y + 3]).mean())[..., None] * 0.5)
+    for x in range(0, W, 16):
+        a[:, x] *= 0.94
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=14, seed=52, paint=0)
+    return img
+
+
+@recipe('kitchenGlass', (0.55, 0.4))
+def kitchen_glass():
+    """The kitchen window's figured glass (型板ガラス) with the evening glowing through: a diamond pattern, the light in
+    stepped, dithered bands (no smooth gradient)."""
+    W, H = px(0.55), px(0.4)
+    y, x = np.mgrid[0:H, 0:W]
+    t = y / H
+    warm = np.array(L.hexrgb('#ffd0a0'), np.float32) * (1 - t)[..., None] + np.array(L.hexrgb('#ff9a60'), np.float32) * t[..., None]
+    band = np.floor(t * 6) / 6
+    warm = np.array(L.hexrgb('#ffd0a0'), np.float32) * (1 - band)[..., None] + np.array(L.hexrgb('#ff9a60'), np.float32) * band[..., None]
+    dia = ((x + y) % 10 < 1) | ((x - y) % 10 < 1)
+    a = warm * np.where(dia, 1.08, 1.0)[..., None]
+    a[((x + y) % 10 == 1)] *= 0.94
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=12, seed=53, paint=0, clean_passes=0)
+    return img
+
+
+@recipe('bathDoor', (0.68, 1.85))
+def bath_door():
+    """The dead unit bath's door: white resin panel, a frosted window with ribbed glass, the frame, a latch handle."""
+    rng = np.random.default_rng(5)
+    W, H = px(0.68), px(1.85)
+    a = tint_detail('beige_wall_001', W, H, rng, '#e8e8ec', std=0.02)
+    gx0, gx1, gy0, gy1 = 20, W - 20, 50, int(H * 0.56)
+    for yy in range(gy0, gy1):
+        a[yy, gx0:gx1] = np.array(L.hexrgb('#c8d8e0' if (yy // 4) % 2 else '#d8e4ea'), np.float32)
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=14, seed=54, paint=0)
+    b = f32(img)
+    fr = np.array(L.hexrgb('#9a9ea4'), np.float32)
+    b[0:8] = fr; b[-8:] = fr; b[:, 0:8] = fr; b[:, -8:] = fr
+    b[gy0 - 3:gy0, gx0 - 3:gx1 + 3] = fr; b[gy1:gy1 + 3, gx0 - 3:gx1 + 3] = fr * 1.1
+    b[:, W // 2 - 1:W // 2 + 1] *= 0.92
+    hy = int(H * 0.6)
+    b[hy:hy + 24, W - 46:W - 34] = np.array(L.hexrgb('#8a8e94'), np.float32); b[hy, W - 46:W - 34] = 0.9
+    return L.snap(to8(np.clip(b, 0, 1)), L.palette(np.clip(b, 0, 1), 16, 55))
+
+
+# ------------------------------------------------------------------ the views out of the windows (backdrops)
+OPEN_IMAGES = 'https://s3.amazonaws.com/open-images-dataset/%s/%s.jpg'
+VIEWS = {  # tools/make-views.py's CC BY 2.0 Open Images photos (credited under "Window views"), at their full width
+    'view_lane': dict(id='50d546d006457f9a', subset='train', crop=(0.0, 0.08, 1.0, 0.62), size=(952, 476), m=(8, 4),
+                      opts=dict(fam=5, steps=8, bins='even', chroma=0.8, smooth=0.05, passes=2, min_cluster=3, hue=0.1, maxdrop=1, maxlift=1)),
+    'view_plaza': dict(id='1c50a2d9bb44696e', subset='train', crop=(0.0, 0.0, 1.0, 0.75), size=(1020, 408), m=(10, 4),
+                       opts=dict(fam=6, steps=8, bins='even', chroma=0.8, smooth=0.05, passes=2, min_cluster=3, hue=0.1, maxdrop=1, maxlift=1)),
+    'view_tracks': dict(id='2ab37fb75e9ecd33', subset='test', crop=(0.0, 0.12, 1.0, 0.6), size=(1020, 408), m=(10, 4),
+                        opts=dict(fam=6, steps=8, bins='even', chroma=0.6, smooth=0.06, passes=2, min_cluster=3, hue=0.1, maxdrop=1, maxlift=1)),
+}
+
+
+def view(key):
+    """A window view as HD pixel art (tools/pixelart.py reduce) at the photo's own full width (never upscaled)."""
+    sys.path.insert(0, os.path.join(ROOT, 'tools'))
+    from pixelart import reduce
+    from PIL import Image as _I
+    v = VIEWS[key]
+    d = os.path.join(L.CACHE, 'openimages')
+    os.makedirs(d, exist_ok=True)
+    path = os.path.join(d, v['id'] + '.jpg')
+    if not os.path.exists(path):
+        open(path, 'wb').write(L._get(OPEN_IMAGES % (v['subset'], v['id'])))
+    im = _I.open(path).convert('RGB')
+    W, H = im.size
+    x, y, w, h = v['crop']
+    im = im.crop((round(x * W), round(y * H), round((x + w) * W), round((y + h) * H)))
+    assert im.width >= v['size'][0], 'never upscale a view'
+    rgb8, labels, pal = reduce(np.asarray(im, np.float32) / 255, v['size'][0], v['size'][1], wrap=False, **v['opts'])
+    return np.asarray(rgb8, np.uint8)[..., :3]
+
+
+for _k, _v in VIEWS.items():
+    recipe(_k, _v['m'])(lambda k=_k: view(k))
+
+
+# ------------------------------------------------------------------ the lane's small art (src/world/Town.js)
+def rgba(img8, alpha):
+    return np.dstack([img8, (np.clip(alpha, 0, 1) * 255).astype(np.uint8)])
+
+
+@recipe('town_noren', (0.66, 0.72))
+def town_noren():
+    """One panel of the garage's 暖簾: indigo-dyed cotton (the weave from a linen scan), darker hems, a white 菱 crest
+    resist-dyed in the middle with the dye bleeding a little at its edges, the hem fraying."""
+    rng = np.random.default_rng(985)
+    W, H = px(0.66), px(0.72)
+    a = tint_detail('rough_linen', W, H, rng, '#24345e', std=0.07, ppm=PPM * 2)
+    a[:12] *= 0.72; a[-14:] *= 0.72  # the hems: doubled cloth, darker
+    cx, cy = W // 2, int(H * 0.5)
+    y, x = np.mgrid[0:H, 0:W]
+    d = np.abs(x - cx) + np.abs(y - cy)
+    white = np.array(L.hexrgb('#f2eee4'), np.float32)
+    for r0, r1 in ((60, 52), (34, 26), (6, 0)):  # nested diamonds
+        ring = (d <= r0) & (d > r1)
+        jag = rng.random((H, W)) < 0.25
+        edge = ring & ((d > r0 - 2) | (d < r1 + 3)) & jag
+        a[ring & ~edge] = white * (1 + (L.lum(a[ring & ~edge]) - L.lum(a[ring & ~edge]).mean())[..., None] * 0.6)
+        a[edge] = white * 0.75 + np.array(L.hexrgb('#24345e'), np.float32) * 0.25
+    for x0 in range(0, W, 3):  # fraying threads at the hem
+        if rng.random() < 0.3:
+            a[H - int(rng.integers(1, 5)):, x0] *= 0.6
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=16, seed=60, paint=0)
+    return img
+
+
+@recipe('town_gutterGrit', (2, 0.34))
+def town_gutter_grit():
+    """Grit along the kerbs and the wall feet: sand and gravel, dead leaves, a cigarette end, thicker against the kerb
+    (top of the strip), thinning out across it. Alpha-cut."""
+    rng = np.random.default_rng(1169)
+    W, H = px(2), px(0.34)
+    src = L.tile_to(L.seamless(L.flatten(L.at_ppm(L.photo('gravel'), PPM), 0.3)), W, H, rng)
+    t = np.linspace(0, 1, H)[:, None]
+    lum_ = L.lum(src)
+    keep = (lum_ / lum_.mean() - 1) * 0.8 + rng.random((H, W)) * 0.5 > (t * 1.1 - 0.1)
+    from PIL import Image as _I, ImageFilter as _F
+    keep = np.asarray(_I.fromarray((keep * 255).astype(np.uint8)).filter(_F.ModeFilter(3)), np.uint8) > 127
+    a = L.grade(src, sat=0.5) * 0.8
+    for _ in range(24):  # leaves and litter
+        cx, cy = int(rng.integers(0, W)), int(rng.integers(0, int(H * 0.7)))
+        col = np.array(L.hexrgb(['#9a6a2a', '#b8862a', '#7a5a2a', '#6a7a3a', '#e8e4d8'][int(rng.integers(5))]), np.float32)
+        lw, lh = int(rng.integers(5, 12)), int(rng.integers(3, 7))
+        ang = rng.uniform(0, np.pi)
+        for yy in range(-lh, lh + 1):
+            for xx in range(-lw, lw + 1):
+                if (xx / lw) ** 2 + (yy / lh) ** 2 <= 1:
+                    X, Y = int(cx + xx * np.cos(ang) - yy * np.sin(ang)), int(cy + xx * np.sin(ang) + yy * np.cos(ang))
+                    if 0 <= Y < H:
+                        a[Y, X % W] = col * (0.85 if yy > 0 else 1.0)
+                        keep[Y, X % W] = True
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=18, seed=61, paint=0, clean_passes=1)
+    return rgba(img, keep.astype(np.float32))
+
+
+@recipe('town_puddle', (1.8, 1.8))
+def town_puddle():
+    """A rain puddle in the asphalt camber: dark water with a sky-blue sheen (the shader reflects where blue > red), a
+    wet darker rim, an irregular edge. Alpha-cut."""
+    rng = np.random.default_rng(1548)
+    W = H = px(1.8)
+    y, x = np.mgrid[0:H, 0:W]
+    ang = np.arctan2(y - H / 2, x - W / 2)
+    r = np.hypot((x - W / 2) / (W / 2), (y - H / 2) / (H / 2))
+    ph = rng.uniform(0, 6.28, 4)
+    edge = 0.82 + 0.08 * np.sin(ang * 3 + ph[0]) + 0.05 * np.sin(ang * 5 + ph[1]) + 0.03 * np.sin(ang * 9 + ph[2])
+    water = r < edge
+    rim = (r < edge + 0.06) & ~water
+    a = tint_detail('asphalt_01', W, H, rng, '#2a2c30', std=0.08)
+    from PIL import Image as _I, ImageFilter as _F
+    n = np.asarray(_I.fromarray((rng.random((H // 8, W // 8)) * 255).astype(np.uint8)).resize((W, H), _I.BICUBIC).filter(_F.GaussianBlur(6)), np.float32) / 255
+    sheen = np.floor((n - n.min()) / max(np.ptp(n), 1e-3) * 4) / 4  # stepped sky sheen across the water
+    a[water] = (np.array(L.hexrgb('#343c4a'), np.float32) * (0.9 + 0.25 * sheen[water])[..., None]
+                + (L.lum(a[water]) - L.lum(a[water]).mean())[..., None] * 0.15)
+    for _ in range(40):  # grit and a leaf floating / showing through
+        cx, cy = int(rng.integers(0, W)), int(rng.integers(0, H))
+        if water[cy, cx]:
+            a[cy:cy + 2, cx:cx + 3] = np.array(L.hexrgb(['#5a524a', '#7a5a2a', '#2a2a2c'][int(rng.integers(3))]), np.float32)
+    a[rim] = np.array(L.hexrgb('#24252a'), np.float32)
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=12, seed=62, paint=0)
+    return rgba(img, (water | rim).astype(np.float32))
+
+
+@recipe('town_fenceMesh', (0.5, 0.5))
+def town_fence_mesh():
+    """Green PVC-coated chain-link (菱形金網): 5 cm diamonds, the wire 2 texels wide with a lit and a shaded side,
+    the coating worn to steel here and there. Alpha-cut."""
+    rng = np.random.default_rng(1329)
+    W = H = px(0.5)
+    y, x = np.mgrid[0:H, 0:W]
+    pitch = W // 10
+    u, v = (x + y) % pitch, (x - y) % pitch
+    wire = (u < 2) | (v < 2)
+    a = np.zeros((H, W, 3), np.float32)
+    a[:] = np.array(L.hexrgb('#4a7a52'), np.float32)
+    a[(u == 0) | (v == 0)] *= 1.25
+    a[((u == 0) | (u == 1)) & ((v == 0) | (v == 1))] *= 0.7  # the knuckles where wires cross
+    worn = rng.random((H, W)) < 0.03
+    a[worn & wire] = np.array(L.hexrgb('#9aa0a0'), np.float32)
+    img, pal = L.pixel_art(np.clip(a, 0, 1), k=8, seed=63, paint=0, clean_passes=0)
+    return rgba(img, wire.astype(np.float32))
+
+
+@recipe('town_blockDeco', (0.8, 0.2))
+def town_block_deco():
+    """透かしブロック: a course of perforated decorative concrete blocks (20 cm motifs: a four-petal opening in each),
+    the same concrete as the block walls. Alpha-cut openings."""
+    rng = np.random.default_rng(1749)
+    W, H = px(0.8), px(0.2)
+    face = cblocks(W, H, W // 4, H, rng, '#a09c94', joint=3, mortar='#7c7972')
+    y, x = np.mgrid[0:H, 0:W]
+    cw = W // 4
+    lx, ly = (x % cw) - cw / 2, y - H / 2
+    r = H * 0.36
+    hole = np.zeros((H, W), bool)
+    for dx, dy in ((r * 0.45, 0), (-r * 0.45, 0), (0, r * 0.45), (0, -r * 0.45)):
+        hole |= ((lx - dx) ** 2 + (ly - dy) ** 2) < (r * 0.42) ** 2
+    b = f32(face)
+    ring = np.zeros_like(hole)
+    for ox, oy in ((1, 0), (0, 1), (-1, 0), (0, -1)):
+        ring |= np.roll(np.roll(hole, ox, 1), oy, 0) & ~hole
+    b[ring] *= 0.7  # the inner faces of the openings, in shadow
+    return rgba(to8(b), (~hole).astype(np.float32))
+
+
 # ------------------------------------------------------------------ Gacha Kaikan (src/growth/mall): floors and ceiling
 MALL = {1: ('#f6e8ec', '#e8a8bc', '#c8889c'), 2: ('#eef8f6', '#9adcd0', '#6ab8ac'), 3: ('#f4e2c4', '#c8784a', '#9a5a38'),
         4: ('#2a2630', '#5a4a2a', '#d4a83a')}  # src/growth/mall/layout.js THEMES a, b, grout
@@ -1423,7 +1731,7 @@ def main(keys):
         size = L.save_webp(img, os.path.join(OUT, key + '.webp'))
         man[key] = {'m': list(m), 'px': [img.shape[1], img.shape[0]]}
         print(f'{key:16s} {img.shape[1]}x{img.shape[0]}  {m[0]}x{m[1]} m  {img.shape[1] / m[0]:.0f} px/m  {size // 1024} KB  '
-              f'{len(np.unique(img.reshape(-1, 3), axis=0))} colours')
+              f'{len(np.unique(img.reshape(-1, img.shape[2]), axis=0))} colours')
     json.dump(dict(sorted(man.items())), open(MANIFEST, 'w'), indent=1)
     src = os.path.join(HERE, 'sources.json')
     old = json.load(open(src)) if os.path.exists(src) else {}

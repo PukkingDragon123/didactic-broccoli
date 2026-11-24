@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
 import { bgm } from '../../core/bgm.js';
 import { pixMat } from '../../gfx/geo.js';
+import { hasHD, hdMap } from '../../gfx/hdtex.js';
 import { propMesh } from '../../world/props.js';
 import { Zone, Batch, V, pick, rnd, canvasMat, pixText, grain, sfx } from '../kit.js';
 import { MachineSpots } from '../machines.js';
@@ -160,7 +161,9 @@ export class Annex {
     B.box(M.metal, 0.05, 0.05, 0.06, 1.3, 0.95, Z0 + 0.07, { tint: 0xc8b048 });
     Z.hit(0.85, 1.95, 0.1, 1.6, 0.98, Z0 + 0.06, { reach: 2.2, hint: () => ({ key: '', text: 'Back rooms', sub: 'Mr. Sugimoto\'s old living rooms. Locked: his family\'s things are still in there' }), use: () => false });
     // the painted view out of the open shutter (the lane, the houses across it)
-    this.view = canvasMat(128, 64, (x, w, h) => this.drawView(x, w, h), { glow: true });
+    // the lane through the shutter: a real photo as HD pixel art (src/gfx/hdtex.js 'view_lane'), else the drawn one
+    this.view = hasHD('view_lane') ? new THREE.MeshBasicMaterial({ map: hdMap('view_lane', true), toneMapped: true }) : canvasMat(128, 64, (x, w, h) => this.drawView(x, w, h), { glow: true });
+    this.view.userData.backdrop = true; // scenery seen through the shutter (tools/texel-audit.mjs judges it as far)
     const vq = new THREE.Mesh(new THREE.PlaneGeometry(10, 5), this.view);
     vq.position.copy(Z.L(-0.7, 2.1, Z1 + 2.6)); vq.rotation.y = Math.PI;
     Z.group.add(vq);

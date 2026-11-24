@@ -58,6 +58,7 @@ import { buildPylon } from './Pylon.js';
 import { buildLanePosters } from './LanePosters.js';
 import { InstanceCuller } from './propCull.js';
 import { detailize, surfaceTex } from './surfaces.js';
+import { hasHD, hdMap } from '../gfx/hdtex.js';
 import { archPlace, archReady, archInstances } from './archModels.js';
 import { assetNow } from '../kit/assets.js';
 import { LP_HOUSES, archAsset } from '../kit/lowpixArch.js';
@@ -289,7 +290,8 @@ export class Town {
   T(key, w, h, { glow = 0, rough = 0.5, alpha = false, decal = false, metal = 0 } = {}) {
     const ck = 't:' + key + w + 'x' + h + glow + alpha + decal;
     if (!this.mats.has(ck)) {
-      const map = townPix(key, w, h).texture();
+      // the HD version when there is one (src/gfx/hdtex.js 'town_<key>', unit-mapped like the old one)
+      const map = hasHD('town_' + key) ? hdMap('town_' + key, true) : townPix(key, w, h).texture();
       const m = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, metalness: metal });
       if (glow) { m.emissive = new THREE.Color(0xffffff); m.emissiveMap = map; m.emissiveIntensity = glow; }
       if (alpha) { m.alphaTest = 0.5; m.transparent = false; }
@@ -1547,7 +1549,7 @@ export class Town {
    *  at roughness 0.1 the low sun's highlight, seen from a low eye, bloomed into a smooth pale blob (no glows). */
   puddle(x, z, w, d, ry = 0) {
     if (!this._puddleM) {
-      const map = townPix('puddle', 32, 32).texture();
+      const map = hasHD('town_puddle') ? hdMap('town_puddle', true) : townPix('puddle', 32, 32).texture();
       const mat = new THREE.MeshStandardMaterial({ map, roughness: 0.45, metalness: 0.0, alphaTest: 0.5, vertexColors: true, envMapIntensity: 0.3 });
       mat.polygonOffset = true; mat.polygonOffsetFactor = -3; mat.polygonOffsetUnits = -6;
       // a cheap sky reflection: dusky zenith blue seen from above, the warm horizon glow at grazing angles (Fresnel)
@@ -1683,8 +1685,9 @@ export class Town {
   RT(key, w, h, ppm = 32, rough = 0.95) {
     const ck = 'rt:' + key + w + 'x' + h + ':' + ppm;
     if (!this.mats.has(ck)) {
-      const map = townPix(key, w, h).texture();
-      map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(ppm / w, ppm / h);
+      const hd = hasHD('town_' + key); // the HD version (256 px/m, its own size in metres) when there is one
+      const map = hd ? hdMap('town_' + key) : townPix(key, w, h).texture();
+      if (!hd) { map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(ppm / w, ppm / h); }
       const mt = new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, alphaTest: 0.5 });
       mt.polygonOffset = true; mt.polygonOffsetFactor = -2; mt.polygonOffsetUnits = -4;
       this.mats.set(ck, mt);
@@ -1740,7 +1743,7 @@ export class Town {
   /** Green PVC-coated wire mesh (alpha-cut, double-sided, repeating). */
   fenceMeshM() {
     if (!this.mats.has('fenceMesh')) {
-      const map = tiled4(townPix('fenceMesh', 16, 16).texture());
+      const map = hasHD('town_fenceMesh') ? hdMap('town_fenceMesh') : tiled4(townPix('fenceMesh', 16, 16).texture());
       this.mats.set('fenceMesh', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.6, metalness: 0.2, alphaTest: 0.35, side: THREE.DoubleSide }));
     }
     return this.mats.get('fenceMesh');
@@ -1748,7 +1751,7 @@ export class Town {
   /** 透かしブロック: the perforated decorative block course (alpha-cut, double-sided, 0.2 m motifs). */
   decoBlockM() {
     if (!this.mats.has('decoBlock')) {
-      const map = townPix('blockDeco', 48, 12).texture();
+      const map = hasHD('town_blockDeco') ? hdMap('town_blockDeco', true) : townPix('blockDeco', 48, 12).texture();
       map.wrapS = THREE.RepeatWrapping;
       this.mats.set('decoBlock', new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: 0.92, alphaTest: 0.5, side: THREE.DoubleSide }));
     }

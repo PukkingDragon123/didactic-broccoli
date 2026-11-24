@@ -1,0 +1,99 @@
+{
+ "id": "puff_stick_own",
+ "src": "art/lowpix/world/made/puff_stick.glb",
+ "credit": {
+  "title": "Corn puff stick (our own model; wrapper from a real photo)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/puff_stick.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 68,
+ "tex": 256,
+ "size": [
+  0.03,
+  0.145,
+  0.025
+ ],
+ "colours": 51,
+ "palette": {
+  "m0": [
+   "#7f4327",
+   "#a26236",
+   "#bf844b",
+   "#c9a573",
+   "#d5c19a",
+   "#d9cdaa",
+   "#ddd7b9",
+   "#e3e0c7",
+   "#e8e8d5"
+  ],
+  "m1": [
+   "#803700",
+   "#a65601",
+   "#ca7a04",
+   "#eda408",
+   "#f4c428",
+   "#f3d948",
+   "#f2e968",
+   "#f3f387",
+   "#f4f4a4"
+  ],
+  "m2": [
+   "#450309",
+   "#580606",
+   "#6b1109",
+   "#7d200d",
+   "#8f3111",
+   "#b74e19",
+   "#dc7124",
+   "#e09950",
+   "#e5b97c"
+  ],
+  "m3": [
+   "#670b1f",
+   "#841120",
+   "#a1171f",
+   "#bc241f",
+   "#d63c28",
+   "#d96548",
+   "#dc8968",
+   "#e1a887",
+   "#e6c2a5"
+  ],
+  "m4": [
+   "#631f0d",
+   "#803213",
+   "#9b4a1a",
+   "#b56523",
+   "#ce832c",
+   "#d4a04a",
+   "#d8b769",
+   "#ddcb88",
+   "#e3dba6"
+  ],
+  "m5": [
+   "#120007",
+   "#170007",
+   "#1d0006",
+   "#220005",
+   "#280002",
+   "#670502",
+   "#a41805",
+   "#df350b",
+   "#f26d38"
+  ],
+  "m6": [
+   "#692810",
+   "#873f17",
+   "#a4591f",
+   "#bf7729",
+   "#d1963c",
+   "#d4ae5a",
+   "#d8c277",
+   "#ded393",
+   "#e4e0ae"
+  ]
+ },
+ "warnings": []
+}

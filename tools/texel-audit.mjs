@@ -113,9 +113,10 @@ function measure([CLOSE, FAR]) {
       const key0 = texName(tx);
       if (!uvA) { const k = key0 + ' || world-projected || ' + label(o); if (!groups.has(k)) groups.set(k, { tex: key0, who: label(o), px: [tx.image.width, tx.image.height], close: [], far: [], proj: true, rep: [tx.repeat.x, tx.repeat.y] }); continue; }
       const W = tx.image.width, H = tx.image.height, rep = Math.abs(tx.repeat.x * tx.repeat.y) || 1;
-      const k = key0 + ' || ' + label(o) + ' || ' + tx.repeat.x.toFixed(4);
+      const bd = !!(mat.userData?.backdrop || mat.userData?.lightmap); // scenery behind a window, far impostors, AO overlays: listed apart
+      const k = key0 + ' || ' + label(o) + ' || ' + tx.repeat.x.toFixed(4) + (bd ? ' || bd' : '');
       let e = groups.get(k);
-      if (!e) groups.set(k, e = { tex: key0, who: label(o), px: [W, H], rep: [+tx.repeat.x.toFixed(4), +tx.repeat.y.toFixed(4)], close: [], far: [], place: pl?.name || null });
+      if (!e) groups.set(k, e = { tex: key0, who: label(o), px: [W, H], rep: [+tx.repeat.x.toFixed(4), +tx.repeat.y.toFixed(4)], close: [], far: [], place: pl?.name || null, bd });
       const nTri = Math.floor(gr.count / 3), step = Math.max(1, Math.floor(nTri / 300));
       for (let ii = 0; ii < nInst; ii++) {
         m4.copy(o.matrixWorld);
@@ -144,7 +145,7 @@ function measure([CLOSE, FAR]) {
     const at = (f) => { let c = 0; for (const r of s) { c += r[1]; if (c >= f * tot) return r[0]; } return s[s.length - 1][0]; };
     return { p10: +at(0.1).toFixed(1), p50: +at(0.5).toFixed(1), area: +tot.toFixed(2) };
   };
-  const rows = [...groups.values()].map((e) => ({ tex: e.tex, who: e.who, px: e.px, rep: e.rep, place: e.place, proj: !!e.proj, close: stat(e.close), far: stat(e.far) }));
+  const rows = [...groups.values()].map((e) => ({ tex: e.tex, who: e.who, px: e.px, rep: e.rep, place: e.place, proj: !!e.proj, bd: !!e.bd, close: stat(e.close), far: stat(e.far) }));
   let bytes = 0; const texList = [];
   for (const e of texSeen.values()) { bytes += e.bytes; texList.push({ name: e.name, w: e.w, h: e.h, mb: +(e.bytes / 1048576).toFixed(2), users: [...e.users].slice(0, 4) }); }
   texList.sort((x, y) => y.mb - x.mb);
@@ -179,7 +180,7 @@ try {
   const short = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
   const bad = [];
   for (const r of res.rows) {
-    if (r.proj) continue;
+    if (r.proj || r.bd) continue;
     if (r.close && r.close.area > 0.02 && r.close.p50 < C * 0.9) bad.push({ ...r, zone: 'close', d: r.close.p50, area: r.close.area, need: C, score: (C / r.close.p50) * Math.sqrt(r.close.area) });
     else if (r.far && r.far.area > 0.05 && r.far.p50 < F * 0.9) bad.push({ ...r, zone: 'far', d: r.far.p50, area: r.far.area, need: F, score: (F / r.far.p50) * Math.sqrt(r.far.area) * 0.35 });
   }
@@ -188,7 +189,9 @@ try {
   const head = [`TEXEL DENSITY AUDIT ${new Date().toISOString()}  standard: close >= ${C} px/m, far >= ${F} px/m (docs/ART.md)`,
     `UNDER STANDARD: ${bad.length} surface groups (texture x mesh); close ${bad.filter((b) => b.zone === 'close').length}, far ${bad.filter((b) => b.zone === 'far').length}`,
     `GPU TEXTURE MEMORY (all textures on meshes, RGBA8 + mips): ${res.mem.mb} MB in ${res.mem.textures} textures`, ''];
-  writeFileSync(resolve(root, outDir, 'lowres_list.txt'), [...head, 'density (area-weighted median), zone, area, texture size, repeat, where, texture source', ...bad.map(fmt), '', ...(errors.length ? ['CONSOLE ERRORS:', ...errors.slice(0, 20)] : [])].join('\n') + '\n');
+  writeFileSync(resolve(root, outDir, 'lowres_list.txt'), [...head, 'density (area-weighted median), zone, area, texture size, repeat, where, texture source', ...bad.map(fmt), '', 'BACKDROPS AND LIGHT OVERLAYS (views behind windows, far impostors, AO maps; not surface art, not listed above):',
+    ...res.rows.filter((r) => r.bd && (r.close || r.far)).map((r) => `  ${(r.close || r.far).p50} px/m  ${(r.close || r.far).area} m²  ${r.px.join('x')}  ${r.place || ''} ${r.who}  ${r.tex}`),
+    '', ...(errors.length ? ['CONSOLE ERRORS:', ...errors.slice(0, 20)] : [])].join('\n') + '\n');
   const all = res.rows.filter((r) => !r.proj && (r.close || r.far)).map((r) => ({ ...r, zone: r.close ? 'close' : 'far', d: (r.close || r.far).p50, area: (r.close || r.far).area, need: r.close ? C : F })).sort((x, y) => y.area - x.area);
   writeFileSync(resolve(root, outDir, 'texel_all.txt'), [...head, ...all.map(fmt), '', 'WORLD-PROJECTED (no uv):', ...res.rows.filter((r) => r.proj).map((r) => `  ${r.who}  ${r.tex}  ${r.px.join('x')}`), '', 'TEXTURES BY MEMORY:', ...res.texList.map((x) => `  ${String(x.mb).padStart(6)} MB  ${x.w}x${x.h}  ${short(x.name, 70).padEnd(70)}  ${x.users.join(', ')}`)].join('\n') + '\n');
   console.log(head.join('\n'));

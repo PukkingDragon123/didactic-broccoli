@@ -1,0 +1,55 @@
+{
+ "id": "petal_drift_own",
+ "src": "art/lowpix/world/made/petal_drift_own.glb",
+ "credit": {
+  "title": "Petal drift (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/petal_drift_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 488,
+ "tex": 288,
+ "size": [
+  1.093,
+  0.03,
+  0.797
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#a8116e",
+   "#d8197f",
+   "#e5448d",
+   "#ea78a2",
+   "#f0aabe",
+   "#f1b7c3",
+   "#f2c4c9",
+   "#f4d0d1",
+   "#f6dddb"
+  ],
+  "m1": [
+   "#612716",
+   "#7d3c1f",
+   "#975429",
+   "#b06f35",
+   "#c38c46",
+   "#c8a463",
+   "#ceb87e",
+   "#d5ca99",
+   "#ddd9b2"
+  ],
+  "m2": [
+   "#234416",
+   "#34571e",
+   "#466927",
+   "#597a31",
+   "#6e8b3c",
+   "#8ca54d",
+   "#a5b468",
+   "#b9c088",
+   "#cbcca6"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,77 @@
+{
+ "id": "hamaya_own",
+ "src": "art/lowpix/world/made/hamaya_own.glb",
+ "credit": {
+  "title": "Hamaya (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hamaya_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 200,
+ "tex": 448,
+ "size": [
+  0.044,
+  0.42,
+  0.034
+ ],
+ "colours": 37,
+ "palette": {
+  "m0": [
+   "#ad6430",
+   "#cc9155",
+   "#d9b98c",
+   "#e8dbc0",
+   "#faf8f2",
+   "#faf9f4",
+   "#fbfbf6",
+   "#fcfcf8",
+   "#fcfcfa"
+  ],
+  "m1": [
+   "#7e361d",
+   "#a15229",
+   "#c37336",
+   "#ce965b",
+   "#d6b482",
+   "#d9c495",
+   "#ded1a8",
+   "#e3dcba",
+   "#e8e6cb"
+  ],
+  "m2": [
+   "#79350b",
+   "#9c5111",
+   "#bd7218",
+   "#dd9721",
+   "#e0b446",
+   "#e1c862",
+   "#e4d87e",
+   "#e7e498",
+   "#ebebb2"
+  ],
+  "m3": [
+   "#140c0d",
+   "#191111",
+   "#1f1616",
+   "#231c1b",
+   "#282220",
+   "#47403d",
+   "#655f5b",
+   "#817e7c",
+   "#9c9c9c"
+  ],
+  "m4": [
+   "#5d0b26",
+   "#77102a",
+   "#91172b",
+   "#a91e29",
+   "#c12626",
+   "#d4463a",
+   "#d8715c",
+   "#dd957d",
+   "#e3b59e"
+  ]
+ },
+ "warnings": []
+}

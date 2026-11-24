@@ -51,7 +51,7 @@ grime(im, 12).save(os.path.join(H, 'kakigori.png'))
 # fire buckets (消火用): red buckets with white lettering, a red steel stand
 im = Image.new('RGB', (512, 256), (180, 36, 34)); d = ImageDraw.Draw(im)
 d.rectangle([0, 0, 255, 255], fill=(196, 40, 36))
-f = ImageFont.truetype(FONT, 58)
+f = ImageFont.truetype(FONT, 48)
 lay = Image.new('RGB', (256, 256), (196, 40, 36)); dl = ImageDraw.Draw(lay)  # the lettering faces the front (+z): it straddles the seam
 for i, ch in enumerate('消火用'): w = dl.textlength(ch, font=f); dl.text((128 - w / 2, 18 + i * 72), ch, font=f, fill=(246, 244, 238), stroke_width=2, stroke_fill=(246, 244, 238))
 im.paste(lay.crop((128, 0, 256, 256)), (0, 0)); im.paste(lay.crop((0, 0, 128, 256)), (128, 0))
@@ -220,7 +220,7 @@ for r in range(4):
         xx = x0 + 6 + k * 28
         if (k + r) % 3 == 0: d.rectangle([xx, yy + 18, xx + 18, yy + 52], fill=(246, 246, 240)); d.rectangle([xx, yy + 26, xx + 18, yy + 36], fill=(60, 120, 200)); d.polygon([(xx, yy + 18), (xx + 9, yy + 8), (xx + 18, yy + 18)], fill=(236, 236, 230))
         else: d.rounded_rectangle([xx + 2, yy + 16, xx + 16, yy + 52], 5, fill=(240, 240, 236)); d.rectangle([xx + 4, yy + 12, xx + 14, yy + 18], fill=(200, 60, 50) if k % 2 else (230, 180, 60))
-x0, y0 = C(6); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(232, 232, 226)); d.rectangle([x0, y0 + 30, x0 + 255, y0 + 60], fill=(190, 40, 46)); d.text((x0 + 60, y0 + 32), '牛乳 乳製品', font=J(0, 24), fill=(250, 248, 240))
+x0, y0 = C(6); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(232, 232, 226)); d.rectangle([x0, y0 + 30, x0 + 255, y0 + 60], fill=(190, 40, 46)); d.text((x0 + 16, y0 + 32), '牛乳 乳製品', font=J(0, 24), fill=(250, 248, 240))
 # 7 kamidana: white paper, the shrine's wood, a sakaki green, the rope
 x0, y0 = C(7); im.paste(planks(256, 128, (200, 170, 120)), (x0, y0)); d.rectangle([x0, y0 + 128, x0 + 127, y0 + 255], fill=(244, 240, 228))
 d.rectangle([x0 + 128, y0 + 128, x0 + 255, y0 + 190], fill=(60, 110, 50)); d.rectangle([x0 + 128, y0 + 190, x0 + 255, y0 + 255], fill=(214, 190, 120))
@@ -236,7 +236,7 @@ x0, y0 = C(10); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(176, 140, 98))
 for r in range(4):
     for k in range(6):
         a, b = x0 + 4 + k * 42, y0 + 6 + r * 62; c = random.choice([(220, 60, 60), (240, 200, 60), (80, 150, 220), (240, 140, 180), (120, 190, 110), (250, 240, 230)])
-        d.rectangle([a, b, a + 38, b + 54], fill=c); d.text((a + 4, b + 18), random.choice(['あめ', 'ガム', 'チョコ', 'くじ', 'ラムネ']), font=J(0, 12), fill=(255, 255, 255) if sum(c) < 500 else (60, 40, 40))
+        d.rectangle([a, b, a + 38, b + 54], fill=c); d.text((a + 4, b + 18), random.choice(['あめ', 'ガム', 'くじ', 'グミ', 'ラムネ'[:2]]), font=J(0, 12), fill=(255, 255, 255) if sum(c) < 500 else (60, 40, 40))
 x0, y0 = C(11); d.rectangle([x0, y0, x0 + 255, y0 + 255], fill=(150, 170, 176))
 for k in range(10):
     a, b = x0 + 8 + k * 24, y0 + 120 + (k % 3) * 30; d.rectangle([a, b, a + 20, b + 90], fill=random.choice([(220, 200, 150), (200, 90, 80), (240, 220, 120), (120, 160, 200)]))

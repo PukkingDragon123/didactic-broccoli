@@ -18,7 +18,7 @@ import { hash2 } from '../core/util.js';
 import { NAME_INDEX } from '../gfx/textures.js';
 import { ROOM } from './interiors.js';
 import { keiWagonMesh } from '../vehicles/keiWagon.js';
-import { archPlace } from './archModels.js';
+import { parkedCar } from './carModels.js';
 
 const ZB = 5.3, ZF = 14.9;
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -195,8 +195,9 @@ function nearSide(t) {
   // the Suzukis' kei wagon in the carport: pastel blue under a white roof, an older (pre-1998, 3.3 m) one than Mr.
   // Tanaka's, so a touch smaller (src/vehicles/keiWagon.js); it blocks the footprint the voxel prop did
   {
-    // a converted lowpix kei wagon when there is one (art/lowpix/world_arch/_src/vehicles.py), else the vehicle kit's
-    const car = archPlace('kei_wagon', t.group, { x: 6.05, z: 3.15, cast: false }) || keiWagonMesh({ paint: 0x7a9ec2, roof: 0xece8dc, dent: false, static: true });
+    // the Suzukis' cream kei truck (a real hand-made model, repainted in the house style, badges painted out, our own
+    // plates: src/world/carModels.js); the vehicle kit's kei wagon if it failed to load
+    const car = parkedCar('kei_truck_a', t.group, { x: 6.05, z: 3.15, plate: { cls: '480', kana: 'さ', num: '21-08' } }) || keiWagonMesh({ paint: 0x7a9ec2, roof: 0xece8dc, dent: false, static: true });
     if (!car.parent) {
       car.scale.setScalar(0.936);
       car.position.set(6.05, 0, 3.15);
@@ -559,6 +560,8 @@ function farSide(t) {
   B.box(m.pv, 0.26, 0.04, 0.025, 2.2, 4.2, -0.8, { tint: 0xe8c860 });
   B.pop();
   t.yard(21.05, 25.7, ZF, 15.2, m.strip);
+  // a neighbour's faded green kei truck pulled up on the garages' apron
+  if (parkedCar('kei_truck_b', t.group, { x: 24.15, z: 13.8, ry: Math.PI / 2 + 0.04, plate: { cls: '41', kana: 'す', num: '3-86' } })) t.game.player.addObstacle(22.5, 25.8, 13.05, 14.55);
   t.weeds(22.1, 0, 15.0, 2);
   t.weeds(25.2, 0, 14.95, 0.6);
   addDoor(t, 'garage6', 'FE6', 'Rental garage', [22.25, 15.4], [22.25, ZF], [22.25, 15.12, 1.2], s, { knockOnly: true });

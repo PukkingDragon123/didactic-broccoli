@@ -3970,7 +3970,8 @@
    "ppm": 300,
    "tris": 1800,
    "cap": 512,
-   "name": "Wooden Playground Horse"
+   "name": "Wooden Playground Horse",
+   "rotx": 90
   },
   {
    "id": "twin_tub_own",
@@ -4025,6 +4026,60 @@
    "tris": 300,
    "cap": 512,
    "name": "Recycle cage (our own model, hand-painted)"
+  },
+  {
+   "id": "puff_stick_own",
+   "src": "art/lowpix/world/made/puff_stick.glb",
+   "h": 0.145,
+   "ppm": 1600,
+   "tris": 200,
+   "cap": 256,
+   "name": "Corn puff stick (our own model; wrapper from a real photo)"
+  },
+  {
+   "id": "capsule_statue_own",
+   "src": "art/lowpix/world/made/capsule_statue_own.glb",
+   "h": 1.07,
+   "ppm": 300,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Capsule statue (our own model, hand-painted)"
+  },
+  {
+   "id": "neon_gacha_own",
+   "src": "art/lowpix/world/made/neon_gacha_own.glb",
+   "h": 0.91,
+   "ppm": 400,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Neon gacha (our own model, hand-painted)"
+  },
+  {
+   "id": "petal_drift_own",
+   "src": "art/lowpix/world/made/petal_drift_own.glb",
+   "h": 0.03,
+   "ppm": 500,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Petal drift (our own model, hand-painted)"
+  },
+  {
+   "id": "hamaya_own",
+   "src": "art/lowpix/world/made/hamaya_own.glb",
+   "h": 0.42,
+   "ppm": 900,
+   "tris": 400,
+   "cap": 512,
+   "name": "Hamaya (our own model, hand-painted)"
+  },
+  {
+   "id": "broombin_own",
+   "src": "art/lowpix/world/made/broombin_own.glb",
+   "h": 1.25,
+   "ppm": 250,
+   "tris": 500,
+   "cap": 512,
+   "name": "Broombin (our own model, hand-painted)"
   }
  ]
 }

@@ -207,7 +207,7 @@ export const PROP_MODELS = {
   donut_seat: { id: 'lowpix/world/donut_seat_own' },
   shop_counter: { id: 'lowpix/world/showcase' },
   shop_bench: { id: 'lowpix/world/bench_jp' },
-  mk_broom_bin: { id: 'lowpix/world/broombin' },
+  mk_broom_bin: { id: 'lowpix/world/broombin_own' },
   mk_dairy_case: { id: 'lowpix/world/dairycase' },
   milk_carton: { id: 'lowpix/world/milk_carton2' },
   room_cupnoodle: { id: 'lowpix/world/goodsnoodle' },
@@ -228,6 +228,13 @@ export const PROP_MODELS = {
   park_clock: { id: 'lowpix/world/park_clock_own' },
   laundry_pole: { id: 'lowpix/world/laundry_pole_own' },
   recycle_cage: { id: 'lowpix/world/recycle_cage_own' },
+  puff_stick: { id: 'lowpix/world/puff_stick_own' },
+  shelf_figures: { id: 'lowpix/world/toy_robot' },
+  spring_panda: { id: 'lowpix/world/spring_horse' },
+  capsule_statue: { id: 'lowpix/world/capsule_statue_own' },
+  neon_gacha: { id: 'lowpix/world/neon_gacha_own' },
+  petal_drift: { id: 'lowpix/world/petal_drift_own' },
+  mk_hamaya: { id: 'lowpix/world/hamaya_own' },
   // ---- the voxel builds and self-made boxes of the home, the food and the goods, redrawn with imported models
   piggy_bank: { id: 'lowpix/world/piggy_bank_c' },
   bed_base: { id: 'lowpix/world/futon_set', fit: 'stretch' }, // the futon, made up (src/places/room/Room.js)

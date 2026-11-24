@@ -273,7 +273,7 @@
    0.126,
    0.022
   ],
-  "bytes": 3984
+  "bytes": 3832
  },
  "beach_parasol": {
   "id": "beach_parasol",
@@ -703,7 +703,25 @@
    0.96,
    0.3
   ],
-  "bytes": 10556
+  "bytes": 13332
+ },
+ "broombin_own": {
+  "id": "broombin_own",
+  "name": "Broombin (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/broombin_own.glb",
+  "title": "Broombin (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/broombin_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 346,
+  "tex": 504,
+  "size": [
+   0.317,
+   1.25,
+   0.317
+  ],
+  "bytes": 41668
  },
  "bucket": {
   "id": "bucket",
@@ -964,6 +982,24 @@
   ],
   "bytes": 13528
  },
+ "capsule_statue_own": {
+  "id": "capsule_statue_own",
+  "name": "Capsule statue (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/capsule_statue_own.glb",
+  "title": "Capsule statue (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/capsule_statue_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 888,
+  "tex": 396,
+  "size": [
+   0.772,
+   1.07,
+   0.742
+  ],
+  "bytes": 71456
+ },
  "capsulereturn": {
   "id": "capsulereturn",
   "name": "capsule return",
@@ -980,7 +1016,7 @@
    0.62,
    0.31
   ],
-  "bytes": 39428
+  "bytes": 34900
  },
  "cardboard_bundle": {
   "id": "cardboard_bundle",
@@ -1036,7 +1072,7 @@
    0.216,
    0.653
   ],
-  "bytes": 69916
+  "bytes": 70748
  },
  "cash_register": {
   "id": "cash_register",
@@ -1513,7 +1549,7 @@
    0.39,
    0.012
   ],
-  "bytes": 7664
+  "bytes": 7712
  },
  "coin_float": {
   "id": "coin_float",
@@ -1550,7 +1586,7 @@
    1.28,
    0.41
   ],
-  "bytes": 36916
+  "bytes": 35276
  },
  "cointray": {
   "id": "cointray",
@@ -1568,7 +1604,7 @@
    0.024,
    0.12
   ],
-  "bytes": 7044
+  "bytes": 6980
  },
  "condiments": {
   "id": "condiments",
@@ -1753,7 +1789,7 @@
    1.215,
    0.5
   ],
-  "bytes": 39248
+  "bytes": 37728
  },
  "dairycase": {
   "id": "dairycase",
@@ -1771,7 +1807,7 @@
    1.72,
    0.58
   ],
-  "bytes": 49660
+  "bytes": 49228
  },
  "dango": {
   "id": "dango",
@@ -2250,7 +2286,7 @@
    0.87,
    0.28
   ],
-  "bytes": 11204
+  "bytes": 10884
  },
  "floor_lamp": {
   "id": "floor_lamp",
@@ -2572,7 +2608,7 @@
    1.74,
    1.04
   ],
-  "bytes": 45636
+  "bytes": 44724
  },
  "gas_cylinder": {
   "id": "gas_cylinder",
@@ -2795,6 +2831,24 @@
    0.089
   ],
   "bytes": 40432
+ },
+ "hamaya_own": {
+  "id": "hamaya_own",
+  "name": "Hamaya (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hamaya_own.glb",
+  "title": "Hamaya (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hamaya_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 200,
+  "tex": 448,
+  "size": [
+   0.044,
+   0.42,
+   0.034
+  ],
+  "bytes": 15772
  },
  "hand_truck": {
   "id": "hand_truck",
@@ -3112,7 +3166,7 @@
    1.545,
    0.259
   ],
-  "bytes": 10768
+  "bytes": 9712
  },
  "kamidana": {
   "id": "kamidana",
@@ -4270,6 +4324,24 @@
   ],
   "bytes": 40580
  },
+ "neon_gacha_own": {
+  "id": "neon_gacha_own",
+  "name": "Neon gacha (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/neon_gacha_own.glb",
+  "title": "Neon gacha (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/neon_gacha_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 372,
+  "tex": 416,
+  "size": [
+   1.388,
+   0.91,
+   0.201
+  ],
+  "bytes": 33784
+ },
  "newspaper_stack": {
   "id": "newspaper_stack",
   "name": "[CC0] Newspaper Stack - Ready to Unity H",
@@ -4550,6 +4622,24 @@
    0.1
   ],
   "bytes": 26120
+ },
+ "petal_drift_own": {
+  "id": "petal_drift_own",
+  "name": "Petal drift (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/petal_drift_own.glb",
+  "title": "Petal drift (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/petal_drift_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 488,
+  "tex": 288,
+  "size": [
+   1.093,
+   0.03,
+   0.797
+  ],
+  "bytes": 27880
  },
  "phone_booth": {
   "id": "phone_booth",
@@ -4980,6 +5070,24 @@
    0.397
   ],
   "bytes": 34904
+ },
+ "puff_stick_own": {
+  "id": "puff_stick_own",
+  "name": "Corn puff stick (our own model; wrapper from a real photo)",
+  "src": "art/lowpix/world/made/puff_stick.glb",
+  "title": "Corn puff stick (our own model; wrapper from a real photo)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/puff_stick.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 68,
+  "tex": 256,
+  "size": [
+   0.03,
+   0.145,
+   0.025
+  ],
+  "bytes": 11124
  },
  "puffbox": {
   "id": "puffbox",
@@ -5650,7 +5758,7 @@
    0.234,
    0.368
   ],
-  "bytes": 63836
+  "bytes": 57724
  },
  "sake_set2": {
   "id": "sake_set2",
@@ -5985,7 +6093,7 @@
    0.96,
    0.56
   ],
-  "bytes": 52688
+  "bytes": 51552
  },
  "shower_own": {
   "id": "shower_own",
@@ -6222,13 +6330,13 @@
   "url": "https://sketchfab.com/3d-models/wooden-playground-horse-aa1c440f48a44e558dcc9097b35a6a6d",
   "site": "Sketchfab",
   "tris": 1756,
-  "tex": 512,
+  "tex": 360,
   "size": [
-   0.324,
+   0.383,
    0.85,
-   0.719
+   1.005
   ],
-  "bytes": 76988
+  "bytes": 88548
  },
  "squeegee_own": {
   "id": "squeegee_own",
@@ -6396,7 +6504,7 @@
    4.14,
    0.168
   ],
-  "bytes": 7752
+  "bytes": 7368
  },
  "sushi_pack": {
   "id": "sushi_pack",
@@ -6824,7 +6932,7 @@
    2.256,
    0.262
   ],
-  "bytes": 7172
+  "bytes": 7244
  },
  "tomato_plant": {
   "id": "tomato_plant",
@@ -7455,7 +7563,7 @@
    0.17,
    0.16
   ],
-  "bytes": 14760
+  "bytes": 14168
  },
  "waterheater": {
   "id": "waterheater",
@@ -7473,7 +7581,7 @@
    0.74,
    0.4
   ],
-  "bytes": 12416
+  "bytes": 13992
  },
  "watering_can": {
   "id": "watering_can",

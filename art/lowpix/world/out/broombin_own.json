@@ -1,0 +1,55 @@
+{
+ "id": "broombin_own",
+ "src": "art/lowpix/world/made/broombin_own.glb",
+ "credit": {
+  "title": "Broombin (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/broombin_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 346,
+ "tex": 504,
+ "size": [
+  0.317,
+  1.25,
+  0.317
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#5c0b26",
+   "#76102a",
+   "#8f172b",
+   "#a81e29",
+   "#bf2626",
+   "#d34538",
+   "#d7705b",
+   "#dc957d",
+   "#e2b49d"
+  ],
+  "m1": [
+   "#6c381f",
+   "#8a522b",
+   "#a76f38",
+   "#be8e4b",
+   "#c6a86d",
+   "#cbb984",
+   "#d1c89a",
+   "#d8d5af",
+   "#e0e0c3"
+  ],
+  "m2": [
+   "#3f475b",
+   "#556073",
+   "#6d7a8b",
+   "#8a949d",
+   "#a6acb0",
+   "#b4b7b9",
+   "#c2c2c2",
+   "#cecece",
+   "#d9d9d9"
+  ]
+ },
+ "warnings": []
+}

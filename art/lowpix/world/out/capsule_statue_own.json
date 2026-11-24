@@ -1,0 +1,77 @@
+{
+ "id": "capsule_statue_own",
+ "src": "art/lowpix/world/made/capsule_statue_own.glb",
+ "credit": {
+  "title": "Capsule statue (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/capsule_statue_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 888,
+ "tex": 396,
+ "size": [
+  0.772,
+  1.07,
+  0.742
+ ],
+ "colours": 38,
+ "palette": {
+  "m0": [
+   "#995736",
+   "#bd7e51",
+   "#cca782",
+   "#dccab0",
+   "#efe9dd",
+   "#f1ede2",
+   "#f2f1e7",
+   "#f4f4ec",
+   "#f6f6f1"
+  ],
+  "m1": [
+   "#6b0d30",
+   "#891335",
+   "#a61b37",
+   "#c22336",
+   "#d6343a",
+   "#d85953",
+   "#dc7f71",
+   "#e0a08e",
+   "#e6bcaa"
+  ],
+  "m2": [
+   "#79350b",
+   "#9c5111",
+   "#bd7218",
+   "#dd9721",
+   "#e0b446",
+   "#e1c862",
+   "#e4d87e",
+   "#e7e498",
+   "#ebebb2"
+  ],
+  "m3": [
+   "#1034a0",
+   "#1854cd",
+   "#377fe4",
+   "#69a8e8",
+   "#99caed",
+   "#a9d7ee",
+   "#b8e1ef",
+   "#c6eaf1",
+   "#d4f1f4"
+  ],
+  "m4": [
+   "#91143f",
+   "#ba1e47",
+   "#da314f",
+   "#df5f6b",
+   "#e58b8c",
+   "#e7a29d",
+   "#e9b7ae",
+   "#ecc9bf",
+   "#efd9cf"
+  ]
+ },
+ "warnings": []
+}

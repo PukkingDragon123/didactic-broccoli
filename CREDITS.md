@@ -1161,7 +1161,7 @@ brands, wordmarks and mascots round them are original drawings.
 - Source: https://www.flickr.com/photos/doremigirl/6070960210 (Open Images ID 8ca078420101d034)
 - Licence: CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/)
 - Attribution: "Sweetest Corn ~" by DoremiGirl, licensed under CC BY 2.0
-- Shipped as: `img/photos/products/corn.jpg` (Corn Potage can, corn tins)
+- Shipped as: `img/photos/products/corn.jpg` (Corn Potage can, corn tins; also on the corn-puff stick wrapper, `models/lowpix/world/puff_stick_own.glb`)
 
 #### Corn Soup at Loving Hut
 
@@ -2667,12 +2667,15 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 
 - AA batteries by Gacha Garage (made for the game, art/lowpix/world/made/batterypack.glb), CC0 1.0. Shipped as `models/lowpix/world/batterypack.glb`
 - Bin fill (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/binfill.glb), CC0 1.0. Shipped as `models/lowpix/world/binfill_own.glb`
+- Broombin (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/broombin_own.glb), CC0 1.0. Shipped as `models/lowpix/world/broombin_own.glb`
 - Bus stop sign (バス停) by Gacha Garage (made for the game, art/lowpix/world/made/busstop.glb), CC0 1.0. Shipped as `models/lowpix/world/busstop.glb`
 - capsule return by Gacha Garage (made for the game, art/lowpix/world/made/capsulereturn.glb), CC0 1.0. Shipped as `models/lowpix/world/capsulereturn.glb`
+- Capsule statue (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/capsule_statue_own.glb), CC0 1.0. Shipped as `models/lowpix/world/capsule_statue_own.glb`
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0. Shipped as `models/lowpix/world/cardboardmess.glb`
 - Cobweb by Gacha Garage (made for the game, art/lowpix/world/made/cobwebcard.glb), CC0 1.0. Shipped as `models/lowpix/world/cobwebcard.glb`
 - coin changer by Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb), CC0 1.0. Shipped as `models/lowpix/world/coinchanger.glb`
 - Coin tray (カルトン) by Gacha Garage (made for the game, art/lowpix/world/made/cointray.glb), CC0 1.0. Shipped as `models/lowpix/world/cointray.glb`
+- Corn puff stick (our own model; wrapper from a real photo) by Gacha Garage (made for the game, art/lowpix/world/made/puff_stick.glb), CC0 1.0. Shipped as `models/lowpix/world/puff_stick_own.glb`
 - Crushed can (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/can_crushed.glb), CC0 1.0. Shipped as `models/lowpix/world/litter_can.glb`
 - Curve mirror (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/mirror_pole.glb), CC0 1.0. Shipped as `models/lowpix/world/mirror_pole.glb`
 - dagashi rack by Gacha Garage (made for the game, art/lowpix/world/made/dagashirack.glb), CC0 1.0. Shipped as `models/lowpix/world/dagashirack.glb`
@@ -2686,6 +2689,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Glass marble (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/marble.glb), CC0 1.0. Shipped as `models/lowpix/world/marble_m.glb`
 - Gumball (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_m.glb`
 - Gumball machine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_own.glb`
+- Hamaya (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hamaya_own.glb), CC0 1.0. Shipped as `models/lowpix/world/hamaya_own.glb`
 - Kamidana (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb), CC0 1.0. Shipped as `models/lowpix/world/kamidana_own.glb`
 - Laundry pole (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/laundry_pole.glb), CC0 1.0. Shipped as `models/lowpix/world/laundry_pole_own.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsmilk.glb`
@@ -2699,9 +2703,11 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - mk watch case by Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb), CC0 1.0. Shipped as `models/lowpix/world/watchcase.glb`
 - Morning glory in bloom (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_bloom.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_bloom.glb`
 - Morning glory vine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_vine.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_vine.glb`
+- Neon gacha (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/neon_gacha_own.glb), CC0 1.0. Shipped as `models/lowpix/world/neon_gacha_own.glb`
 - Paint roller (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/roller.glb), CC0 1.0. Shipped as `models/lowpix/world/roller_m.glb`
 - Park clock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/park_clock.glb), CC0 1.0. Shipped as `models/lowpix/world/park_clock_own.glb`
 - Park litter (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/park_litter.glb), CC0 1.0. Shipped as `models/lowpix/world/park_litter_own.glb`
+- Petal drift (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/petal_drift_own.glb), CC0 1.0. Shipped as `models/lowpix/world/petal_drift_own.glb`
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0. Shipped as `models/lowpix/world/pinkphone.glb`
 - Recycle cage (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb), CC0 1.0. Shipped as `models/lowpix/world/recycle_cage_own.glb`
 - Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb), CC0 1.0. Shipped as `models/lowpix/world/vacuum_dock_m.glb`
@@ -3283,6 +3289,11 @@ Modelled for the game as lowpix specs (art/lowpix/world_arch/, CC0) and built wi
 - rectangular_paving: https://polyhaven.com/a/rectangular_paving (CC0 1.0)
 - plywood: https://polyhaven.com/a/plywood (CC0 1.0)
 - rusty_metal_02: https://polyhaven.com/a/rusty_metal_02 (CC0 1.0)
+
+Converted from these models (`lowpix convert --style pixel-hd`), shipped in `models/lowpix/world_arch/`:
+
+- 1984 Suzuki Kei Truck by untitled.vvti, CC BY 4.0: https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd (kei_truck_a)
+- 1984 Suzuki Kei Truck by untitled.vvti, CC BY 4.0: https://sketchfab.com/3d-models/1984-suzuki-kei-truck-c08fd6d5410b4a4099043033907616bd (kei_truck_b)
 
 <!-- lowpix-world-arch:end -->
 

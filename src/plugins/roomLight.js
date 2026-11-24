@@ -12,8 +12,10 @@ const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const box = (x0, y0, z0, x1, y1, z1) => new THREE.Box3(V(x0, y0, z0), V(x1, y1, z1));
 // a ceiling lamp as a downward spot: full light in a cone under it, fading out toward the walls' tops
 const LAMP_K = 3.6; // the old painted lamp term's intensity -> candela-ish (about the same light on the floor under it)
+// (its colour half way to white: the eye white-balances a lamp-lit room, the bounce off warm walls adds the rest)
+const _c = new THREE.Color(), _w = new THREE.Color(1, 1, 1);
 const lamp = (L, o = {}) => L && {
-  p: [L.x + (o.dx ?? 0), L.y + (o.dy ?? 0), L.z + (o.dz ?? 0)], color: o.color ?? L.color ?? 0xffe8c8,
+  p: [L.x + (o.dx ?? 0), L.y + (o.dy ?? 0), L.z + (o.dz ?? 0)], color: _c.set(o.color ?? L.color ?? 0xffe8c8).lerp(_w, 0.45).getHex(),
   i: (L.intensity ?? 1) * Math.max(0, L.k ?? 1) * LAMP_K * (o.s ?? 1), angle: o.angle ?? 1.32, pen: o.pen ?? 0.55, range: o.range ?? 7, soft: o.soft,
 };
 
@@ -28,11 +30,11 @@ export function install(game) {
 
   // ---- the garage (its own lights: tubes, desk lamp, the sun through the shutter and window)
   gi.add({
-    id: 'garage', box: box(GARAGE.minX, 0, GARAGE.minZ, GARAGE.maxX, GARAGE.height, GARAGE.maxZ), sky: true, global: true,
+    id: 'garage', box: box(GARAGE.minX, 0, GARAGE.minZ, GARAGE.maxX, GARAGE.height, GARAGE.maxZ), sky: true, global: true, k: 1.15,
     at: V(0.2, 1.4, 0.5),
     // the two tube fixtures' shadowed share, as one wide spot under the ceiling between them (src/game/Lighting.js
     // turns the tubes' point lights down while it's on)
-    lights: () => [{ p: [0, GARAGE.height - 0.25, -0.6], t: [0, 0, -0.4], color: 0xf2f4ff, i: 16 * (Lg?.tubeLight ?? 0), angle: 1.36, pen: 0.6, range: 9, soft: 3 }],
+    lights: () => [{ p: [0, GARAGE.height - 0.25, -0.6], t: [0, 0, -0.4], color: 0xf2f4ff, i: 30 * (Lg?.tubeLight ?? 0), angle: 1.36, pen: 0.6, range: 9, soft: 3 }],
     key: () => [G.lightsOn, game.bills?.powerOn !== false, Math.round(Math.max(0, G.shutterOpen) * 4), Math.round(Lg?.dimLevel ?? 0), (G.lights?.tubes || []).map((t) => (t.dead ? 0 : 1)).join(''), night()].join(),
     minor: () => hour(1),
   });
@@ -96,7 +98,14 @@ export function install(game) {
     const O = V(120, 0, -80);
     offMap('ramen', box(O.x - 3, 0, O.z - 2.5, O.x + 3, 2.6, O.z + 2.5), {
       at: V(O.x + 0.4, 1.35, O.z + 0.9),
-      key: { dy: -0.1, angle: 1.35 }, fill: { angle: 1.3 },
+      key: { dy: -0.1, angle: 1.38, s: 1.8 }, fill: { angle: 1.3, s: 1.5 },
     });
+    // the two outer pendants as short warm lights of their own (the light pool picks them up while you're inside)
+    const pend = () => {
+      const g = def('ramen')?.group;
+      if (!g || g.userData.pendants) return;
+      g.userData.pendants = [-1.6, 1.4].map((x) => { const pl = new THREE.PointLight(0xffe2c0, 3.2, 3.6, 2); pl.position.set(O.x + x, 1.9, O.z + 0.2); g.add(pl); return pl; });
+    };
+    pend();
   }
 }

@@ -16,7 +16,7 @@ const [W, H] = flag('size', '960x540').split('x').map(Number);
 
 // each view: [hour, setup]; zone-local coordinates for the flats (dbg.growth.go)
 const VIEWS = {
-  garage: [null, 'game.gachaDebug.setup(); dbg.view(0.6, 3.4, 0.35, -0.12);'],
+  garage: [null, 'dbg.shopOpen?.(); game.gachaDebug.setup(); dbg.view(0.6, 3.4, 0.35, -0.12);'],
   mikawaya: [null, 'dbg.view(-12.4, 15.55, Math.PI, -0.06);'],
   ramen: [null, 'dbg.needs.enter("ramen"); game.player.pitch = -0.08;'],
   room: [null, 'dbg.growth.go("room"); game.player.pos.set(80.75, 0, -79.6); game.player.yaw = 0.45; game.player.pitch = -0.12;'],

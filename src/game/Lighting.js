@@ -116,7 +116,7 @@ export class Lighting {
     let live = 0;
     for (const tb of L.tubes) {
       const k = tb.dead ? 0 : tubeK; // a dead tube stays dark until it's replaced
-      tb.light.intensity = tb.base * k * d * (1 - 0.55 * keyed);
+      tb.light.intensity = tb.base * k * d * (1 - 0.4 * keyed);
       tb.mat.color.setScalar(0.15 + 2.05 * k * d);
       live += k;
     }

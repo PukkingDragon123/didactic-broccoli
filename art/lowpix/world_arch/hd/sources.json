@@ -11,11 +11,7 @@
  "asphalt_01": {
   "source": "https://polyhaven.com/a/asphalt_01",
   "license": "CC0-1.0",
-  "metres": 2.08,
-  "used_for": [
-   "asphaltHD",
-   "sf_asphalt"
-  ]
+  "metres": 2.08
  },
  "asphalt_02": {
   "source": "https://polyhaven.com/a/asphalt_02",
@@ -36,13 +32,7 @@
  "beige_wall_001": {
   "source": "https://polyhaven.com/a/beige_wall_001",
   "license": "CC0-1.0",
-  "metres": 3.0,
-  "used_for": [
-   "houseWall",
-   "mallCeil",
-   "prefabPanel",
-   "shikkui"
-  ]
+  "metres": 3.0
  },
  "beige_wall_002": {
   "source": "https://polyhaven.com/a/beige_wall_002",
@@ -63,11 +53,7 @@
  "blue_metal_plate": {
   "source": "https://polyhaven.com/a/blue_metal_plate",
   "license": "CC0-1.0",
-  "metres": 2.5,
-  "used_for": [
-   "hazard",
-   "steel"
-  ]
+  "metres": 2.5
  },
  "brown_planks_08": {
   "source": "https://polyhaven.com/a/brown_planks_08",
@@ -199,10 +185,7 @@
  "gravel": {
   "source": "https://polyhaven.com/a/gravel",
   "license": "CC0-1.0",
-  "metres": 2.0,
-  "used_for": [
-   "ballast"
-  ]
+  "metres": 2.0
  },
  "grey_roof_tiles": {
   "source": "https://polyhaven.com/a/grey_roof_tiles",
@@ -310,6 +293,11 @@
    "sf_park_ground"
   ]
  },
+ "rough_linen": {
+  "source": "https://polyhaven.com/a/rough_linen",
+  "license": "CC0-1.0",
+  "metres": 0.271
+ },
  "rusty_corrugated_iron": {
   "source": "https://polyhaven.com/a/rusty_corrugated_iron",
   "license": "CC0-1.0",
@@ -349,10 +337,7 @@
  "terlenka": {
   "source": "https://polyhaven.com/a/terlenka",
   "license": "CC0-1.0",
-  "metres": 0.266,
-  "used_for": [
-   "wallpaper"
-  ]
+  "metres": 0.266
  },
  "weathered_planks": {
   "source": "https://polyhaven.com/a/weathered_planks",

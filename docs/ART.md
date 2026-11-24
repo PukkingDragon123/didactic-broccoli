@@ -57,6 +57,9 @@ lists everything under the standard, worst first, in shots/textures/lowres_list.
   recipe key was used). Never upscale an old texture (no smoothing, no nearest-neighbour blow-ups): re-bake it from
   its sources. One repeat covers 2-4 m (floors 4 m) with per-tile / per-board variation, stains and cracks placed by
   rule, so no repeat lines up; 1-2 m only for small parts.
+- Backdrops (the views out of windows, far impostors) are judged as the far scenery they show: a real photo at its
+  own full resolution (never upscaled), tagged `userData.backdrop`; soft light overlays (AO maps, `userData.lightmap`)
+  are shading, not surface art. The audit lists both apart.
 - Memory: lossless WebP on disk; on the GPU RGBA8 + mipmaps (trilinear, anisotropy 4). At most 1024 px for a 4 m
   floor, 512 px for a 2 m wall; 2048 px only for a model atlas that needs it.
 

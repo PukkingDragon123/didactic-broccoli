@@ -217,7 +217,7 @@ export function buildRoom(game, group) {
   B.box(M.metal, ww + 0.7, 0.03, 0.04, wx, w.y1 + 0.12, z0 + 0.12, { tint: 0xe8e8ec });
   const curtainPix = new Pix(32, 64, 9);
   for (let y = 0; y < 64; y++) for (let x = 0; x < 32; x++) curtainPix.px(x, y, ((x >> 2) + (y >> 3)) % 4 === 0 && (y % 8 === 3) ? 0xfff6e0 : (((x * 7 + y * 3) % 23 === 0) ? 0xa8d8c8 : 0x8ac8b4));
-  const curtMat = new THREE.MeshStandardMaterial({ map: T.texOf(curtainPix), roughness: 0.95, side: THREE.DoubleSide, emissive: 0xff9a50, emissiveIntensity: 0.12 });
+  const curtMat = new THREE.MeshStandardMaterial({ map: hasHD('curtain') ? hdMap('curtain', true) : T.texOf(curtainPix), roughness: 0.95, side: THREE.DoubleSide, emissive: 0xff9a50, emissiveIntensity: 0.12 });
   const curtain = (xa, xb, folds) => {
     const n = folds * 2, cw = (xb - xa) / n, ch = w.y1 + 0.1 - (w.y0 - 0.25);
     const pos = [], uv = [], idx = [];
@@ -257,6 +257,7 @@ export function buildRoom(game, group) {
     const map = T.texOf(pix);
     map.minFilter = THREE.NearestFilter; map.generateMipmaps = false;
     const m = new THREE.MeshBasicMaterial({ map, fog: false, transparent: false, alphaTest: alpha ? 0.5 : 0, toneMapped: true });
+    m.userData.backdrop = true; // the painted view out of the window (tools/texel-audit.mjs judges it as far)
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(wM, hM), m);
     mesh.position.set(x, y, z);
     group.add(mesh);
@@ -279,7 +280,7 @@ export function buildRoom(game, group) {
   B.box(M.wood, 0.06, 0.06, cz1 - cz0 + 0.06, x0 + 0.01, 1.74, (cz0 + cz1) / 2, { tint: 0xc89868 });
   B.box(M.wood, 0.06, 0.03, cz1 - cz0, x0 + 0.01, 0, (cz0 + cz1) / 2, { tint: 0xa87850 });
   // fusuma: the left leaf closed, the right one slid behind it (so half the closet shows)
-  const fus = [unitMat(T.fusuma(58, 112, 1)), unitMat(T.fusuma(58, 112, 2))];
+  const fus = [unitMat(() => T.fusuma(58, 112, 1), { hd: 'fusuma1' }), unitMat(() => T.fusuma(58, 112, 2), { hd: 'fusuma2' })];
   const fw = (cz1 - cz0) / 2;
   const leaf = (m, z, dx) => { const g = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.74, fw), [m, m, M.edge, M.edge, M.edge, M.edge]); g.position.set(x0 + dx, 0.87, z); group.add(g); return g; };
   leaf(fus[0], cz0 + fw / 2, -0.015);
@@ -287,7 +288,7 @@ export function buildRoom(game, group) {
   // (what's inside, the folded spare futon, a toy box, old books and boxes: real models, src/room/dressing.js)
 
   // ---------------------------------------------------------------- the front door (inside face) + genkan bits
-  const doorMat = unitMat(T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2 });
+  const doorMat = unitMat(() => T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2, hd: 'doorInside' });
   const doorLeaf = new THREE.Mesh(new THREE.BoxGeometry(d.w, d.h, 0.05), [M.edge, M.edge, M.edge, M.edge, M.edge, doorMat]);
   doorLeaf.geometry.translate(d.w / 2, 0, 0); // hinge on the left edge
   doorLeaf.position.set(dx0, d.y + d.h / 2, z1 - 0.03);
@@ -311,10 +312,10 @@ export function buildRoom(game, group) {
   for (const x of [0.3, 0.9]) { B.box(M.paint, 0.56, 0.5, 0.01, x, 1.645, z1 - 0.345, { tint: 0xf6eedc }); B.box(M.metal, 0.08, 0.015, 0.02, x + (x < 0.5 ? 0.2 : -0.2), 1.69, z1 - 0.355, { tint: 0xc8ccd2 }); }
   const kw = new Pix(16, 12, 3); kw.gradient(0, 0, 16, 12, 0xffd0a0, 0xff9a60); for (let x = 0; x < 16; x += 3) for (let y = 0; y < 12; y++) if ((x + y) % 2) kw.px(x, y, 0xffe0b8);
   kw.frame(0, 0, 16, 12, 0xb8bcc2);
-  B.quad(new THREE.MeshBasicMaterial({ map: T.texOf(kw), vertexColors: true }), 0.55, 0.4, 0.42, 1.12, z1 - 0.005, { ry: Math.PI, tint: 0xffffff, k: 0.9 });
+  B.quad(new THREE.MeshBasicMaterial({ map: hasHD('kitchenGlass') ? hdMap('kitchenGlass', true) : T.texOf(kw), vertexColors: true }), 0.55, 0.4, 0.42, 1.12, z1 - 0.005, { ry: Math.PI, tint: 0xffffff, k: 0.9 });
   // folding bath door in the east wall of the kitchen
   const bd = new Pix(24, 64, 5); bd.fill(0xe8e8ec); bd.frame(0, 0, 24, 64, 0x9a9ea4); bd.rect(3, 6, 18, 30, 0xc8d8e0); for (let y = 6; y < 36; y += 2) bd.rect(3, y, 18, 1, 0xd8e4ea); bd.rect(11, 0, 1, 64, 0xb8bcc2); bd.rect(17, 38, 3, 6, 0x8a8e94);
-  B.quad(unitMat(bd, { roughness: 0.4 }), 0.68, 1.85, x1 - 0.005, 0, 0.95, { ry: -Math.PI / 2 });
+  B.quad(unitMat(bd, { roughness: 0.4, hd: 'bathDoor' }), 0.68, 1.85, x1 - 0.005, 0, 0.95, { ry: -Math.PI / 2 });
   B.box(M.paint, 0.03, 0.06, 0.74, x1 - 0.015, 1.85, 0.95, { tint: 0xb8bcc2 });
 
   // ---------------------------------------------------------------- lamp

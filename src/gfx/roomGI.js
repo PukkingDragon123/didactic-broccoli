@@ -134,7 +134,7 @@ export class RoomGI {
     if (r !== this.cur) {
       this.cur = r;
       this.on = r?.vol?.has ? 1 : 0;
-      this.burst = 1.2; // a door fade or a walk in: bake fast for a moment
+      this.burst = r?.active ? 1.2 : 0; // (behind a door's fade: bake fast for a moment; walking into one: at the usual pace)
       this.rigK = r?.active ? 1 : 0; // (teleported in behind a fade: at once; walked in: fades up)
     }
     this.burst = Math.max(0, this.burst - dt);
@@ -282,7 +282,7 @@ export class RoomGI {
         }
         gl.autoClear = save.ac;
         n++;
-        if (!all && performance.now() - t0 > (this.burst > 0 ? 40 : 6)) break;
+        if (!all && performance.now() - t0 > (this.burst > 0 ? 40 : q.ms ?? 4)) break; // (the preset's time budget)
       }
     } finally {
       for (const o of hidden) o.visible = true;

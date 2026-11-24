@@ -194,7 +194,10 @@ def palette(img, k=24, seed=0, sample=80000):
     C = [X[rng.integers(len(X))]]
     for _ in range(1, k):
         d = np.min([((X - c) ** 2).sum(1) for c in C], axis=0)
+        if not d.sum() > 0:  # fewer distinct colours than k
+            break
         C.append(X[rng.choice(len(X), p=d / d.sum())])
+    k = len(C)
     C = np.array(C)
     for _ in range(14):
         lab = np.argmin(((X[:, None, :] - C[None]) ** 2).sum(-1), 1)

@@ -1,0 +1,55 @@
+{
+ "id": "neon_gacha_own",
+ "src": "art/lowpix/world/made/neon_gacha_own.glb",
+ "credit": {
+  "title": "Neon gacha (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/neon_gacha_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 372,
+ "tex": 416,
+ "size": [
+  1.388,
+  0.91,
+  0.201
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#0e0b1c",
+   "#110f23",
+   "#14142a",
+   "#191b31",
+   "#1e2238",
+   "#353e5c",
+   "#4d5c7e",
+   "#687d9d",
+   "#8e9fb1"
+  ],
+  "m1": [
+   "#a4009d",
+   "#d600bb",
+   "#ff0acb",
+   "#ff3cc5",
+   "#ff6ec8",
+   "#fd84c5",
+   "#fc99c6",
+   "#fbaeca",
+   "#fbc2d2"
+  ],
+  "m2": [
+   "#004da0",
+   "#0075d1",
+   "#02a6ff",
+   "#33c8ff",
+   "#64e2ff",
+   "#7bf0fd",
+   "#92f9fc",
+   "#a8fbf6",
+   "#bdfbf2"
+  ]
+ },
+ "warnings": []
+}

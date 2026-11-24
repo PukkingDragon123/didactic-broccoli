@@ -170,7 +170,7 @@ export class Ramen {
     const B = new t.B.constructor();
     const M = (mat) => P.mat(mat);
     const tinted = (mt) => { const c = mt.clone(); c.vertexColors = true; return c; };
-    const floor = M(m.tile), plaster = M(m.shikkui), koshi = M(m.koshi), ceil = M(m.ceil), wood = M(m.wood), woodL = M(m.woodL), paint = M(tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 }))), steel = M(tinted(pixMat('steel', { roughness: 0.35, metalness: 0.6, bump: 0.2 }))); // (textured, tinted per part: no flat colours)
+    const floor = M(m.tile), plaster = M(m.shikkui), koshi = M(m.koshi), ceil = M(m.ceil), wood = M(m.wood), woodL = M(m.woodL), paint = M(tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 }))), steel = M(tinted(pixMat('steel', { roughness: 0.4, metalness: 0.25, bump: 0.2 }))); // (low metalness: no env map indoors, a high one reads as a dark slab) // (textured, tinted per part: no flat colours)
     B.push(O.x, 0, O.z);
     B.plane(floor, 6, 5, 0, 0, 0, { tint: 0x8a7a6a });
     B.box(ceil, 6, 0.05, 5, 0, 2.6, 0, { tint: 0xf0e4d0 });
@@ -336,7 +336,7 @@ export class Ramen {
     this.group.add(root);
     root.updateMatrixWorld(true);
     const body = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.45).translate(0, 0.775, 0), P.mat(t.P(0.4, 0.2)));
-    body.material = P.mat(pixMat('steel', { roughness: 0.4, metalness: 0.3, bump: 0.2 })); // (textured steel cabinet, no flat colour)
+    body.material = P.mat(pixMat('steel', { roughness: 0.5, metalness: 0.1, bump: 0.2, color: 0xe4e8ea })); // (textured, painted steel cabinet: no flat colour, not a dark slab)
     root.add(body);
     const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(pixMat('steel', { roughness: 0.5, metalness: 0.4, color: 0x3a3a3e })));
     slot.position.set(0, 0.55, 0.23); root.add(slot);

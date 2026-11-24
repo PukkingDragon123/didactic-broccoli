@@ -281,7 +281,7 @@ const AOUpsampleShader = {
 // steers an exposure factor that eases toward it over about a second: step into a dim room and it opens up, look out
 // at the sunlit lane and it closes down. Only part of the difference is made up (STRENGTH), so a night room still
 // reads darker than noon. The factor lives in a 1x1 half-float texture the grade reads (no read-back, no stall).
-const ADAPT = { KEY: 0.34, STRENGTH: 0.55, MIN: 0.62, MAX: 2.1, SPEED: 1.6 };
+const ADAPT = { KEY: 0.13, STRENGTH: 0.5, MIN: 0.75, MAX: 1.8, SPEED: 1.6 }; // (KEY: the sunny lane by day reads 1.0)
 const LumShader = {
   uniforms: { tDiffuse: { value: null } },
   vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
@@ -416,11 +416,11 @@ function casterState(o) {
 // cutscenes (0: none), mb = motion blur taps (full resolution, 0: none), mbScale = its exposure, farPx = the widest
 // background blur (pixels at 1080 lines, cutscene aperture; play uses about 60% of it).
 export const QUALITY = {
-  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null, gi: { spacing: 1.0, per: 1, max: 90 }, giSoft: 2, shadowSoft: 1 },
-  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 }, gi: { spacing: 0.8, per: 2, max: 140 }, giSoft: 3, shadowSoft: 1.5 },
-  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: true, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, per: 3, max: 180 }, giSoft: 4, shadowSoft: 2 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.6, per: 4, max: 220 }, giSoft: 5, shadowSoft: 2.5 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.5, per: 6, max: 320 }, giSoft: 6, shadowSoft: 3 },
+  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null, gi: { spacing: 1.0, per: 1, max: 90, ms: 2 }, giSoft: 2, shadowSoft: 1 },
+  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 }, gi: { spacing: 0.8, per: 2, max: 140, ms: 3 }, giSoft: 3, shadowSoft: 1.5 },
+  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: true, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, per: 3, max: 180, ms: 4 }, giSoft: 4, shadowSoft: 2 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.6, per: 4, max: 220, ms: 6 }, giSoft: 5, shadowSoft: 2.5 },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.5, per: 6, max: 320, ms: 8 }, giSoft: 6, shadowSoft: 3 },
 };
 
 export class Renderer {

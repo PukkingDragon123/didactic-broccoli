@@ -292,6 +292,7 @@ export class GarageDetail {
     };
     const ao = new THREE.MeshBasicMaterial({ color: 0x000000, vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
     ao.map = this.aoTex(); ao.userData.rgba = true; ao.userData.order = 1; ao.name = 'ao';
+    ao.userData.lightmap = true; // soft contact shading, not surface art (tools/texel-audit.mjs lists it apart)
     const halo = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, vertexColors: true, side: THREE.DoubleSide,
       uniforms: { uK: { value: new THREE.Vector4(1, 1, 1, 1) } }, vertexShader: HALO_VS, fragmentShader: HALO_FS,
