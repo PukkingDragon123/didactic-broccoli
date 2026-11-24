@@ -7515,13 +7515,13 @@
   "url": "https://polyhaven.com/a/Television_01",
   "site": "Poly Haven",
   "tris": 975,
-  "tex": 1024,
+  "tex": 512,
   "size": [
    0.6,
    0.457,
    0.471
   ],
-  "bytes": 291368
+  "bytes": 34712
  },
  "twin_tub_own": {
   "id": "twin_tub_own",
@@ -7699,14 +7699,14 @@
   "license": "CC BY 4.0",
   "url": "https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5",
   "site": "Sketchfab",
-  "tris": 1308,
-  "tex": 288,
+  "tris": 1306,
+  "tex": 512,
   "size": [
-   8.801,
-   0.97,
-   6.139
+   0.754,
+   0.62,
+   0.55
   ],
-  "bytes": 27280
+  "bytes": 144032
  },
  "vacuum_dock_m": {
   "id": "vacuum_dock_m",

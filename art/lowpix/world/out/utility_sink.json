@@ -9,49 +9,49 @@
   "url": "https://sketchfab.com/3d-models/utility-sink-69eacffafcfe40378bf4de7822eaf0f5",
   "site": "Sketchfab"
  },
- "tris": 1308,
+ "tris": 1306,
  "tex": 512,
  "size": [
-  8.801,
-  0.97,
-  6.139
+  0.754,
+  0.62,
+  0.55
  ],
- "colours": 4737,
+ "colours": 3281,
  "palette": {
   "m0": [
-   "#382e31",
-   "#9e9395",
-   "#fefefe",
-   "#fefefe",
-   "#ffffff"
+   "#2f2c25",
+   "#868377",
+   "#d3d3d2",
+   "#e4e4e4",
+   "#f6f6f6"
   ],
   "m1": [
-   "#282621",
-   "#747267",
-   "#b7b7b6",
-   "#d4d4d4",
-   "#f0f0f0"
+   "#241d1b",
+   "#675c54",
+   "#a19d97",
+   "#c4c4c4",
+   "#ebebeb"
   ],
   "m2": [
-   "#161214",
-   "#403a3b",
-   "#656565",
-   "#a3a3a3",
-   "#e0e0e0"
+   "#141011",
+   "#393334",
+   "#5a5a5a",
+   "#9c9c9c",
+   "#dedede"
   ],
   "m3": [
-   "#4c1c08",
-   "#de781d",
-   "#f2dab0",
-   "#f6efd1",
-   "#fbfbf0"
+   "#261f21",
+   "#6c6264",
+   "#acacac",
+   "#cdcdcd",
+   "#eeeeee"
   ],
   "m4": [
-   "#391404",
-   "#a65512",
-   "#e6ac4d",
-   "#eddb97",
-   "#f8f7dd"
+   "#1e181a",
+   "#554d4e",
+   "#878787",
+   "#b7b7b7",
+   "#e7e7e7"
   ]
  },
  "warnings": []

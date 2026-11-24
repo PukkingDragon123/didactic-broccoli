@@ -2,32 +2,51 @@
  "id": "wear_neckerchief",
  "src": "sketchfab:d5c94ab29a3342b1bde11702c5b8e968",
  "credit": {
-  "title": "Neckerchief",
-  "author": "hectopod",
-  "authorUrl": "https://sketchfab.com/hectopod",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/neckerchief-d5c94ab29a3342b1bde11702c5b8e968",
   "site": "Sketchfab"
  },
  "tris": 2000,
- "tex": 352,
+ "tex": 512,
  "size": [
   0.158,
   0.3,
   0.225
  ],
- "colours": 7,
+ "colours": 1,
  "palette": {
   "m0": [
-   "#2d000f",
-   "#3b000f",
-   "#49000c",
-   "#570007",
+   "#140007",
+   "#3d000a",
    "#640101",
-   "#991004",
-   "#cd2909",
-   "#f2511c",
-   "#f28954"
+   "#f63812",
+   "#facab2"
+  ],
+  "m1": [
+   "#140007",
+   "#3d000a",
+   "#640101",
+   "#f63812",
+   "#facab2"
+  ],
+  "m2": [
+   "#140007",
+   "#3d000a",
+   "#640101",
+   "#f63812",
+   "#facab2"
+  ],
+  "m3": [
+   "#140007",
+   "#3d000a",
+   "#640101",
+   "#f63812",
+   "#facab2"
+  ],
+  "m4": [
+   "#140007",
+   "#3d000a",
+   "#640101",
+   "#f63812",
+   "#facab2"
   ]
  },
  "warnings": []

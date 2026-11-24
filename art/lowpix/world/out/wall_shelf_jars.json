@@ -10,35 +10,48 @@
   "site": "Sketchfab"
  },
  "tris": 1256,
- "tex": 256,
+ "tex": 1024,
  "size": [
   0.548,
   0.56,
   0.204
  ],
- "colours": 11,
+ "colours": 2,
  "palette": {
   "m0": [
-   "#81656e",
-   "#9f8c91",
-   "#bdb5b6",
-   "#dddbdb",
-   "#ffffff",
-   "#ffffff",
+   "#0f003d",
+   "#1f00b8",
+   "#3333ff",
+   "#889bfc",
+   "#d8e4fd"
+  ],
+  "m1": [
+   "#382e31",
+   "#9e9496",
    "#ffffff",
    "#ffffff",
    "#ffffff"
   ],
-  "m1": [
-   "#22008a",
-   "#2d00b4",
-   "#2500de",
-   "#1d09ff",
+  "m2": [
+   "#382e31",
+   "#9e9496",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ],
+  "m3": [
+   "#0f003d",
+   "#1f00b8",
    "#3333ff",
-   "#5260fc",
-   "#7087fb",
-   "#8da8fa",
-   "#a9c4f9"
+   "#889bfc",
+   "#d8e4fd"
+  ],
+  "m4": [
+   "#382e31",
+   "#9e9496",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
   ]
  },
  "warnings": []

@@ -1850,9 +1850,7 @@
    "ppm": 240,
    "tris": 1000,
    "name": "sneakers",
-   "prop": "room_shoes",
-   "style": "realistic",
-   "atlas": 1024
+   "prop": "room_shoes"
   },
   {
    "id": "room_boxes",
@@ -1969,9 +1967,7 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Grocery store Shelf",
-   "prop": "goods_shelf",
-   "style": "realistic",
-   "atlas": 1024
+   "prop": "goods_shelf"
   },
   {
    "id": "moon_rock",
@@ -2056,9 +2052,7 @@
    "ppm": 140,
    "tris": 3000,
    "name": "Beverages refrigerator",
-   "prop": "milk_fridge",
-   "style": "realistic",
-   "atlas": 1024
+   "prop": "milk_fridge"
   },
   {
    "id": "call_bell_p",

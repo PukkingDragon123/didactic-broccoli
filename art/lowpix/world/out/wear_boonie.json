@@ -2,43 +2,51 @@
  "id": "wear_boonie",
  "src": "sketchfab:68c6eda73171436b911c77f8e16bdd2d",
  "credit": {
-  "title": "Bucket hat",
-  "author": "landout",
-  "authorUrl": "https://sketchfab.com/landout",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/bucket-hat-68c6eda73171436b911c77f8e16bdd2d",
   "site": "Sketchfab"
  },
  "tris": 1998,
- "tex": 256,
+ "tex": 512,
  "size": [
   0.084,
   0.12,
   0.096
  ],
- "colours": 16,
+ "colours": 33803,
  "palette": {
   "m0": [
-   "#212013",
-   "#2a2a1a",
-   "#313222",
-   "#383a2a",
-   "#3e4232",
-   "#5b5e4c",
-   "#777967",
-   "#919186",
-   "#a8a8a5"
+   "#130f0b",
+   "#363024",
+   "#57533f",
+   "#9f9f87",
+   "#ddddd9"
   ],
   "m1": [
-   "#1e0705",
-   "#270d07",
-   "#2f140a",
-   "#371b0d",
-   "#3f2410",
-   "#6c461e",
-   "#986d2e",
-   "#c09740",
-   "#ccb670"
+   "#070607",
+   "#151314",
+   "#222222",
+   "#7a7a7a",
+   "#d3d3d3"
+  ],
+  "m2": [
+   "#0e0d08",
+   "#29291b",
+   "#3e4130",
+   "#94947c",
+   "#d9d9d5"
+  ],
+  "m3": [
+   "#090805",
+   "#1a1810",
+   "#29291d",
+   "#8a8a6c",
+   "#d6d6d0"
+  ],
+  "m4": [
+   "#0e120b",
+   "#2d3524",
+   "#4e5540",
+   "#999d89",
+   "#dcdcd9"
   ]
  },
  "warnings": []

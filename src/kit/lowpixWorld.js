@@ -417,7 +417,7 @@ export const LP_WORLD = {
   umbrella_stand: { size: [0.546, 0.89, 0.575], credit: "Umbrellas holder with umbrellas by MCStevebrine12 (CC BY 4.0)" },
   utility_box: { size: [0.52, 1.12, 0.432], credit: "Utility Box 01 by James Ray Cock (CC0 1.0)" },
   utility_box2: { size: [0.92, 1.12, 0.431], credit: "Utility Box 02 by James Ray Cock (CC0 1.0)" },
-  utility_sink: { size: [8.801, 0.97, 6.139], credit: "Utility Sink by Janet Peña (CC BY 4.0)" },
+  utility_sink: { size: [0.754, 0.62, 0.55], credit: "Utility Sink by Janet Peña (CC BY 4.0)" },
   vacuum_dock_m: { size: [0.289, 0.11, 0.206], credit: "Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb) (CC0 1.0)" },
   vase_brass: { size: [0.228, 0.692, 0.228], credit: "Brass Vase 01 by Rico Cilliers (CC0 1.0)" },
   vase_ceramic: { size: [0.25, 0.44, 0.25], credit: "Antique Ceramic Vase 01 by James Ray Cock (CC0 1.0)" },
