@@ -30,8 +30,8 @@ const GradeShader = {
     uTime: { value: 0 },
     uVignette: { value: 0.12 },
     uGrain: { value: 0.02 },
-    uSaturation: { value: 1.0 },
-    uContrast: { value: 1.06 },
+    uSaturation: { value: 0.86 },
+    uContrast: { value: 0.9 },
     uWarm: { value: 0.004 },
     // the floor the shadows are lifted to (linear, added to the darkest tones and fading out by the mid-tones)
     uLift: { value: new THREE.Color(0.004, 0.004, 0.005) },
@@ -418,7 +418,7 @@ function casterState(o) {
 export const QUALITY = {
   verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null, gi: { single: true, env: false, shadow: false, ms: 1.5 }, giSoft: 2, shadowSoft: 1 },
   low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 }, gi: { single: true, env: false, shadow: false, ms: 2 }, giSoft: 3, shadowSoft: 1.5 },
-  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: true, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, max: 180, ms: 2 }, giSoft: 4, shadowSoft: 2 },
+  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: false, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, max: 180, ms: 2 }, giSoft: 4, shadowSoft: 2 },
   high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.6, max: 220, ms: 2 }, giSoft: 5, shadowSoft: 2.5 },
   ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.5, max: 320, ms: 2 }, giSoft: 6, shadowSoft: 3 },
 };
@@ -460,6 +460,8 @@ export class Renderer {
     this.scene = scene;
     this.camera = camera;
     this.gi.setup(scene);
+    // the room bounce volume darkened the interiors: the owner prefers the bright, clean look (src/gfx/roomGI.js kept, off)
+    this.gi.enabled = false;
     this.buildComposer();
     window.addEventListener('resize', () => this.resize());
     this.resize();
@@ -523,16 +525,16 @@ export class Renderer {
         gtao.output = GTAOPass.OUTPUT.Off;
         this.outline.uniforms.uDepthAlpha.value = 1;
       }
-      gtao.blendIntensity = 0.95; // (contact shadows where props meet floors and walls; the probe volume does the room-scale darkening)
-      gtao.updateGtaoMaterial({ radius: 0.5, distanceExponent: 1.6, thickness: 1.2, scale: 1.0, samples: q.aoSamples || 12, distanceFallOff: 1.0 });
+      gtao.blendIntensity = 0.7; // (soft: the owner's look keeps contact shadows light, and high stays close to low, which has none)
+      gtao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.5, thickness: 1.5, scale: 1.0, samples: 12, distanceFallOff: 1.0 });
       // (the denoise radius is in AO pixels: the same footprint on screen at any scale)
       gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6 * k, rings: 2, samples: 12 });
       composer.addPass(gtao);
       this.gtao = gtao;
     }
     // eye adaptation: measured on the lit HDR frame (before the lens and the bloom), applied in the grade
-    this.adapt = new AdaptPass(this.camera);
-    composer.addPass(this.adapt);
+    // (off: the owner prefers the steady, bright exposure; AdaptPass stays available)
+    this.adapt = null;
     // the lens: depth of field + motion blur, on the HDR frame before the bloom (the depth is in alpha from here)
     if (q.lens) {
       this.outline.uniforms.uDepthAlpha.value = 1;
@@ -553,7 +555,7 @@ export class Renderer {
     const fold = r.toneMapping === THREE.NeutralToneMapping && r.outputColorSpace === THREE.SRGBColorSpace;
     this.grade = new ShaderPass(fold ? GradeOutputShader : GradeShader);
     this.grade.material.toneMapped = false;
-    this.grade.uniforms.tAdapt.value = this.adapt.texture; this.grade.uniforms.uAdaptOn.value = 1; this.adapt.gradeU = this.grade.uniforms;
+    this.grade.uniforms.uAdaptOn.value = 0;
     this.gradeOutput = fold;
     composer.addPass(this.grade);
     if (!fold) composer.addPass(new OutputPass());

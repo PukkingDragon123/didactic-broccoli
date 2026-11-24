@@ -8,25 +8,49 @@
   "url": "https://polyhaven.com/a/mounted_fluorescent_lights",
   "site": "Poly Haven"
  },
- "tris": 2885,
+ "tris": 5919,
  "tex": 512,
  "size": [
-  0.914,
+  0.912,
   0.035,
-  0.647
+  0.645
  ],
- "colours": 8,
+ "colours": 2948,
  "palette": {
   "m0": [
-   "#5b474e",
-   "#736065",
-   "#8a7b7e",
-   "#9e9899",
-   "#b4b4b4",
-   "#bebebe",
+   "#251c1d",
+   "#6b5c5a",
+   "#a8a3a1",
    "#c9c9c9",
+   "#ededed"
+  ],
+  "m1": [
+   "#201c24",
+   "#625968",
+   "#a29ea3",
+   "#c6c6c6",
+   "#ececec"
+  ],
+  "m2": [
+   "#2a2421",
+   "#787068",
+   "#bcbbb9",
+   "#d6d6d6",
+   "#f1f1f1"
+  ],
+  "m3": [
+   "#151216",
+   "#3e3840",
+   "#656365",
+   "#a2a2a2",
+   "#e0e0e0"
+  ],
+  "m4": [
+   "#282123",
+   "#73686a",
+   "#b6b6b6",
    "#d3d3d3",
-   "#dddddd"
+   "#f0f0f0"
   ]
  },
  "warnings": []

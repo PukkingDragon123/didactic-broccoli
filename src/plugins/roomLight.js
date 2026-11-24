@@ -115,7 +115,7 @@ export function install(game) {
     // pool picks them up while you're inside)
     const pend = () => {
       const g = def('ramen')?.group;
-      if (!g || g.userData.pendants) return;
+      if (!g || g.userData.pendants || !gi.enabled) return; // (with the room lighting off the shop keeps its own lamps)
       const pl = (x, y, z, c, i, d) => { const L = new THREE.PointLight(c, i, d, 2); L.position.set(O.x + x, y, O.z + z); g.add(L); return L; };
       g.userData.pendants = [pl(-1.6, 1.9, 0.2, 0xffe2c0, 4.5, 3.8), pl(1.4, 1.9, 0.2, 0xffe2c0, 4.5, 3.8),
         pl(-1.4, 2.5, 1.55, 0xfff1e0, 6.5, 6), pl(1.5, 2.5, 1.55, 0xfff1e0, 6.5, 6)];

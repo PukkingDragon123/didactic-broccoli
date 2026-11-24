@@ -2,43 +2,56 @@
  "id": "beer_crates",
  "src": "sketchfab:2be722c87cfd404698506f33f575b219",
  "credit": {
-  "title": "Abandoned Beer Crates & Bottles Low Poly",
+  "title": "Abandoned Beer Crates & Bottles Pack",
   "author": "Fevzi_Beydili",
   "authorUrl": "https://sketchfab.com/Fevzi_Beydili",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-low-poly-2be722c87cfd404698506f33f575b219",
+  "url": "https://sketchfab.com/3d-models/abandoned-beer-crates-bottles-pack-2be722c87cfd404698506f33f575b219",
   "site": "Sketchfab"
  },
- "tris": 2972,
+ "tris": 5998,
  "tex": 512,
  "size": [
-  3.817,
+  3.844,
   0.62,
-  2.284
+  2.289
  ],
- "colours": 16,
+ "colours": 2545,
  "palette": {
   "m0": [
-   "#070000",
-   "#090000",
-   "#0b0200",
-   "#0d0301",
-   "#0f0501",
-   "#4d2107",
-   "#8a460e",
-   "#c47418",
-   "#e4a43c"
+   "#020207",
+   "#060a14",
+   "#0b1520",
+   "#4181a5",
+   "#bedce2"
   ],
   "m1": [
-   "#080e3d",
-   "#0b194e",
-   "#10265f",
-   "#14366f",
-   "#1a477e",
-   "#2569a4",
-   "#328fc8",
-   "#5aaed2",
-   "#83c7da"
+   "#04071b",
+   "#0e204f",
+   "#1b487f",
+   "#54a3d4",
+   "#c8e6ef"
+  ],
+  "m2": [
+   "#030000",
+   "#090100",
+   "#0f0501",
+   "#c36213",
+   "#f4d7a7"
+  ],
+  "m3": [
+   "#020309",
+   "#080e19",
+   "#0f1c29",
+   "#4687a8",
+   "#c1dde2"
+  ],
+  "m4": [
+   "#00010d",
+   "#010925",
+   "#04193c",
+   "#1582dd",
+   "#b0e1f5"
   ]
  },
  "warnings": []

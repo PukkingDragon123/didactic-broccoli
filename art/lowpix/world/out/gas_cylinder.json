@@ -2,65 +2,51 @@
  "id": "gas_cylinder",
  "src": "sketchfab:8faeab51bf604cd092e827dc1eb88ff4",
  "credit": {
-  "title": "Metal Gas Cylinder",
-  "author": "TheoClarke",
-  "authorUrl": "https://sketchfab.com/TheoClarke",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/metal-gas-cylinder-8faeab51bf604cd092e827dc1eb88ff4",
   "site": "Sketchfab"
  },
  "tris": 1312,
- "tex": 256,
+ "tex": 512,
  "size": [
   0.233,
   1.25,
   0.233
  ],
- "colours": 27,
+ "colours": 6990,
  "palette": {
   "m0": [
-   "#873953",
-   "#ac4e66",
-   "#bd7883",
-   "#cea1a5",
-   "#e1c9c9",
-   "#e4d3d2",
-   "#e7dcda",
-   "#ebe4e1",
-   "#efebe9"
+   "#250a13",
+   "#6d222e",
+   "#af3e3e",
+   "#d0968a",
+   "#eee0d9"
   ],
   "m1": [
-   "#241c1f",
-   "#2d2628",
-   "#373031",
-   "#3f3b3c",
-   "#474747",
-   "#606060",
-   "#7a7a7a",
-   "#939393",
-   "#acacac"
+   "#100d0e",
+   "#2d2829",
+   "#484747",
+   "#919191",
+   "#dadada"
   ],
   "m2": [
-   "#56152b",
-   "#6e1e32",
-   "#862837",
-   "#9c323b",
-   "#b13e3e",
-   "#bf5e55",
-   "#c68173",
-   "#cfa090",
-   "#d8bbac"
+   "#220b12",
+   "#63242d",
+   "#9f4442",
+   "#c9968a",
+   "#ebe0da"
   ],
   "m3": [
-   "#4c2c11",
-   "#624018",
-   "#765620",
-   "#8a6e29",
-   "#9d8733",
-   "#b9aa41",
-   "#c3bf60",
-   "#cccc81",
-   "#d6d6a1"
+   "#371a23",
+   "#a0545e",
+   "#d9bfbe",
+   "#e7dcda",
+   "#f6f4f3"
+  ],
+  "m4": [
+   "#150b0d",
+   "#3d2525",
+   "#614741",
+   "#a69287",
+   "#e0dcd9"
   ]
  },
  "warnings": []
