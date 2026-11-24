@@ -1756,7 +1756,7 @@ export class Town {
     const crack = this.decal('roadCrack', 32, 32);
     for (const [x, z, sz, r] of [[-22.5, 9.0, 1.4, 0.4], [-16.8, 12.3, 1.1, 2.0], [-6.8, 10.9, 1.5, 1.1], [-1.2, 7.4, 1.0, 2.8], [8.6, 11.6, 1.6, 0.2], [14.3, 9.3, 1.3, 1.9], [22.6, 8.0, 1.5, 0.9], [-12.8, 6.9, 1.0, 1.5], [10.8, 12.9, 0.9, 3.1], [17.6, 7.0, 1.2, 2.4]]) B.plane(crack, sz, sz, x, 0.004, z, { unit: true, ry: r, tint: 0xa8a4a0 });
     // lids: fire hydrant (yellow ring), water valves, square utility covers, one more decorated manhole
-    const lidH = this.decal('lidHydrant', 32, 32, 0.6), lidV = this.decal('lidValve', 12, 12, 0.6), lidS = this.decal('lidSquare', 24, 24, 0.6);
+    const lidH = this.decal('lidHydrant', 32, 32, 0.6), lidV = this.decal('lidValve', 24, 24, 0.6), lidS = this.decal('lidSquare', 24, 24, 0.6);
     for (const [x, z] of [[-10.6, 12.55], [17.2, 6.85]]) B.plane(lidH, 0.62, 0.62, x, 0.005, z, { unit: true, ry: hash2(x, z) * 6 });
     for (const [x, z] of [[-3.9, 12.95], [7.8, 12.9], [-17.9, 6.6], [21.4, 6.72], [11.2, 6.62], [-24.0, 6.7]]) B.plane(lidV, 0.24, 0.24, x, 0.005, z, { unit: true, ry: hash2(z, x) * 6 });
     for (const [x, z] of [[-24.2, 12.75], [14.6, 12.92], [-8.0, 6.72], [9.6, 6.62]]) B.plane(lidS, 0.55, 0.55, x, 0.005, z, { unit: true, ry: Math.round(hash2(x, 1) * 4) * Math.PI / 2 });

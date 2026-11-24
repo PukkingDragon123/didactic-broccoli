@@ -196,7 +196,7 @@ function nearSide(t) {
   // Tanaka's, so a touch smaller (src/vehicles/keiWagon.js); it blocks the footprint the voxel prop did
   {
     // a converted lowpix kei wagon when there is one (art/lowpix/world_arch/_src/vehicles.py), else the vehicle kit's
-    const car = archPlace('kei_wagon', t.group, { x: 6.05, z: 3.15, cast: false }) || keiWagonMesh({ paint: 0x8fb4d4, roof: 0xf2f0e8, dent: false, static: true });
+    const car = archPlace('kei_wagon', t.group, { x: 6.05, z: 3.15, cast: false }) || keiWagonMesh({ paint: 0x7a9ec2, roof: 0xece8dc, dent: false, static: true });
     if (!car.parent) {
       car.scale.setScalar(0.936);
       car.position.set(6.05, 0, 3.15);
