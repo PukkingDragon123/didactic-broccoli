@@ -2695,6 +2695,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Capsule statue (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/capsule_statue_own.glb), CC0 1.0. Shipped as `models/lowpix/world/capsule_statue_own.glb`
 - Cardboard mess by Gacha Garage (made for the game, art/lowpix/world/made/cardboardmess.glb), CC0 1.0. Shipped as `models/lowpix/world/cardboardmess.glb`
 - Cardboard sign on a stick (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/bush_sign.glb), CC0 1.0. Shipped as `models/lowpix/world/bush_sign.glb`
+- Ceramic piggy bank (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/piggy_bank.glb), CC0 1.0. Shipped as `models/lowpix/world/piggy_bank_c.glb`
 - Cigarette (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/cig_own.glb), CC0 1.0. Shipped as `models/lowpix/world/cig_own.glb`
 - Cobweb by Gacha Garage (made for the game, art/lowpix/world/made/cobwebcard.glb), CC0 1.0. Shipped as `models/lowpix/world/cobwebcard.glb`
 - coin changer by Gacha Garage (made for the game, art/lowpix/world/made/coinchanger.glb), CC0 1.0. Shipped as `models/lowpix/world/coinchanger.glb`
@@ -2735,6 +2736,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Morning glory in bloom (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_bloom.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_bloom.glb`
 - Morning glory vine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/asagao_vine.glb), CC0 1.0. Shipped as `models/lowpix/world/asagao_vine.glb`
 - Neon gacha (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/neon_gacha_own.glb), CC0 1.0. Shipped as `models/lowpix/world/neon_gacha_own.glb`
+- Old patched teddy bear (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/teddy_old.glb), CC0 1.0. Shipped as `models/lowpix/world/teddy2.glb`
 - Paint roller (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/roller.glb), CC0 1.0. Shipped as `models/lowpix/world/roller_m.glb`
 - Park clock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/park_clock.glb), CC0 1.0. Shipped as `models/lowpix/world/park_clock_own.glb`
 - Park litter (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/park_litter.glb), CC0 1.0. Shipped as `models/lowpix/world/park_litter_own.glb`
@@ -2762,6 +2764,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0. Shipped as `models/lowpix/world/ashtray_stand.glb`
 - Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
 - Street light by Gacha Garage (made for the game, art/lowpix/world/made/streetlight.glb), CC0 1.0. Shipped as `models/lowpix/world/streetlight.glb`
+- Teddy bear with a red bow (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/teddy.glb), CC0 1.0. Shipped as `models/lowpix/world/teddy.glb`
 - Tiled ofuro with a hinoki rim (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/ofuro_own.glb), CC0 1.0. Shipped as `models/lowpix/world/ofuro_own.glb`
 - tube box by Gacha Garage (made for the game, art/lowpix/world/made/tubebox.glb), CC0 1.0. Shipped as `models/lowpix/world/tubebox.glb`
 - Twin tub (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/twin_tub.glb), CC0 1.0. Shipped as `models/lowpix/world/twin_tub_own.glb`
@@ -3097,7 +3100,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Pet Bowl by furkandgn (https://sketchfab.com/3d-models/pet-bowl-dbf27cb19fba4ba0850cf6076fc17ed5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cat_bowl.glb`
 - pickles by Etman (https://sketchfab.com/3d-models/pickles-4b8c7e8412fb409285528e79b70d1891), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pickle_jar.glb`
 - Pigeon - Low poly by Patryk Chowratowicz (https://sketchfab.com/3d-models/pigeon-low-poly-38eb847b4cf441bcae044605d0562e77), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/pigeon_lp2.glb`
-- Piggy Bank by Fridge (https://sketchfab.com/3d-models/piggy-bank-4cedb14ba59a49498696468e38de982b), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/piggy_bank_c.glb`
 - Planet lamp by Chepix (https://sketchfab.com/3d-models/planet-lamp-0a582da99b314741b7544798478d2978), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/planet_lamp.glb`
 - Plant pots by Vanum-Chan (https://sketchfab.com/3d-models/plant-pots-936c438fc2ab4631ab81cb05af343a9e), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/potted_row.glb`
 - plastic Bag by saruedaacevedo (https://sketchfab.com/3d-models/plastic-bag-b91fdb59320d48189c9d6047a1411836), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/plastic_bag.glb`
@@ -3151,8 +3153,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Taiyaki by patrakeevasveta (https://sketchfab.com/3d-models/taiyaki-a8ca187f40504b9084b9052c569e5122), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/taiyaki.glb`
 - Tansu by Museo de Zaragoza (https://sketchfab.com/3d-models/tansu-48bbd9962cc04725907c14a1a98fb812), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tansu.glb`
 - Tau Noodle Cup by Squishy (https://sketchfab.com/3d-models/tau-noodle-cup-74399ab3073d47d196621eecee0bfad3), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/cup_noodle2.glb`
-- Teddy bear by Etman (https://sketchfab.com/3d-models/teddy-bear-cee94954353d4e19a388e3ed4c8e64a7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/teddy2.glb`
-- Teddy Bear by theacidrose (https://sketchfab.com/3d-models/teddy-bear-dae9249342744328ad6da4182e6010f7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/teddy.glb`
 - The cap is leather. peaked visor by ToxaGrom (https://sketchfab.com/3d-models/the-cap-is-leather-peaked-visor-70a949de921345c183204528adc5c4b7), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_peaked.glb`
 - Tokkuri by ColorfulPlanet (https://sketchfab.com/3d-models/tokkuri-db39173abbfc4fe78eeaca4687c07a9a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tokkuri.glb`
 - Tomato plant by ellievaskali (https://sketchfab.com/3d-models/tomato-plant-60d3cb49e21d46cf81f1e7e295793102), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tomato_plant2.glb`

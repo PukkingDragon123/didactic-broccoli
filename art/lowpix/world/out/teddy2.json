@@ -1,57 +1,54 @@
 {
  "id": "teddy2",
- "src": "sketchfab:cee94954353d4e19a388e3ed4c8e64a7",
+ "src": "art/lowpix/world/made/teddy_old.glb",
  "credit": {
-  "title": "Teddy bear",
-  "author": "Etman",
-  "authorUrl": "https://sketchfab.com/Etman",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/teddy-bear-cee94954353d4e19a388e3ed4c8e64a7",
-  "site": "Sketchfab"
+  "title": "Old patched teddy bear (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/teddy_old.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 1999,
- "tex": 512,
+ "tris": 1636,
+ "tex": 432,
  "size": [
-  0.109,
+  0.202,
   0.25,
-  0.296
+  0.204
  ],
- "colours": 61743,
+ "colours": 19,
  "palette": {
   "m0": [
-   "#1d1211",
-   "#543e35",
-   "#87715e",
-   "#b6aea0",
-   "#e5e4e1"
+   "#43241f",
+   "#56342a",
+   "#674637",
+   "#785944",
+   "#886c52",
+   "#9c8566",
+   "#a99b81",
+   "#b7af9c",
+   "#c6c3b5"
   ],
   "m1": [
-   "#050303",
-   "#0e0b0a",
-   "#171412",
-   "#7b736a",
-   "#d1d1cf"
+   "#9b460e",
+   "#c86b15",
+   "#e4942c",
+   "#e7b65d",
+   "#ecd28c",
+   "#edde9e",
+   "#eee8af",
+   "#f0efbf",
+   "#f3f3cf"
   ],
   "m2": [
-   "#2a1b16",
-   "#7a5b45",
-   "#b5a38a",
-   "#d0cbbc",
-   "#eeeeea"
-  ],
-  "m3": [
-   "#0a0103",
-   "#1c0406",
-   "#2d0b08",
-   "#c24f29",
-   "#edcdb6"
-  ],
-  "m4": [
-   "#190f0e",
-   "#48332e",
-   "#735e51",
-   "#aca295",
-   "#e2e1dd"
+   "#363467",
+   "#474a84",
+   "#5c649f",
+   "#7c87ae",
+   "#9ca6be",
+   "#acb5c5",
+   "#bbc3cc",
+   "#c9cfd4",
+   "#d7dbdd"
   ]
  },
  "warnings": []

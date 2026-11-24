@@ -4918,22 +4918,21 @@
  },
  "piggy_bank_c": {
   "id": "piggy_bank_c",
-  "name": "Piggy Bank",
-  "src": "sketchfab:4cedb14ba59a49498696468e38de982b",
-  "title": "Piggy Bank",
-  "author": "Fridge",
-  "authorUrl": "https://sketchfab.com/youssefdarwish01",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/piggy-bank-4cedb14ba59a49498696468e38de982b",
-  "site": "Sketchfab",
-  "tris": 2000,
-  "tex": 368,
+  "name": "Ceramic piggy bank (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/piggy_bank.glb",
+  "title": "Ceramic piggy bank (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/piggy_bank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1984,
+  "tex": 400,
   "size": [
-   0.22,
+   0.139,
    0.16,
-   0.147
+   0.249
   ],
-  "bytes": 38696
+  "bytes": 43104
  },
  "pinkphone": {
   "id": "pinkphone",
@@ -7077,41 +7076,39 @@
  },
  "teddy": {
   "id": "teddy",
-  "name": "Teddy Bear",
-  "src": "sketchfab:dae9249342744328ad6da4182e6010f7",
-  "title": "Teddy Bear",
-  "author": "theacidrose",
-  "authorUrl": "https://sketchfab.com/theacidrose",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/teddy-bear-dae9249342744328ad6da4182e6010f7",
-  "site": "Sketchfab",
-  "tris": 2000,
-  "tex": 384,
+  "name": "Teddy bear with a red bow (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/teddy.glb",
+  "title": "Teddy bear with a red bow (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/teddy.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1942,
+  "tex": 512,
   "size": [
-   0.305,
+   0.233,
    0.3,
-   0.163
+   0.212
   ],
-  "bytes": 53408
+  "bytes": 62352
  },
  "teddy2": {
   "id": "teddy2",
-  "name": "Teddy bear",
-  "src": "sketchfab:cee94954353d4e19a388e3ed4c8e64a7",
-  "title": "Teddy bear",
-  "author": "Etman",
-  "authorUrl": "https://sketchfab.com/Etman",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/teddy-bear-cee94954353d4e19a388e3ed4c8e64a7",
-  "site": "Sketchfab",
-  "tris": 1999,
-  "tex": 352,
+  "name": "Old patched teddy bear (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/teddy_old.glb",
+  "title": "Old patched teddy bear (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/teddy_old.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1636,
+  "tex": 432,
   "size": [
-   0.109,
+   0.202,
    0.25,
-   0.296
+   0.204
   ],
-  "bytes": 47632
+  "bytes": 51524
  },
  "thermos": {
   "id": "thermos",

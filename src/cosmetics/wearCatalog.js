@@ -55,7 +55,7 @@ const F = {
   rubberchicken: { m: 'wear_rubberchicken', w: 19, y: 15.2, z: 2, rz: Math.PI / 2 },
   woodchicken: { m: 'wear_woodchicken', w: 11, y: 15.4, z: 2 },
   duck: { m: 'wear_duck', w: 11, y: 15.6, z: 2 },
-  teddy: { m: 'teddy', w: 12, y: 15.2, z: 2 },
+  teddy: { m: 'teddy', h: 12, y: 15.2, z: 2 }, // (fitted by height: our own seated bear, arms down)
   wagasa: { m: 'wear_wagasa2', w: 26, y: 15.6, z: 2 },
   kokeshi: { m: 'kokeshi2', h: 9, y: 15.6, z: 2 },
   daruma: { m: 'daruma', w: 10, y: 15.6, z: 2 },

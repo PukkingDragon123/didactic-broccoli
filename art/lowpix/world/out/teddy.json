@@ -1,57 +1,65 @@
 {
  "id": "teddy",
- "src": "sketchfab:dae9249342744328ad6da4182e6010f7",
+ "src": "art/lowpix/world/made/teddy.glb",
  "credit": {
-  "title": "Teddy Bear",
-  "author": "theacidrose",
-  "authorUrl": "https://sketchfab.com/theacidrose",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/teddy-bear-dae9249342744328ad6da4182e6010f7",
-  "site": "Sketchfab"
+  "title": "Teddy bear with a red bow (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/teddy.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 2000,
+ "tris": 1942,
  "tex": 512,
  "size": [
-  0.305,
+  0.233,
   0.3,
-  0.163
+  0.212
  ],
- "colours": 39744,
+ "colours": 31,
  "palette": {
   "m0": [
-   "#150807",
-   "#3d1f17",
-   "#623f2a",
-   "#b79369",
-   "#e5dfcf"
+   "#4f0926",
+   "#660e2a",
+   "#7b132c",
+   "#90192c",
+   "#a4202a",
+   "#c52c2b",
+   "#d35447",
+   "#d9806d",
+   "#dfa591"
   ],
   "m1": [
-   "#1b0c0a",
-   "#4e2e21",
-   "#7d5a3b",
-   "#bba57f",
-   "#e7e4d6"
+   "#541f12",
+   "#6b301a",
+   "#824422",
+   "#975b2c",
+   "#ac7436",
+   "#c19248",
+   "#c8aa68",
+   "#d0bf88",
+   "#d9d2a5"
   ],
   "m2": [
-   "#190908",
-   "#4a251a",
-   "#774c2f",
-   "#bf9d70",
-   "#e8e2d1"
+   "#b2052e",
+   "#e50a2c",
+   "#f33442",
+   "#f46c6b",
+   "#f6a8a0",
+   "#f6bbae",
+   "#f6cbbc",
+   "#f7d9ca",
+   "#f8e5d7"
   ],
   "m3": [
-   "#1f1310",
-   "#594034",
-   "#8e755d",
-   "#bab19f",
-   "#e6e5e1"
-  ],
-  "m4": [
-   "#0b0606",
-   "#201614",
-   "#332924",
-   "#908071",
-   "#d8d6d2"
+   "#2d0a09",
+   "#39110c",
+   "#451b10",
+   "#512615",
+   "#5c321a",
+   "#835128",
+   "#a97439",
+   "#c29856",
+   "#ceb680"
   ]
  },
  "warnings": []

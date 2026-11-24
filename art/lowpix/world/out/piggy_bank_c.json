@@ -1,57 +1,98 @@
 {
  "id": "piggy_bank_c",
- "src": "sketchfab:4cedb14ba59a49498696468e38de982b",
+ "src": "art/lowpix/world/made/piggy_bank.glb",
  "credit": {
-  "title": "Piggy Bank",
-  "author": "Fridge",
-  "authorUrl": "https://sketchfab.com/youssefdarwish01",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/piggy-bank-4cedb14ba59a49498696468e38de982b",
-  "site": "Sketchfab"
+  "title": "Ceramic piggy bank (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/piggy_bank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 2000,
- "tex": 512,
+ "tris": 1984,
+ "tex": 400,
  "size": [
-  0.22,
+  0.139,
   0.16,
-  0.147
+  0.249
  ],
- "colours": 4,
+ "colours": 52,
  "palette": {
   "m0": [
-   "#2f0f20",
-   "#883352",
-   "#c47383",
-   "#d9aeaf",
-   "#f1e7e5"
+   "#171017",
+   "#1d151d",
+   "#231b22",
+   "#292127",
+   "#2e282c",
+   "#4b4549",
+   "#666465",
+   "#828282",
+   "#a0a0a0"
   ],
   "m1": [
-   "#2b0b1a",
-   "#7e243f",
-   "#c44a5a",
-   "#d89896",
-   "#f1e1dd"
+   "#813607",
+   "#a6530c",
+   "#c97712",
+   "#e79d1d",
+   "#e8ba46",
+   "#e8ce62",
+   "#eadd7d",
+   "#ece998",
+   "#efefb1"
   ],
   "m2": [
-   "#50000c",
-   "#ef0300",
-   "#ffa490",
-   "#fdd4be",
-   "#fef4ea"
+   "#4f2934",
+   "#653841",
+   "#7a484e",
+   "#8e595b",
+   "#9e706e",
+   "#a88985",
+   "#b3a09b",
+   "#c0b5b0",
+   "#cdc7c4"
   ],
   "m3": [
-   "#020101",
-   "#040404",
-   "#070707",
-   "#6a6a6a",
-   "#cdcdcd"
+   "#b7391f",
+   "#da653e",
+   "#e29b77",
+   "#ecc8af",
+   "#f8eee4",
+   "#f9f2e8",
+   "#f9f5ec",
+   "#faf8f0",
+   "#fbfaf4"
   ],
   "m4": [
-   "#2f0f20",
-   "#883352",
-   "#c47383",
-   "#d9aeaf",
-   "#f1e7e5"
+   "#9f125a",
+   "#cc1b67",
+   "#e13d76",
+   "#e66e8e",
+   "#ec9eac",
+   "#edadb3",
+   "#efbbbc",
+   "#f1ccc9",
+   "#f3dbd6"
+  ],
+  "m5": [
+   "#1c4025",
+   "#26522e",
+   "#316336",
+   "#3d733e",
+   "#4e824a",
+   "#66995d",
+   "#84a878",
+   "#9fb695",
+   "#b8c5b0"
+  ],
+  "m6": [
+   "#641031",
+   "#811738",
+   "#9c1f3c",
+   "#b7283d",
+   "#ce343e",
+   "#d15553",
+   "#d67c71",
+   "#dc9d8e",
+   "#e2b9aa"
   ]
  },
  "warnings": []

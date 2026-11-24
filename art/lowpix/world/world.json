@@ -2609,14 +2609,15 @@
   },
   {
    "id": "piggy_bank_c",
-   "src": "sketchfab:4cedb14ba59a49498696468e38de982b",
+   "src": "art/lowpix/world/made/piggy_bank.glb",
    "h": 0.16,
    "ppm": 600,
    "tris": 2000,
    "cap": 512,
-   "name": "Piggy Bank",
-   "style": "realistic",
-   "atlas": 1024
+   "ramps": 12,
+   "grain": 0,
+   "detail": 1.0,
+   "name": "Ceramic piggy bank (our own model, hand-painted)"
   },
   {
    "id": "fridge_old",
@@ -2664,25 +2665,27 @@
   },
   {
    "id": "teddy",
-   "src": "sketchfab:dae9249342744328ad6da4182e6010f7",
+   "src": "art/lowpix/world/made/teddy.glb",
    "h": 0.3,
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Teddy Bear",
-   "style": "realistic",
-   "atlas": 1024
+   "ramps": 12,
+   "grain": 0,
+   "detail": 1.0,
+   "name": "Teddy bear with a red bow (our own model, hand-painted)"
   },
   {
    "id": "teddy2",
-   "src": "sketchfab:cee94954353d4e19a388e3ed4c8e64a7",
+   "src": "art/lowpix/world/made/teddy_old.glb",
    "h": 0.25,
    "ppm": 500,
    "tris": 2000,
    "cap": 512,
-   "name": "Teddy bear",
-   "style": "realistic",
-   "atlas": 1024
+   "ramps": 12,
+   "grain": 0,
+   "detail": 1.0,
+   "name": "Old patched teddy bear (our own model, hand-painted)"
   },
   {
    "id": "toy_train",
