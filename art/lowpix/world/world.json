@@ -15,8 +15,9 @@
   {
    "id": "tv_wood",
    "src": "polyhaven:Television_01",
-   "cap": 512,
-   "tris": 1000
+   "cap": 1024,
+   "tris": 1000,
+   "ppm": 240
   },
   {
    "id": "boombox",
@@ -151,7 +152,9 @@
   {
    "id": "box_cardboard",
    "src": "polyhaven:cardboard_box_01",
-   "tris": 1000
+   "tris": 1000,
+   "ppm": 340,
+   "cap": 1024
   },
   {
    "id": "bin_metal",
@@ -199,7 +202,8 @@
   {
    "id": "chalkboard",
    "src": "polyhaven:standing_chalkboard_01",
-   "ppm": 160
+   "ppm": 270,
+   "cap": 1024
   },
   {
    "id": "hand_truck",
@@ -1256,7 +1260,7 @@
    "h": 0.925,
    "ppm": 180,
    "tris": 3000,
-   "name": "Car Barricade 2\u3000\u8eca\u6b62\u3081\u30dd\u30fc\u30eb \u30d0\u30ea\u30ab\u30fc",
+   "name": "Car Barricade 2　車止めポール バリカー",
    "prop": "bollard_u"
   },
   {
@@ -1629,7 +1633,7 @@
    "h": 2.256,
    "ppm": 140,
    "tris": 600,
-   "name": "Stop sign (\u6b62\u307e\u308c)",
+   "name": "Stop sign (止まれ)",
    "prop": "tomare_sign",
    "cap": 512,
    "grain": 0.0,
@@ -1641,7 +1645,7 @@
    "h": 1.545,
    "ppm": 180,
    "tris": 600,
-   "name": "Shaved-ice flag (\u6c37)",
+   "name": "Shaved-ice flag (氷)",
    "prop": "kakigori_flag",
    "cap": 512,
    "grain": 0.0,
@@ -1653,7 +1657,7 @@
    "h": 0.87,
    "ppm": 200,
    "tris": 800,
-   "name": "Fire buckets (\u6d88\u706b\u7528)",
+   "name": "Fire buckets (消火用)",
    "prop": "fire_buckets",
    "cap": 512,
    "grain": 0.0,
@@ -1665,7 +1669,7 @@
    "h": 2.3,
    "ppm": 140,
    "tris": 800,
-   "name": "Bus stop sign (\u30d0\u30b9\u505c)",
+   "name": "Bus stop sign (バス停)",
    "prop": "bus_stop",
    "cap": 512,
    "grain": 0.0,
@@ -1677,7 +1681,7 @@
    "h": 0.665,
    "ppm": 200,
    "tris": 500,
-   "name": "Standing ashtray (\u7070\u76bf)",
+   "name": "Standing ashtray (灰皿)",
    "prop": "mk_stand_ashtray",
    "grain": 0.0,
    "smooth": 1.0
@@ -1736,7 +1740,7 @@
    "h": 0.74,
    "ppm": 300,
    "tris": 400,
-   "name": "Gas water heater (\u77ac\u9593\u6e6f\u6cb8\u5668)",
+   "name": "Gas water heater (瞬間湯沸器)",
    "prop": "water_heater",
    "cap": 512,
    "grain": 0.0,
@@ -1760,7 +1764,7 @@
    "h": 0.024,
    "ppm": 600,
    "tris": 60,
-   "name": "Coin tray (\u30ab\u30eb\u30c8\u30f3)",
+   "name": "Coin tray (カルトン)",
    "prop": "coin_tray",
    "cap": 256,
    "grain": 0.0,
@@ -1772,7 +1776,7 @@
    "h": 0.525,
    "ppm": 300,
    "tris": 400,
-   "name": "Shopfront bench (\u7e01\u53f0)",
+   "name": "Shopfront bench (縁台)",
    "prop": "shop_bench",
    "cap": 512,
    "grain": 0.0,
@@ -1784,7 +1788,7 @@
    "h": 0.96,
    "ppm": 300,
    "tris": 500,
-   "name": "Pink phone (\u30d4\u30f3\u30af\u96fb\u8a71)",
+   "name": "Pink phone (ピンク電話)",
    "prop": "pink_phone",
    "cap": 512,
    "grain": 0.0,
@@ -1940,7 +1944,7 @@
    "h": 1.74,
    "ppm": 200,
    "tris": 1500,
-   "name": "Garbage station (\u3054\u307f\u96c6\u7a4d\u6240)",
+   "name": "Garbage station (ごみ集積所)",
    "prop": "garbage_station",
    "cap": 512,
    "grain": 0.0,
@@ -2935,7 +2939,7 @@
    "ppm": 400,
    "tris": 2500,
    "cap": 512,
-   "name": "Fenshui Oil\u2011Paper Umbrella (Luzhou, Chin"
+   "name": "Fenshui Oil‑Paper Umbrella (Luzhou, Chin"
   },
   {
    "id": "wear_paperbag",
@@ -3124,7 +3128,7 @@
    "ppm": 600,
    "tris": 2500,
    "cap": 512,
-   "name": "Stuffed animal of Shark (\u30b5\u30e1\u306e\u306c\u3044\u3050\u308b\u307f)"
+   "name": "Stuffed animal of Shark (サメのぬいぐるみ)"
   },
   {
    "id": "wear_frog",
@@ -3214,7 +3218,7 @@
    "ppm": 500,
    "tris": 200,
    "cap": 512,
-   "name": "Japan Retro \"Shogi\" Free / \u65e5\u672c \u30ec\u30c8\u30ed \"\u5c06\u68cb\" \u7121"
+   "name": "Japan Retro \"Shogi\" Free / 日本 レトロ \"将棋\" 無"
   },
   {
    "id": "mahjong",
@@ -3286,7 +3290,7 @@
    "ppm": 700,
    "tris": 3000,
    "cap": 512,
-   "name": "Low Poly Bento | \u5f01\u5f53"
+   "name": "Low Poly Bento | 弁当"
   },
   {
    "id": "bento_sushi",
@@ -3358,7 +3362,7 @@
    "ppm": 600,
    "tris": 1000,
    "cap": 512,
-   "name": "NVA PITH HELMET - M\u0169 C\u1ed1i Sao V\u00e0ng"
+   "name": "NVA PITH HELMET - Mũ Cối Sao Vàng"
   },
   {
    "id": "wagon_trolley",
@@ -3502,7 +3506,7 @@
    "ppm": 700,
    "tris": 2400,
    "cap": 512,
-   "name": "Kagami-mochi\ud83d\udcae\ud83d\udcf7"
+   "name": "Kagami-mochi💮📷"
   },
   {
    "id": "wear_eyepatch",
