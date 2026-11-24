@@ -1689,8 +1689,8 @@ const TYPE_2X = new Set(['nobori', 'openPlate', 'clearance', 'clearancePlate', '
   'signSnatch', 'enamelSoap', 'enamelRamune', 'enamelUniform', 'signDog', 'tobidashi', 'signGarage', 'noticeBoard', 'signPiano',
   'signMilk', 'parkName', 'parkArrow', 'wcSign', 'parkRules', 'kishibe', 'forSale', 'danger', 'pylonPlate', 'closedSign',
   'villaNo', 'chalk', 'tobaccoWin', 'otaFudosan', 'aptRecruit', 'forRent', 'babySign', 'patrolNote', 'aptNos', 'closedNotice',
-  'pigeonBoard']);
-const TYPE_4X = new Set(['closedSign']); // two lines of type in a 16 px tall plate
+  'pigeonBoard', 'namesL']);
+const TYPE_4X = new Set(['closedSign', 'aptRecruit']); // several lines of type in a tiny plate
 export function townPix(key, w, h) {
   const ck = key + w + 'x' + h;
   if (!townCache.has(ck)) {

@@ -1,33 +1,110 @@
 {
  "id": "cupcake",
- "src": "sketchfab:43b8a378e7a74898855fe0075215aa48",
+ "src": "sketchfab:d48216d6294648a49e92463a18f62e70",
  "credit": {
-  "title": "Extra Chocolate Marshmallow Cupcake",
-  "author": "jtressle",
-  "authorUrl": "https://sketchfab.com/jtressle",
+  "title": "Hand painted cupcake",
+  "author": "Anna Espenstein",
+  "authorUrl": "https://sketchfab.com/Anna.Espenstein",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/extra-chocolate-marshmallow-cupcake-43b8a378e7a74898855fe0075215aa48",
+  "url": "https://sketchfab.com/3d-models/hand-painted-cupcake-d48216d6294648a49e92463a18f62e70",
   "site": "Sketchfab"
  },
- "tris": 2999,
- "tex": 336,
+ "tris": 2500,
+ "tex": 512,
  "size": [
-  0.908,
+  0.618,
   0.96,
-  0.917
+  0.632
  ],
- "colours": 8,
+ "colours": 64,
  "palette": {
   "m0": [
-   "#2f191a",
-   "#3b2323",
-   "#48302c",
-   "#533d37",
-   "#5e4a42",
-   "#776459",
-   "#8f7f72",
-   "#a1998f",
-   "#b5b1ac"
+   "#b61287",
+   "#e51f9c",
+   "#e859a8",
+   "#ee90bc",
+   "#f5c6d8",
+   "#f6cfda",
+   "#f6d7de",
+   "#f7dfe2",
+   "#f9e7e8"
+  ],
+  "m1": [
+   "#70205e",
+   "#902c71",
+   "#ae3a80",
+   "#c1538d",
+   "#ca769b",
+   "#cf8ba3",
+   "#d4a0ae",
+   "#dbb4bb",
+   "#e2c6c9"
+  ],
+  "m2": [
+   "#541d15",
+   "#6c2e1d",
+   "#824226",
+   "#985931",
+   "#ad713c",
+   "#be8d51",
+   "#c5a670",
+   "#cebc8d",
+   "#d7ceaa"
+  ],
+  "m3": [
+   "#5f090b",
+   "#7a130d",
+   "#942513",
+   "#ad3a19",
+   "#c55321",
+   "#d97434",
+   "#dc9657",
+   "#e0b27a",
+   "#e5ca9b"
+  ],
+  "m4": [
+   "#413337",
+   "#524448",
+   "#625759",
+   "#726b6c",
+   "#808080",
+   "#919191",
+   "#a3a3a3",
+   "#b4b4b4",
+   "#c6c6c6"
+  ],
+  "m5": [
+   "#86087f",
+   "#ac0e97",
+   "#d114a8",
+   "#e62aae",
+   "#e854af",
+   "#e96eaf",
+   "#ea87b4",
+   "#eca0bc",
+   "#efb7c7"
+  ],
+  "m6": [
+   "#aa309b",
+   "#ca53b2",
+   "#d788c1",
+   "#e7bcd7",
+   "#f8edf3",
+   "#f9f0f4",
+   "#f9f2f5",
+   "#faf5f7",
+   "#fbf8f8"
+  ],
+  "m7": [
+   "#851b02",
+   "#ab3305",
+   "#cf500a",
+   "#f07413",
+   "#ef9a3d",
+   "#eeb45a",
+   "#efca77",
+   "#f0db93",
+   "#f2e8ad"
   ]
  },
  "warnings": []

@@ -4,8 +4,28 @@
   "license": "CC0-1.0",
   "metres": 1.0
  },
+ "asphalt_01": {
+  "source": "https://polyhaven.com/a/asphalt_01",
+  "license": "CC0-1.0",
+  "metres": 2.08
+ },
+ "asphalt_02": {
+  "source": "https://polyhaven.com/a/asphalt_02",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "asphalt_04": {
+  "source": "https://polyhaven.com/a/asphalt_04",
+  "license": "CC0-1.0",
+  "metres": 4.04
+ },
  "beige_wall_001": {
   "source": "https://polyhaven.com/a/beige_wall_001",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "beige_wall_002": {
+  "source": "https://polyhaven.com/a/beige_wall_002",
   "license": "CC0-1.0",
   "metres": 3.0
  },
@@ -19,10 +39,20 @@
   "license": "CC0-1.0",
   "metres": 2.5
  },
+ "brown_planks_08": {
+  "source": "https://polyhaven.com/a/brown_planks_08",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
  "brushed_concrete": {
   "source": "https://polyhaven.com/a/brushed_concrete",
   "license": "CC0-1.0",
   "metres": 2.5
+ },
+ "caban": {
+  "source": "https://polyhaven.com/a/caban",
+  "license": "CC0-1.0",
+  "metres": 0.274
  },
  "cherry_veneer": {
   "source": "https://polyhaven.com/a/cherry_veneer",
@@ -31,6 +61,11 @@
  },
  "clay_floor_001": {
   "source": "https://polyhaven.com/a/clay_floor_001",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "clay_plaster": {
+  "source": "https://polyhaven.com/a/clay_plaster",
   "license": "CC0-1.0",
   "metres": 2.0
  },
@@ -49,6 +84,11 @@
   "license": "CC0-1.0",
   "metres": 3.0
  },
+ "concrete_wall_004": {
+  "source": "https://polyhaven.com/a/concrete_wall_004",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
  "concrete_wall_006": {
   "source": "https://polyhaven.com/a/concrete_wall_006",
   "license": "CC0-1.0",
@@ -59,8 +99,18 @@
   "license": "CC0-1.0",
   "metres": 2.7
  },
+ "dirt": {
+  "source": "https://polyhaven.com/a/dirt",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
  "granite_tile_04": {
   "source": "https://polyhaven.com/a/granite_tile_04",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "gravel": {
+  "source": "https://polyhaven.com/a/gravel",
   "license": "CC0-1.0",
   "metres": 2.0
  },
@@ -68,6 +118,21 @@
   "source": "https://polyhaven.com/a/green_metal_rust",
   "license": "CC0-1.0",
   "metres": 1.0
+ },
+ "grey_roof_tiles": {
+  "source": "https://polyhaven.com/a/grey_roof_tiles",
+  "license": "CC0-1.0",
+  "metres": 3.0
+ },
+ "grey_roof_tiles_02": {
+  "source": "https://polyhaven.com/a/grey_roof_tiles_02",
+  "license": "CC0-1.0",
+  "metres": 1.5
+ },
+ "hessian_380": {
+  "source": "https://polyhaven.com/a/hessian_380",
+  "license": "CC0-1.0",
+  "metres": 0.274
  },
  "hinoki_planks": {
   "source": "https://polyhaven.com/a/hinoki_planks",
@@ -79,13 +144,38 @@
   "license": "CC0-1.0",
   "metres": 1.13
  },
+ "knitted_fleece": {
+  "source": "https://polyhaven.com/a/knitted_fleece",
+  "license": "CC0-1.0",
+  "metres": 0.266
+ },
  "marble_01": {
   "source": "https://polyhaven.com/a/marble_01",
   "license": "CC0-1.0",
   "metres": 1.5
  },
+ "marble_tiles": {
+  "source": "https://polyhaven.com/a/marble_tiles",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "oak_veneer_01": {
+  "source": "https://polyhaven.com/a/oak_veneer_01",
+  "license": "CC0-1.0",
+  "metres": 1.83
+ },
  "oak_veneer_02": {
   "source": "https://polyhaven.com/a/oak_veneer_02",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
+ "oak_veneer_05": {
+  "source": "https://polyhaven.com/a/oak_veneer_05",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
+ "okoume_veneer": {
+  "source": "https://polyhaven.com/a/okoume_veneer",
   "license": "CC0-1.0",
   "metres": 1.0
  },
@@ -94,9 +184,54 @@
   "license": "CC0-1.0",
   "metres": 2.0
  },
+ "painted_plaster_wall": {
+  "source": "https://polyhaven.com/a/painted_plaster_wall",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "plywood": {
+  "source": "https://polyhaven.com/a/plywood",
+  "license": "CC0-1.0",
+  "metres": 0.5
+ },
+ "rocky_trail_02": {
+  "source": "https://polyhaven.com/a/rocky_trail_02",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "rusty_corrugated_iron": {
+  "source": "https://polyhaven.com/a/rusty_corrugated_iron",
+  "license": "CC0-1.0",
+  "metres": 2.0
+ },
+ "rusty_metal_02": {
+  "source": "https://polyhaven.com/a/rusty_metal_02",
+  "license": "CC0-1.0",
+  "metres": 1.0
+ },
  "rusty_painted_metal": {
   "source": "https://polyhaven.com/a/rusty_painted_metal",
   "license": "CC0-1.0",
   "metres": 2.2
+ },
+ "sand_01": {
+  "source": "https://polyhaven.com/a/sand_01",
+  "license": "CC0-1.0",
+  "metres": 1.5
+ },
+ "tatami_mat": {
+  "source": "https://polyhaven.com/a/tatami_mat",
+  "license": "CC0-1.0",
+  "metres": 1.8
+ },
+ "terlenka": {
+  "source": "https://polyhaven.com/a/terlenka",
+  "license": "CC0-1.0",
+  "metres": 0.266
+ },
+ "weathered_planks": {
+  "source": "https://polyhaven.com/a/weathered_planks",
+  "license": "CC0-1.0",
+  "metres": 2.0
  }
 }

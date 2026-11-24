@@ -968,11 +968,11 @@
   },
   {
    "id": "tires",
-   "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
+   "src": "art/lowpix/world/made/tyres.glb",
    "h": 0.57,
-   "ppm": 180,
+   "ppm": 240,
    "tris": 1000,
-   "name": "Old, dirty, stacked tires, PBR textures ",
+   "name": "Stacked tyres (our own model, hand-painted)",
    "prop": "tires"
   },
   {
@@ -3630,15 +3630,6 @@
    "name": "Band Aid"
   },
   {
-   "id": "band_aid2",
-   "src": "sketchfab:68fac0e06ece412098eaae249c5e2639",
-   "h": 0.01,
-   "ppm": 1500,
-   "tris": 172,
-   "cap": 512,
-   "name": "Bandaid"
-  },
-  {
    "id": "pigeon_lp2",
    "src": "sketchfab:38eb847b4cf441bcae044605d0562e77",
    "h": 0.25,
@@ -3648,15 +3639,6 @@
    "name": "Pigeon - Low poly"
   },
   {
-   "id": "candy_wrap",
-   "src": "sketchfab:4c4641cae8544bb38488778548da34ed",
-   "h": 0.03,
-   "ppm": 1200,
-   "tris": 960,
-   "cap": 512,
-   "name": "Candy Wrapper"
-  },
-  {
    "id": "gumball_machine",
    "src": "sketchfab:4fccac6257d64c3680bd81fc8f34675d",
    "h": 0.4,
@@ -3664,15 +3646,6 @@
    "tris": 3000,
    "cap": 512,
    "name": "Vintage Gum Ball Machine"
-  },
-  {
-   "id": "gumball_machine2",
-   "src": "sketchfab:bc3fcd22766d4f7d9c9d12145093ab95",
-   "h": 0.4,
-   "ppm": 400,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Gum Ball Machine"
   },
   {
    "id": "milk_carton2",
@@ -3691,15 +3664,6 @@
    "tris": 969,
    "cap": 512,
    "name": "Japanese Garden Bench"
-  },
-  {
-   "id": "bench_street",
-   "src": "sketchfab:b910b6a02c31444e935f324073565070",
-   "h": 0.45,
-   "ppm": 300,
-   "tris": 1348,
-   "cap": 512,
-   "name": "Street Wooden Bench"
   },
   {
    "id": "tomato_plant",
@@ -3792,60 +3756,6 @@
    "name": "Condiment Bottles Set | Crafted by jerov"
   },
   {
-   "id": "pot_mg",
-   "src": "sketchfab:8b58098d88d24378aa2be6db224c6893",
-   "h": 0.35,
-   "ppm": 500,
-   "tris": 3000,
-   "cap": 512,
-   "name": "Blender Three Rendering Two:morning glor"
-  },
-  {
-   "id": "aa_pack",
-   "src": "sketchfab:748312706f3444488cb5f66e43f3f364",
-   "h": 0.1,
-   "ppm": 700,
-   "tris": 800,
-   "cap": 512,
-   "name": "2x Battteryes AA Package"
-  },
-  {
-   "id": "heater_gas",
-   "src": "sketchfab:63221a93315c4e4e9b3ed8234ff026e7",
-   "h": 0.62,
-   "ppm": 400,
-   "tris": 2000,
-   "cap": 512,
-   "name": "Soviet gas water heater KGI-56"
-  },
-  {
-   "id": "trash_pile",
-   "src": "sketchfab:a441c0d002bc49a59237f8003b5a7eb8",
-   "h": 0.08,
-   "ppm": 500,
-   "tris": 600,
-   "cap": 512,
-   "name": "Pile of Trash and Garbage - 3 Piece Set"
-  },
-  {
-   "id": "candy_display",
-   "src": "sketchfab:b78cd4d26e164ef0ba11b0d11985a1a0",
-   "h": 0.9,
-   "ppm": 300,
-   "tris": 2500,
-   "cap": 512,
-   "name": "Candy Display"
-  },
-  {
-   "id": "candy_sweet",
-   "src": "sketchfab:6b3f5b44f4f54e0ab29bf88690603e0d",
-   "h": 0.025,
-   "ppm": 1500,
-   "tris": 600,
-   "cap": 256,
-   "name": "Candy"
-  },
-  {
    "id": "gumball_m",
    "src": "art/lowpix/world/made/gumball.glb",
    "h": 0.022,
@@ -3907,6 +3817,15 @@
    "tris": 600,
    "cap": 256,
    "name": "Kamidana (our own model, hand-painted)"
+  },
+  {
+   "id": "candy_own",
+   "src": "art/lowpix/world/made/candy_own.glb",
+   "h": 0.018,
+   "ppm": 2400,
+   "tris": 300,
+   "cap": 128,
+   "name": "Wrapped fruit candy (our own model, hand-painted)"
   }
  ]
 }

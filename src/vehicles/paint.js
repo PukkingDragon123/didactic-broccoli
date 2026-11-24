@@ -33,8 +33,9 @@ export function carPaint(i, j, y, R, o = {}) {
     if (((u + v * 0.7) % 1.15 + 1.15) % 1.15 < 0.07) tv += 0.55;
   } else if (y < sh + px * 2) tv = 3.9; // the shoulder crease catching the light
   else tv = 2.6 + 0.4 * Math.min(1, (y - sh) / Math.max(0.05, top - sh));
-  const k = Math.min(3.999, Math.max(0, tv)), lo = Math.floor(k);
-  let c = dith(i, j, k - lo) ? R[Math.min(4, lo + 1)] : R[lo];
+  // clean bands of the ramp, dithered only in a narrow seam where two steps meet (no all-over speckle)
+  const k = Math.min(3.999, Math.max(0, tv)), lo = Math.floor(k), f = k - lo;
+  let c = f > 0.62 ? R[Math.min(4, lo + 1)] : f < 0.38 ? R[lo] : (dith(i, j, (f - 0.38) / 0.24) ? R[Math.min(4, lo + 1)] : R[lo]);
   // road grime up from the sills
   const gh = o.grime ?? 0.16;
   if (y < sill + gh) { const g = 1 - (y - sill) / gh; if (dith(i + 2, j + 1, g * 0.7)) c = mix(c, o.dirt ?? 0x5a4c3e, 0.45); }

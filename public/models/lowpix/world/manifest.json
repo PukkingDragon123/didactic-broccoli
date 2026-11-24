@@ -165,6 +165,25 @@
   ],
   "bytes": 40100
  },
+ "band_aid": {
+  "id": "band_aid",
+  "name": "Band Aid",
+  "src": "sketchfab:1728a97697d94d2f8c5cb910c5f213ce",
+  "title": "Band Aid",
+  "author": "way2mind",
+  "authorUrl": "https://sketchfab.com/way2mind",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/band-aid-1728a97697d94d2f8c5cb910c5f213ce",
+  "site": "Sketchfab",
+  "tris": 200,
+  "tex": 496,
+  "size": [
+   0.62,
+   0.01,
+   0.18
+  ],
+  "bytes": 47928
+ },
  "basket": {
   "id": "basket",
   "name": "Wicker Basket 01",
@@ -276,6 +295,25 @@
    2.284
   ],
   "bytes": 160720
+ },
+ "bench_jp": {
+  "id": "bench_jp",
+  "name": "Japanese Garden Bench",
+  "src": "sketchfab:df71b965d0ba4a9596375133ac785e21",
+  "title": "Japanese Garden Bench",
+  "author": "Anastasiia Shevchenko",
+  "authorUrl": "https://sketchfab.com/chertpaderi",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/japanese-garden-bench-df71b965d0ba4a9596375133ac785e21",
+  "site": "Sketchfab",
+  "tris": 969,
+  "tex": 512,
+  "size": [
+   0.85,
+   0.45,
+   0.299
+  ],
+  "bytes": 50908
  },
  "bench_station": {
   "id": "bench_station",
@@ -558,6 +596,25 @@
   ],
   "bytes": 22084
  },
+ "breaker_lever_m": {
+  "id": "breaker_lever_m",
+  "name": "Old Circiut Breaker Lever",
+  "src": "sketchfab:48dae899a38c4b04a7b6f7c017c9d95a",
+  "title": "Old Circiut Breaker Lever",
+  "author": "Serkan ÇINAR",
+  "authorUrl": "https://sketchfab.com/mr.cserkan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/old-circiut-breaker-lever-48dae899a38c4b04a7b6f7c017c9d95a",
+  "site": "Sketchfab",
+  "tris": 2493,
+  "tex": 512,
+  "size": [
+   0.142,
+   0.3,
+   0.522
+  ],
+  "bytes": 68532
+ },
  "broom": {
   "id": "broom",
   "name": "Wooden Broom",
@@ -666,6 +723,25 @@
    0.3
   ],
   "bytes": 30104
+ },
+ "button_m": {
+  "id": "button_m",
+  "name": "Simple Button",
+  "src": "sketchfab:c43d7365730c4d15ad20181b31d4d363",
+  "title": "Simple Button",
+  "author": "Blender3D",
+  "authorUrl": "https://sketchfab.com/Blender3D",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/simple-button-c43d7365730c4d15ad20181b31d4d363",
+  "site": "Sketchfab",
+  "tris": 2996,
+  "tex": 512,
+  "size": [
+   0.142,
+   0.02,
+   0.142
+  ],
+  "bytes": 51424
  },
  "cabinet_cn": {
   "id": "cabinet_cn",
@@ -815,6 +891,24 @@
    0.936
   ],
   "bytes": 56900
+ },
+ "candy_own": {
+  "id": "candy_own",
+  "name": "Wrapped fruit candy (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/candy_own.glb",
+  "title": "Wrapped fruit candy (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/candy_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 252,
+  "tex": 128,
+  "size": [
+   0.047,
+   0.018,
+   0.02
+  ],
+  "bytes": 13528
  },
  "capsulereturn": {
   "id": "capsulereturn",
@@ -1258,6 +1352,25 @@
   ],
   "bytes": 18692
  },
+ "cig_butt": {
+  "id": "cig_butt",
+  "name": "cigarette butt",
+  "src": "sketchfab:72bd63eb0024404aa8e72c6ae15cebd9",
+  "title": "cigarette butt",
+  "author": "gbraithwaite",
+  "authorUrl": "https://sketchfab.com/gbraithwaite",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cigarette-butt-72bd63eb0024404aa8e72c6ae15cebd9",
+  "site": "Sketchfab",
+  "tris": 252,
+  "tex": 112,
+  "size": [
+   0.01,
+   0.01,
+   0.038
+  ],
+  "bytes": 5772
+ },
  "clock_alarm": {
   "id": "clock_alarm",
   "name": "Alarm Clock 01",
@@ -1403,6 +1516,25 @@
   ],
   "bytes": 7044
  },
+ "condiments": {
+  "id": "condiments",
+  "name": "Condiment Bottles Set | Crafted by jerov",
+  "src": "sketchfab:42d35a5caa574e21adf9ad082f860705",
+  "title": "Condiment Bottles Set | Crafted by jerovdl",
+  "author": "Jerovdl",
+  "authorUrl": "https://sketchfab.com/Jerovdl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/condiment-bottles-set-crafted-by-jerovdl-42d35a5caa574e21adf9ad082f860705",
+  "site": "Sketchfab",
+  "tris": 2956,
+  "tex": 256,
+  "size": [
+   0.116,
+   0.15,
+   0.076
+  ],
+  "bytes": 50364
+ },
  "cone": {
   "id": "cone",
   "name": "Worn Traffic Cone",
@@ -1515,22 +1647,22 @@
  },
  "cupcake": {
   "id": "cupcake",
-  "name": "Extra Chocolate Marshmallow Cupcake",
-  "src": "sketchfab:43b8a378e7a74898855fe0075215aa48",
-  "title": "Extra Chocolate Marshmallow Cupcake",
-  "author": "jtressle",
-  "authorUrl": "https://sketchfab.com/jtressle",
+  "name": "Hand painted cupcake",
+  "src": "sketchfab:d48216d6294648a49e92463a18f62e70",
+  "title": "Hand painted cupcake",
+  "author": "Anna Espenstein",
+  "authorUrl": "https://sketchfab.com/Anna.Espenstein",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/extra-chocolate-marshmallow-cupcake-43b8a378e7a74898855fe0075215aa48",
+  "url": "https://sketchfab.com/3d-models/hand-painted-cupcake-d48216d6294648a49e92463a18f62e70",
   "site": "Sketchfab",
-  "tris": 2999,
-  "tex": 336,
+  "tris": 2500,
+  "tex": 512,
   "size": [
-   0.908,
+   0.618,
    0.96,
-   0.917
+   0.632
   ],
-  "bytes": 116484
+  "bytes": 71180
  },
  "cutting_board": {
   "id": "cutting_board",
@@ -2556,6 +2688,25 @@
   ],
   "bytes": 7516
  },
+ "gumball_machine": {
+  "id": "gumball_machine",
+  "name": "Vintage Gum Ball Machine",
+  "src": "sketchfab:4fccac6257d64c3680bd81fc8f34675d",
+  "title": "Vintage Gum Ball Machine",
+  "author": "gozdemrl",
+  "authorUrl": "https://sketchfab.com/gozdemrl",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/vintage-gum-ball-machine-4fccac6257d64c3680bd81fc8f34675d",
+  "site": "Sketchfab",
+  "tris": 2928,
+  "tex": 512,
+  "size": [
+   0.197,
+   0.4,
+   0.209
+  ],
+  "bytes": 91500
+ },
  "hair_dryer": {
   "id": "hair_dryer",
   "name": "Hair Dryer",
@@ -2802,22 +2953,22 @@
  },
  "jizo_shrine": {
   "id": "jizo_shrine",
-  "name": "Jizo statue in Kyoto - MTSU Animation",
-  "src": "sketchfab:08f07b04c4384f8fa9b75e8203d9f26f",
-  "title": "Jizo statue in Kyoto - MTSU Animation",
-  "author": "MTSU Animation Virtual Production",
-  "authorUrl": "https://sketchfab.com/fusion",
+  "name": "Jizo Shrine",
+  "src": "sketchfab:a5b25c6de844459ba118fe54e880fde6",
+  "title": "Jizo Shrine",
+  "author": "cornylope",
+  "authorUrl": "https://sketchfab.com/cornylope",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/jizo-statue-in-kyoto-mtsu-animation-08f07b04c4384f8fa9b75e8203d9f26f",
+  "url": "https://sketchfab.com/3d-models/jizo-shrine-a5b25c6de844459ba118fe54e880fde6",
   "site": "Sketchfab",
-  "tris": 2999,
-  "tex": 512,
+  "tris": 2997,
+  "tex": 292,
   "size": [
-   1.209,
+   2.054,
    1.305,
-   1.197
+   1.367
   ],
-  "bytes": 90972
+  "bytes": 117004
  },
  "junk_box": {
   "id": "junk_box",
@@ -2966,6 +3117,25 @@
    0.246
   ],
   "bytes": 26016
+ },
+ "keychain_m": {
+  "id": "keychain_m",
+  "name": "Key & Keychain",
+  "src": "sketchfab:a552734ef6834a74b3084a89c6dab17d",
+  "title": "Key & Keychain",
+  "author": "tonken",
+  "authorUrl": "https://sketchfab.com/tonken",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/key-keychain-a552734ef6834a74b3084a89c6dab17d",
+  "site": "Sketchfab",
+  "tris": 2995,
+  "tex": 176,
+  "size": [
+   0.041,
+   0.08,
+   0.044
+  ],
+  "bytes": 51320
  },
  "kokeshi": {
   "id": "kokeshi",
@@ -3541,7 +3711,7 @@
    0.2,
    0.091
   ],
-  "bytes": 37248
+  "bytes": 37472
  },
  "milk_fridge": {
   "id": "milk_fridge",
@@ -3656,22 +3826,22 @@
  },
  "mk_cigar_box": {
   "id": "mk_cigar_box",
-  "name": "Red Dot Cigar Box",
-  "src": "sketchfab:bf5152c1f1fc44f4a81dbca1d502304c",
-  "title": "Red Dot Cigar Box",
-  "author": "IU Indianapolis University Library",
-  "authorUrl": "https://sketchfab.com/IUI-UniversityLibrary",
+  "name": "Cigar Box",
+  "src": "sketchfab:06349eb24202462ba553dbbe23766100",
+  "title": "Cigar Box",
+  "author": "wesmcquillen",
+  "authorUrl": "https://sketchfab.com/wesmcquillen",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/red-dot-cigar-box-bf5152c1f1fc44f4a81dbca1d502304c",
+  "url": "https://sketchfab.com/3d-models/cigar-box-06349eb24202462ba553dbbe23766100",
   "site": "Sketchfab",
-  "tris": 1000,
-  "tex": 288,
+  "tris": 440,
+  "tex": 256,
   "size": [
-   0.694,
-   0.21,
-   0.445
+   0.247,
+   0.06,
+   0.147
   ],
-  "bytes": 29436
+  "bytes": 41132
  },
  "mk_ema": {
   "id": "mk_ema",
@@ -4296,6 +4466,25 @@
    0.103
   ],
   "bytes": 69112
+ },
+ "pigeon_lp2": {
+  "id": "pigeon_lp2",
+  "name": "Pigeon - Low poly",
+  "src": "sketchfab:38eb847b4cf441bcae044605d0562e77",
+  "title": "Pigeon - Low poly",
+  "author": "Patryk Chowratowicz",
+  "authorUrl": "https://sketchfab.com/Zszywacz",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/pigeon-low-poly-38eb847b4cf441bcae044605d0562e77",
+  "site": "Sketchfab",
+  "tris": 752,
+  "tex": 512,
+  "size": [
+   0.375,
+   0.25,
+   0.135
+  ],
+  "bytes": 25464
  },
  "piggy_bank_c": {
   "id": "piggy_bank_c",
@@ -5400,6 +5589,25 @@
   ],
   "bytes": 64416
  },
+ "shelf_wall4": {
+  "id": "shelf_wall4",
+  "name": "CC0 - Wall Shelf 4",
+  "src": "sketchfab:8732f5e14a30461f83bcb34a9101cbc0",
+  "title": "CC0 - Wall Shelf 4",
+  "author": "plaggy",
+  "authorUrl": "https://sketchfab.com/plaggy",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/cc0-wall-shelf-4-8732f5e14a30461f83bcb34a9101cbc0",
+  "site": "Sketchfab",
+  "tris": 352,
+  "tex": 128,
+  "size": [
+   0.105,
+   0.12,
+   0.043
+  ],
+  "bytes": 9884
+ },
  "shell_giant": {
   "id": "shell_giant",
   "name": "Lambis Shell",
@@ -6257,6 +6465,44 @@
    0.262
   ],
   "bytes": 7172
+ },
+ "tomato_plant": {
+  "id": "tomato_plant",
+  "name": "Tomato Plant",
+  "src": "sketchfab:e0b559690e384fc0a9f3a05913f609c4",
+  "title": "Tomato Plant",
+  "author": "zvanstone",
+  "authorUrl": "https://sketchfab.com/zvanstone",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tomato-plant-e0b559690e384fc0a9f3a05913f609c4",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 368,
+  "size": [
+   0.332,
+   0.5,
+   0.283
+  ],
+  "bytes": 68052
+ },
+ "tomato_plant2": {
+  "id": "tomato_plant2",
+  "name": "Tomato plant",
+  "src": "sketchfab:60d3cb49e21d46cf81f1e7e295793102",
+  "title": "Tomato plant",
+  "author": "ellievaskali",
+  "authorUrl": "https://sketchfab.com/ellievaskali",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/tomato-plant-60d3cb49e21d46cf81f1e7e295793102",
+  "site": "Sketchfab",
+  "tris": 2999,
+  "tex": 512,
+  "size": [
+   0.377,
+   0.5,
+   0.374
+  ],
+  "bytes": 130628
  },
  "tool_chest": {
   "id": "tool_chest",

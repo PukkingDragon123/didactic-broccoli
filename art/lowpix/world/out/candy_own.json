@@ -1,0 +1,55 @@
+{
+ "id": "candy_own",
+ "src": "art/lowpix/world/made/candy_own.glb",
+ "credit": {
+  "title": "Wrapped fruit candy (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/candy_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 252,
+ "tex": 128,
+ "size": [
+  0.047,
+  0.018,
+  0.02
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#630b2c",
+   "#801131",
+   "#9b1832",
+   "#b51f31",
+   "#ce282e",
+   "#d74b44",
+   "#da7464",
+   "#df9784",
+   "#e5b6a3"
+  ],
+  "m1": [
+   "#8d424f",
+   "#af6066",
+   "#c18c8c",
+   "#d6bab7",
+   "#ece2e0",
+   "#eee7e5",
+   "#f0ecea",
+   "#f3f0ee",
+   "#f5f4f2"
+  ],
+  "m2": [
+   "#9a1541",
+   "#c51f48",
+   "#dd3d57",
+   "#e26d76",
+   "#e99b9b",
+   "#eab0aa",
+   "#ecc2b9",
+   "#efd1c7",
+   "#f2dfd5"
+  ]
+ },
+ "warnings": []
+}

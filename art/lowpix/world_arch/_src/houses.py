@@ -195,7 +195,7 @@ class House:
             cs.append([u + ww * 0.2, cy - 0.1, self.D / 2, 0.06])
         if not cs:
             return []
-        return [{'id': f'streak{floor}', 'op': 'spots', 'centers': cs, 'stretch': [0.6, 5.0, 0.6], 'shift': -0.7, 'faces': ['front']}]
+        return [{'id': f'streak{floor}', 'op': 'spots', 'centers': cs, 'stretch': [0.5, 6.0, 0.5], 'shift': -0.35, 'roughness': 0.15, 'faces': ['front']}]
 
     def top_guess(self):
         o = self.o

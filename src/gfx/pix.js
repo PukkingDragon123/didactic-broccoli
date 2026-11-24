@@ -12,7 +12,7 @@ export const FONT_JP = '"DotGothic16", "Pixelify Sans"';
 export const FONT_EN = '"Alagard", "DotGothic16", "Pixelify Sans"';
 export const FONT_DISPLAY = '"Alagard", "DotGothic16", "Pixelify Sans"';
 export const FONT_KEY = '"Alagard", "Pixelify Sans", "DotGothic16"';
-const ALAGARD = /Alagard|GG Display|GG Bold|DotGothic16/; // the pixel faces, crisp only on their 16 px grid
+const ALAGARD = /Alagard|GG Display|GG Bold/;
 /** Alagard's crisp size for a requested size (never under its native 16 px). */
 export function crispSize(size, font) {
   if (!ALAGARD.test(font)) return size;
@@ -147,7 +147,8 @@ export class Pix {
     const font = opts.font || FONT_JP, K = this.k;
     // on a finer grid (k > 1) the type is set at twice the asked size in texels (8 -> Alagard's native 16), never
     // more: a k = 4 retry keeps that size and so gains room
-    const size = crispSize((opts.size || 16) * (K > 1 ? 2 : 1), font);
+    let size = crispSize((opts.size || 16) * (K > 1 ? 2 : 1), font);
+    if (K > 1 && /DotGothic16/.test(font)) size = 16 * Math.max(1, Math.round((size - 1) / 16)); // its native grid too
     const tmp = document.createElement('canvas');
     const tctx = tmp.getContext('2d', { willReadFrequently: true });
     tctx.font = `${opts.weight || ''} ${size}px ${font}`;

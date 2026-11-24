@@ -67,6 +67,16 @@ export const ATTACH = {
     { face: '+z', u0: -1.52, u1: -0.58, y0: 2.22, y1: 2.9 }, // Grandpa's kamidana (the charm shelf)
     { face: '+z', u0: -1.98, u1: -1.58, y0: 2.2, y1: 2.8 }, // the lucky rake
     { face: '+x', u0: 2.9, u1: 4.35, y0: 0, y1: 2.1 }, // Grandpa's workbench and the jar shelf over it
+    // Grandpa's things round the walls (src/plugins/garageDressing.js)
+    { face: '+x', u0: -4.65, u1: -1.58, y0: 1.85, y1: 2.62 }, // stock shelves over the machine row
+    { face: '+x', u0: 2.9, u1: 4.9, y0: 2.0, y1: 3.1 }, // the bicycle hung over the workbench
+    { face: '-x', u0: -3.1, u1: -1.3, y0: 1.0, y1: 1.95 }, // jar shelf, calendar, mirror
+    { face: '-x', u0: 0.1, u1: 0.6, y0: 1.05, y1: 1.8 }, // a poster between the wall shelves' slots
+    { face: '-x', u0: 1.9, u1: 2.4, y0: 1.05, y1: 1.8 }, // and another
+    { face: '-x', u0: 3.7, u1: 4.95, y0: 0, y1: 2.2 }, // the fire alarm and the steel shelving unit
+    { face: '+z', u0: 1.85, u1: 2.35, y0: 1.8, y1: 2.5 }, // a poster over the sink
+    { face: '+z', u0: 2.88, u1: 3.43, y0: 1.9, y1: 2.4 }, // the dartboard
+    { face: '+z', u0: -1.16, u1: -0.86, y0: 1.45, y1: 1.65 }, // the opening-hours card
   ],
   keepClear: [
     { a: [0.4, 5.2], b: [0.4, 4.2], r: 0.45 }, // in under the shutter

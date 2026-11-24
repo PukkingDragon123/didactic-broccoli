@@ -105,7 +105,7 @@ export function installGIShader() {
 // ------------------------------------------------------------------ the onBeforeCompile hook
 const OWN = Symbol('ggOnBeforeCompile');
 const WRAP = new WeakMap();
-const LIT = (m) => m.isMeshStandardMaterial || m.isMeshLambertMaterial || m.isMeshPhongMaterial;
+const LIT = (m) => !!m && (m.isMeshStandardMaterial || m.isMeshLambertMaterial || m.isMeshPhongMaterial);
 function inject(m, shader) {
   if (!LIT(m)) return;
   Object.assign(shader.uniforms, GI);
@@ -114,7 +114,7 @@ function inject(m, shader) {
 function wrap(fn) {
   let w = WRAP.get(fn);
   if (!w) {
-    w = function (shader, renderer) { fn.call(this, shader, renderer); inject(this, shader); };
+    w = function (shader, renderer) { fn.call(this, shader, renderer); if (this) inject(this, shader); }; // (called bare by a wrapping hook: the outer material injects)
     const src = 'gg-gi|' + fn.toString();
     w.toString = () => src; // (Material.customProgramCacheKey: one key per original function, as before)
     w.ggOriginal = fn;

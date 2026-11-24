@@ -1,0 +1,56 @@
+{
+ "id": "keychain_m",
+ "src": "sketchfab:a552734ef6834a74b3084a89c6dab17d",
+ "credit": {
+  "title": "Key & Keychain",
+  "author": "tonken",
+  "authorUrl": "https://sketchfab.com/tonken",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/key-keychain-a552734ef6834a74b3084a89c6dab17d",
+  "site": "Sketchfab"
+ },
+ "tris": 2995,
+ "tex": 176,
+ "size": [
+  0.041,
+  0.08,
+  0.044
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#39051c",
+   "#49081f",
+   "#590b20",
+   "#680f20",
+   "#76131e",
+   "#9f1d21",
+   "#c73128",
+   "#d75f4c",
+   "#de8f78"
+  ],
+  "m1": [
+   "#4a0626",
+   "#5f0a2a",
+   "#730e2c",
+   "#86132c",
+   "#99192a",
+   "#bd232a",
+   "#d63d37",
+   "#db6f60",
+   "#e19988"
+  ],
+  "m2": [
+   "#3c312e",
+   "#4c423e",
+   "#5b5450",
+   "#6a6562",
+   "#777675",
+   "#898989",
+   "#9c9c9c",
+   "#afafaf",
+   "#c1c1c1"
+  ]
+ },
+ "warnings": []
+}

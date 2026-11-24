@@ -9,7 +9,7 @@
 // scene so it never pokes into walls.
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { Pass } from 'three/addons/postprocessing/Pass.js';
+import { Pass, FullScreenQuad } from 'three/addons/postprocessing/Pass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -38,6 +38,8 @@ const GradeShader = {
     uFlash: { value: new THREE.Color(0, 0, 0) },
     uAberration: { value: 0.0006 },
     uExposure: { value: 1.0 },
+    // eye adaptation (AdaptPass): a 1x1 texture holding the exposure factor the eye has settled on
+    tAdapt: { value: null }, uAdaptOn: { value: 0 },
     // body state (src/needs/Needs.js through renderer.fx): tired (a darker, duller edge), lid (eyelids closing from top and
     // bottom), double (drunk double vision: a second, offset copy), wobble (drunk: the picture sways)
     uTired: { value: 0 }, uLid: { value: 0 }, uDouble: { value: 0 }, uWobble: { value: 0 },
@@ -47,8 +49,8 @@ const GradeShader = {
     varying vec2 vUv;
     void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
-    uniform sampler2D tDiffuse;
-    uniform float uTime, uVignette, uGrain, uSaturation, uContrast, uWarm, uAberration, uExposure;
+    uniform sampler2D tDiffuse, tAdapt;
+    uniform float uTime, uVignette, uGrain, uSaturation, uContrast, uWarm, uAberration, uExposure, uAdaptOn;
     uniform float uTired, uLid, uDouble, uWobble;
     uniform vec3 uFlash, uLift;
     varying vec2 vUv;
@@ -68,7 +70,7 @@ const GradeShader = {
         col = mix(col, texture2D(tDiffuse, uv + d2).rgb, 0.42 * min(1.0, uDouble * 1.6));
       }
       if (any(isnan(col)) || any(isinf(col))) col = vec3(0.0); // (never a NaN into the frame: see the black-frame guard)
-      col *= uExposure;
+      col *= uExposure * (uAdaptOn > 0.5 ? texture2D(tAdapt, vec2(0.5)).r : 1.0);
       // pastel: saturation down (tired: duller still)
       float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
       col = mix(vec3(l), col, uSaturation * (1.0 - 0.35 * uTired));
@@ -275,6 +277,84 @@ const AOUpsampleShader = {
     }`,
 };
 
+// Eye adaptation: the frame's average brightness (log luminance, centre-weighted, from a 16x16 grid of 4x4 samples)
+// steers an exposure factor that eases toward it over about a second: step into a dim room and it opens up, look out
+// at the sunlit lane and it closes down. Only part of the difference is made up (STRENGTH), so a night room still
+// reads darker than noon. The factor lives in a 1x1 half-float texture the grade reads (no read-back, no stall).
+const ADAPT = { KEY: 0.34, STRENGTH: 0.55, MIN: 0.62, MAX: 2.1, SPEED: 1.6 };
+const LumShader = {
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: /* glsl */`varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D tDiffuse; varying vec2 vUv;
+    void main() {
+      float acc = 0.0;
+      for (int j = 0; j < 4; j++) for (int i = 0; i < 4; i++) {
+        vec2 uv = vUv + (vec2(float(i), float(j)) - 1.5) / 64.0;
+        vec3 c = texture2D(tDiffuse, uv).rgb;
+        float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+        if (isnan(l) || isinf(l)) l = 0.0;
+        acc += log2(clamp(l, 1e-3, 64.0));
+      }
+      vec2 d = (vUv - 0.5) * vec2(1.6, 2.0);
+      float w = 0.25 + exp(-dot(d, d) * 2.5);
+      gl_FragColor = vec4(acc / 16.0 * w, w, 0.0, 1.0);
+    }`,
+};
+const AdaptShader = {
+  uniforms: { tLum: { value: null }, tPrev: { value: null }, uK: { value: 1 }, uSnap: { value: 1 }, uKey: { value: ADAPT.KEY }, uStrength: { value: ADAPT.STRENGTH }, uMin: { value: ADAPT.MIN }, uMax: { value: ADAPT.MAX } },
+  vertexShader: /* glsl */`void main() { gl_Position = vec4(position.xy, 0.0, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D tLum, tPrev; uniform float uK, uSnap, uKey, uStrength, uMin, uMax;
+    void main() {
+      vec2 s = vec2(0.0);
+      for (int j = 0; j < 16; j++) for (int i = 0; i < 16; i++) s += texelFetch(tLum, ivec2(i, j), 0).rg;
+      float lum = exp2(s.x / max(s.y, 1e-4));
+      float target = clamp(pow(uKey / max(lum, 1e-4), uStrength), uMin, uMax);
+      float prev = texelFetch(tPrev, ivec2(0), 0).r;
+      float e = (uSnap > 0.5 || !(prev > 0.0) || isnan(prev)) ? target : mix(prev, target, uK);
+      gl_FragColor = vec4(e, lum, target, 1.0);
+    }`,
+};
+const _adaptCam = new THREE.Vector3();
+class AdaptPass extends Pass {
+  constructor(camera) {
+    super();
+    this.needsSwap = false;
+    this.camera = camera;
+    const o = { type: THREE.HalfFloatType, depthBuffer: false, minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, generateMipmaps: false };
+    this.lum = new THREE.WebGLRenderTarget(16, 16, o);
+    this.rt = [new THREE.WebGLRenderTarget(1, 1, o), new THREE.WebGLRenderTarget(1, 1, o)];
+    this.lumQuad = new FullScreenQuad(new THREE.ShaderMaterial({ ...LumShader, uniforms: THREE.UniformsUtils.clone(LumShader.uniforms), depthTest: false, depthWrite: false }));
+    this.adaptQuad = new FullScreenQuad(new THREE.ShaderMaterial({ ...AdaptShader, uniforms: THREE.UniformsUtils.clone(AdaptShader.uniforms), depthTest: false, depthWrite: false }));
+    this.snap = true;
+    this.pos = new THREE.Vector3(1e9, 0, 0);
+  }
+  get texture() { return this.rt[0].texture; }
+  render(renderer, writeBuffer, readBuffer, dt) {
+    // (a cut, a door or a teleport: the eye is already used to the new place)
+    this.camera.getWorldPosition(_adaptCam);
+    if (_adaptCam.distanceToSquared(this.pos) > 6) this.snap = true;
+    this.pos.copy(_adaptCam);
+    const ac = renderer.autoClear;
+    renderer.autoClear = false;
+    this.lumQuad.material.uniforms.tDiffuse.value = readBuffer.texture;
+    renderer.setRenderTarget(this.lum);
+    this.lumQuad.render(renderer);
+    this.rt.reverse();
+    const u = this.adaptQuad.material.uniforms;
+    u.tLum.value = this.lum.texture; u.tPrev.value = this.rt[1].texture;
+    u.uK.value = 1 - Math.exp(-Math.min(0.25, dt || 0) * ADAPT.SPEED);
+    u.uSnap.value = this.snap ? 1 : 0;
+    renderer.setRenderTarget(this.rt[0]);
+    this.adaptQuad.render(renderer);
+    renderer.autoClear = ac;
+    if (this.gradeU) this.gradeU.tAdapt.value = this.rt[0].texture;
+    this.snap = false;
+  }
+  dispose() { this.lum.dispose(); for (const t of this.rt) t.dispose(); this.lumQuad.dispose(); this.adaptQuad.dispose(); }
+}
+
 export const VM_LAYER = 4;
 // the viewmodel is depth-tested as if VM_DEPTH times closer: only clip z changes (x/y, lighting and fog stay true), so it
 // sits in front of any wall the player can touch while depth ratios (ink outlines, creases) stay exactly the same
@@ -450,6 +530,9 @@ export class Renderer {
       composer.addPass(gtao);
       this.gtao = gtao;
     }
+    // eye adaptation: measured on the lit HDR frame (before the lens and the bloom), applied in the grade
+    this.adapt = new AdaptPass(this.camera);
+    composer.addPass(this.adapt);
     // the lens: depth of field + motion blur, on the HDR frame before the bloom (the depth is in alpha from here)
     if (q.lens) {
       this.outline.uniforms.uDepthAlpha.value = 1;
@@ -470,6 +553,7 @@ export class Renderer {
     const fold = r.toneMapping === THREE.NeutralToneMapping && r.outputColorSpace === THREE.SRGBColorSpace;
     this.grade = new ShaderPass(fold ? GradeOutputShader : GradeShader);
     this.grade.material.toneMapped = false;
+    this.grade.uniforms.tAdapt.value = this.adapt.texture; this.grade.uniforms.uAdaptOn.value = 1; this.adapt.gradeU = this.grade.uniforms;
     this.gradeOutput = fold;
     composer.addPass(this.grade);
     if (!fold) composer.addPass(new OutputPass());

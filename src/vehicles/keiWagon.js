@@ -45,7 +45,7 @@ function paintAtlas() {
   V.plate = A.patch('plate', 66, 33); plate(V.plate, { top: 'MORIO 580', num: '21-08', kana: 'sa' });
   for (const [S, sx] of [[V.L, 1], [V.R, -1]]) paintSide(S, sx);
   paintFront(V.F); paintRear(V.B);
-  V.T.A.ink(ROUGH.paint); V.T.box(0, 0, V.T.W, V.T.H, (i, j) => { const R = ROOF || RED, c = Math.abs(i / V.T.W - 0.5), k = c < 0.18 ? 0.75 : c < 0.32 ? 0.45 : 0.15; return dith(i, j, k) ? R[3] : R[2]; }); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
+  V.T.A.ink(ROUGH.paint); V.T.box(0, 0, V.T.W, V.T.H, (i, j) => { const R = ROOF || RED, c = Math.abs(i / V.T.W - 0.5); return c < 0.16 ? R[3] : c < 0.19 ? (dith(i, j, 0.5) ? R[3] : R[2]) : R[2]; }); V.T.rect(-0.62, -1.4, 0.62, 0.25, (ROOF || RED)[3]); if (ROOF) V.T.rect(-0.74, 0.32, 0.74, 1.78, RED[2]);
   V.I.A.ink(ROUGH.fabric); V.I.fill(0x3a3c42); V.I.rect(-1.72, 1.45, 1.72, 1.64, 0x8a8880); V.IT.fill(0x8a8880); V.IT.rect(-0.74, -1.72, 0.74, 1.0, 0x34363a);
   return { A, V };
 }

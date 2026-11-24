@@ -36,18 +36,27 @@ export const hdKeys = () => Object.keys(MANIFEST);
 
 export function whenHD() { return Promise.all(Object.keys(MANIFEST).map((k) => image(k).ready)); }
 
+const bases = new Map();
 export function hdTexture(key) {
   const im = image(key);
-  const ok = im.complete && im.naturalWidth > 0;
-  const t = new THREE.Texture(ok ? im : null);
+  if (im.complete && im.naturalWidth > 0) {
+    // one base texture per key, cloned per use: clones share its Source, so the GPU holds one copy of the image
+    let b = bases.get(key);
+    if (!b) { b = setup(new THREE.Texture(im), key); b.needsUpdate = true; bases.set(key, b); }
+    return b.clone();
+  }
+  const t = setup(new THREE.Texture(null), key);
+  im.ready.then((loaded) => { if (loaded) { t.image = im; t.needsUpdate = true; } });
+  return t;
+}
+
+function setup(t, key) {
   t.name = 'hd:' + key;
   t.colorSpace = THREE.SRGBColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.magFilter = THREE.NearestFilter;
   t.minFilter = THREE.LinearMipmapLinearFilter;
   t.anisotropy = 4;
-  if (ok) t.needsUpdate = true;
-  else im.ready.then((loaded) => { if (loaded) { t.image = im; t.needsUpdate = true; } });
   return t;
 }
 

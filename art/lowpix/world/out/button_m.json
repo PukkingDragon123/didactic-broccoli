@@ -1,0 +1,34 @@
+{
+ "id": "button_m",
+ "src": "sketchfab:c43d7365730c4d15ad20181b31d4d363",
+ "credit": {
+  "title": "Simple Button",
+  "author": "Blender3D",
+  "authorUrl": "https://sketchfab.com/Blender3D",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/simple-button-c43d7365730c4d15ad20181b31d4d363",
+  "site": "Sketchfab"
+ },
+ "tris": 2996,
+ "tex": 512,
+ "size": [
+  0.142,
+  0.02,
+  0.142
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#69081e",
+   "#870d1e",
+   "#a4131b",
+   "#bf1f1a",
+   "#da3722",
+   "#de6142",
+   "#e08663",
+   "#e4a683",
+   "#e8c1a2"
+  ]
+ },
+ "warnings": []
+}

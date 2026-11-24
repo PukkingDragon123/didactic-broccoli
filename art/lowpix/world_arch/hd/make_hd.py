@@ -630,21 +630,35 @@ def genkan_tile():
 
 # ------------------------------------------------------------------ the rooms
 def tatami_mat(W, H, horiz, rng, weave):
-    """One tatami mat: igusa weave from the photo (rows across the short side), sun-faded, heri borders down the long
-    edges (dark fabric with a woven pattern), a sewn short edge."""
+    """One tatami mat: the igusa weave painted reed by reed (a lit, a mid and a shaded pixel row per reed, each reed
+    its own tone, straw-coloured dashes along it, the warp stitches across), toned by the photo's large-scale fading;
+    heri borders down the long edges (dark fabric with a woven pattern), a sewn short edge."""
     a = np.zeros((H, W, 3), np.float32)
     base = np.array(L.hexrgb('#c8c27a'), np.float32) * rng.uniform(0.95, 1.05)
+    n_along, n_across = (W, H) if horiz else (H, W)
+    reeds = np.ones((n_across, n_along), np.float32)
+    prof = np.array([1.07, 1.0, 0.86], np.float32)
+    for r in range(0, n_across, 3):
+        tone = rng.uniform(0.95, 1.05)
+        for k in range(3):
+            if r + k < n_across:
+                reeds[r + k] = prof[k] * tone
+        x = 0
+        while x < n_along:  # straw dashes along the reed
+            ln = int(rng.integers(4, 14))
+            if rng.random() < 0.35:
+                reeds[r:r + 2, x:x + ln] *= rng.choice([0.92, 1.06])
+            x += ln
+    for x in range(0, n_along, 14):  # the warp stitches
+        reeds[:, x] *= 0.93
+    if not horiz:
+        reeds = reeds.T
+    # the photo's slow fading (sun, wear): blurred, gentle
     p = L.cut(weave, int(rng.integers(0, weave.shape[1])), int(rng.integers(0, weave.shape[0])), W, H)
-    pl = L.lum(p)
-    d = (pl - pl.mean()) / max(pl.std(), 1e-3)
-    a[:] = base * (1 + np.clip(d, -2.5, 2.5) * 0.08)[..., None]
-    # the weave: a darker line every 3 px across the long axis, stitches every 12 px along it
-    if horiz:
-        a[np.arange(H) % 3 == 0] *= 0.9
-        a[:, np.arange(W) % 14 == 0] *= 0.95
-    else:
-        a[:, np.arange(W) % 3 == 0] *= 0.9
-        a[np.arange(H) % 14 == 0] *= 0.95
+    from PIL import Image as _I, ImageFilter as _F
+    pl = np.asarray(_I.fromarray((np.clip(L.lum(p), 0, 1) * 255).astype(np.uint8)).filter(_F.GaussianBlur(12)), np.float32) / 255
+    fade = 1 + (pl / max(pl.mean(), 1e-3) - 1) * 0.6
+    a[:] = base * (reeds * fade)[..., None]
     hb = max(4, px(0.035))
     heri = np.array(L.hexrgb('#24301e'), np.float32)
     heri2 = np.array(L.hexrgb('#3a4a30'), np.float32)
@@ -666,8 +680,7 @@ def tatami_mat(W, H, horiz, rng, weave):
 
 
 def tatami_weave():
-    w = L.at_ppm(L.photo('tatami_mat'), PPM)
-    return grain_along_x(L.seamless(L.flatten(w, 0.2)))
+    return L.seamless(grain_along_x(L.flatten(L.at_ppm(L.photo('tatami_mat'), PPM), 0.2)))
 
 
 @recipe('tatamiFloor', (3.6, 2.7))
@@ -1148,8 +1161,8 @@ def mall_tile(n):
     a_, b_, g_ = MALL[n]
     rng = np.random.default_rng(700 + n)
     W = H = px(2)
-    face = L.flatten(L.at_ppm(L.photo('marble_tiles'), PPM), 0.3)
-    a, cells = tile_layout(W, H, 4, 4, [a_, b_], rng, face_src=face, face_contrast=0.35, grout=L.hexrgb(g_), gw=2, jitter=0.02)
+    face = L.flatten(L.at_ppm(L.photo('clay_floor_001'), PPM), 0.3)
+    a, cells = tile_layout(W, H, 4, 4, [a_, b_], rng, face_src=face, face_contrast=0.55, grout=L.hexrgb(g_), gw=2, jitter=0.02)
     stains(a, rng, 6, r=(20, 60), f=(0.93, 0.97))
     img, pal = L.pixel_art(np.clip(a, 0, 1), k=22, seed=30 + n, paint=1)
     b = tile_strokes(f32(img), cells, rng, L.hexrgb(g_), gw=2, bevel=(1.06, 0.9), chip=0.02, crackp=0.0)
@@ -1184,11 +1197,11 @@ def sf_asphalt():
     """The lane's road surface: worn asphalt, tar-sealed cracks, an old trench repair, oil drips."""
     rng = np.random.default_rng(1001)
     W = H = px(4)
-    a = surface('asphalt_01', W, H, rng, std=0.12, sat=0.35, blend=('asphalt_04', 0.2))
+    a = surface('asphalt_01', W, H, rng, std=0.2, sat=0.35, blend=('asphalt_04', 0.2))
     stains(a, rng, 12, r=(20, 80), f=(0.86, 0.93))
     x0 = int(rng.integers(0, W))  # a trench repair: darker, smoother band with sealed edges
     a[:, x0:x0 + 70] = a[:, x0:x0 + 70] * 0.86 if x0 + 70 <= W else a[:, x0:x0 + 70]
-    a = L.grade(a, contrast=0.8, gain=(0.97, 0.98, 1.02), mean=(0.33, 0.33, 0.33), sat=0.35)
+    a = L.grade(a, gain=(0.97, 0.98, 1.02), mean=(0.33, 0.33, 0.33), sat=0.35)
     img, pal = L.pixel_art(a, k=28, seed=24, paint=1)
     b = f32(img)
     if x0 + 70 <= W:

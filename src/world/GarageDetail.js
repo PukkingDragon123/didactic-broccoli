@@ -661,6 +661,18 @@ export class GarageDetail {
       if (face === '+z') return this.prop(id, u, y, G.minZ + d, 0, { scale: k });
       return this.prop(id, G.maxX - d, y, u, -Math.PI / 2, { scale: k });
     };
+    // stock shelves over the machine row on the left wall: plank boards on steel brackets either side of the steel column
+    // at z -3.4 (what stands on them: src/plugins/garageDressing.js), and the opening hours under the kamidana
+    for (const [z0, z1] of [[-4.62, -3.5], [-3.3, -1.62]]) {
+      B.box(m.ply, 0.26, 0.025, z1 - z0, G.minX + 0.13, 1.95, (z0 + z1) / 2, { tint: 0xd8c8b0 });
+      B.box(m.wood, 0.02, 0.04, z1 - z0, G.minX + 0.26, 1.935, (z0 + z1) / 2, { tint: 0xa88a6a });
+      for (const z of [z0 + 0.12, z1 - 0.12]) {
+        B.box(m.steel, 0.2, 0.02, 0.02, G.minX + 0.1, 1.93, z, { tint: 0x5a6066 });
+        B.box(m.steel, 0.02, 0.18, 0.02, G.minX + 0.01, 1.77, z, { tint: 0x5a6066 });
+        B.box(m.steel, 0.012, 0.22, 0.012, G.minX + 0.09, 1.8, z, { rz: -0.72, tint: 0x5a6066 });
+      }
+    }
+    this.card('hours', '+z', -1.01, 1.55, G.minZ + 0.012, 0.24, 0.15, { rot: 0.02 });
     // the old wall clock over the back door; the New Year's lucky rake beside Grandpa's kamidana (the charm shelf,
     // src/game/shop.js ensureKamidana); the umbrella stand by the way in (the rest: src/plugins/garageDressing.js)
     onWall('wall_clock', '+z', 0, 2.36, { w: 0.42, h: 0.5 });

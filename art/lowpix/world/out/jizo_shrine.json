@@ -1,55 +1,55 @@
 {
  "id": "jizo_shrine",
- "src": "sketchfab:08f07b04c4384f8fa9b75e8203d9f26f",
+ "src": "sketchfab:a5b25c6de844459ba118fe54e880fde6",
  "credit": {
-  "title": "Jizo statue in Kyoto - MTSU Animation",
-  "author": "MTSU Animation Virtual Production",
-  "authorUrl": "https://sketchfab.com/fusion",
+  "title": "Jizo Shrine",
+  "author": "cornylope",
+  "authorUrl": "https://sketchfab.com/cornylope",
   "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/jizo-statue-in-kyoto-mtsu-animation-08f07b04c4384f8fa9b75e8203d9f26f",
+  "url": "https://sketchfab.com/3d-models/jizo-shrine-a5b25c6de844459ba118fe54e880fde6",
   "site": "Sketchfab"
  },
- "tris": 2999,
- "tex": 512,
+ "tris": 2997,
+ "tex": 292,
  "size": [
-  1.209,
+  2.054,
   1.305,
-  1.197
+  1.367
  ],
  "colours": 24,
  "palette": {
   "m0": [
-   "#5e1536",
-   "#791d3f",
-   "#932745",
-   "#ab324a",
-   "#c23e4d",
-   "#c75c5f",
-   "#cd7d79",
-   "#d49d94",
-   "#ddb9af"
+   "#350f0b",
+   "#441910",
+   "#522416",
+   "#60321b",
+   "#6d4122",
+   "#916031",
+   "#b38341",
+   "#c2a264",
+   "#cebd8b"
   ],
   "m1": [
-   "#3d2f29",
-   "#4e4038",
-   "#5d5247",
-   "#6c6358",
-   "#7a7469",
-   "#8a877f",
-   "#9a9997",
-   "#acacac",
-   "#bfbfbf"
+   "#4e0e1e",
+   "#641421",
+   "#791b22",
+   "#8e2322",
+   "#a1352b",
+   "#bf4e38",
+   "#ca7357",
+   "#d19779",
+   "#dab59b"
   ],
   "m2": [
-   "#192916",
-   "#23341e",
-   "#2f3f26",
-   "#3a492f",
-   "#465339",
-   "#626e51",
-   "#7e886a",
-   "#989d88",
-   "#afb1a6"
+   "#15280e",
+   "#1e3313",
+   "#293e19",
+   "#34481f",
+   "#405226",
+   "#61743a",
+   "#84944f",
+   "#a2ac6d",
+   "#babd92"
   ]
  },
  "warnings": []

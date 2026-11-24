@@ -44,10 +44,8 @@ const SHOP = [
   // (the tool chest moved under Grandpa's workbench, src/plugins/garageDressing.js: here it stood inside the steel rack)
   ['lp_box_cardboard', -0.95, 0, -4.72, 0.15, { shadow: true }],
   ['lp_box_cardboard', -0.95, 0.27, -4.74, -0.2, { shadow: true }],
-  ['lp_jerrycan_metal', 3.62, 0, 4.55, -0.4, { shadow: true }],
-  ['lp_dustpan', 3.15, 0, 4.72, 0.3],
-  ['lp_hand_truck', 3.72, 0, 3.95, -H, { shadow: true }],
-  ['lp_fire_alarm', 3.97, 1.35, 4.4, -H],
+  // (the jerrycan, the dustpan, the hand truck and the fire alarm are placed with the rest of the front-right corner in
+  // src/plugins/garageDressing.js, so nothing there overlaps)
 ];
 // interiors: [lowpix model id, x, y, z (world), ry, height (m) | null for the model's own size]
 const INSIDE = {
