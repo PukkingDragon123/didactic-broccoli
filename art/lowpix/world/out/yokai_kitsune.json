@@ -1,0 +1,67 @@
+{
+ "id": "yokai_kitsune",
+ "src": "sketchfab:92e7c87ace4b4dd986e85a1e184d2b85",
+ "credit": {
+  "title": "kitsune",
+  "author": "divivan",
+  "authorUrl": "https://sketchfab.com/divivan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kitsune-92e7c87ace4b4dd986e85a1e184d2b85",
+  "site": "Sketchfab"
+ },
+ "tris": 3999,
+ "tex": 456,
+ "size": [
+  0.646,
+  0.65,
+  1.112
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#4d3c42",
+   "#615155",
+   "#75686a",
+   "#877f80",
+   "#989898",
+   "#a6a6a6",
+   "#b4b4b4",
+   "#c2c2c2",
+   "#d1d1d1"
+  ],
+  "m1": [
+   "#68253b",
+   "#843348",
+   "#a04352",
+   "#b55961",
+   "#bf7a7a",
+   "#c5938f",
+   "#ccaaa3",
+   "#d4beb6",
+   "#ddcfc8"
+  ],
+  "m2": [
+   "#59182e",
+   "#722136",
+   "#8a2c3c",
+   "#a13740",
+   "#b74444",
+   "#bf675f",
+   "#c6887c",
+   "#cfa597",
+   "#d8beb1"
+  ],
+  "m3": [
+   "#560420",
+   "#6f0821",
+   "#870c20",
+   "#9e101c",
+   "#b41616",
+   "#d62e1e",
+   "#e05a3f",
+   "#e38566",
+   "#e8aa8c"
+  ]
+ },
+ "warnings": []
+}

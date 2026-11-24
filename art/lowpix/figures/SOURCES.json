@@ -31,14 +31,6 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
- "polyhaven:bananas": {
-  "name": "bananas",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/bananas",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
  "polyhaven:baseball_01": {
   "name": "baseball 01",
   "author": "Poly Haven",
@@ -87,27 +79,11 @@
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
- "polyhaven:carrot_cake": {
-  "name": "carrot cake",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/carrot_cake",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
  "polyhaven:cassette_player": {
   "name": "cassette player",
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/cassette_player",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:croissant": {
-  "name": "croissant",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/croissant",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -124,46 +100,6 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/filmstrip_projector_8mm",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:food_apple_01": {
-  "name": "food apple 01",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/food_apple_01",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:food_ginger_01": {
-  "name": "food ginger 01",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/food_ginger_01",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:food_lychee_01": {
-  "name": "food lychee 01",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/food_lychee_01",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:food_pears_asian_01": {
-  "name": "food pears asian 01",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/food_pears_asian_01",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:food_pomegranate_01": {
-  "name": "food pomegranate 01",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/food_pomegranate_01",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -188,14 +124,6 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/jug_01",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:lemon": {
-  "name": "lemon",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/lemon",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -268,14 +196,6 @@
   "author": "Poly Haven",
   "author_url": "https://polyhaven.com",
   "source": "https://polyhaven.com/a/street_rat",
-  "licence": "cc0",
-  "note": "CC0: no attribution required (credited anyway)."
- },
- "polyhaven:sweet_potato": {
-  "name": "sweet potato",
-  "author": "Poly Haven",
-  "author_url": "https://polyhaven.com",
-  "source": "https://polyhaven.com/a/sweet_potato",
   "licence": "cc0",
   "note": "CC0: no attribution required (credited anyway)."
  },
@@ -368,7 +288,7 @@
   "note": "CC0: no attribution required (credited anyway)."
  },
  "sketchfab:046f4d21810e4bf68feabe393a6b83cf": {
-  "name": "Dog Dachshund -Tacsk\u00f3",
+  "name": "Dog Dachshund -Tacskó",
   "author": "PAndras",
   "author_url": "https://sketchfab.com/PusztaiAndras",
   "source": "https://sketchfab.com/3d-models/dog-dachshund-tacsko-046f4d21810e4bf68feabe393a6b83cf",
@@ -380,14 +300,6 @@
   "author": "rud.olenka",
   "author_url": "https://sketchfab.com/rud.olenka",
   "source": "https://sketchfab.com/3d-models/phone-booth-068f8bc747114856a7505cadf7873792",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:0a43eeb601264d728fb5848ee62482b5": {
-  "name": "Dinosaur",
-  "author": "golukumar",
-  "author_url": "https://sketchfab.com/mortalityrexotable",
-  "source": "https://sketchfab.com/3d-models/dinosaur-0a43eeb601264d728fb5848ee62482b5",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -407,27 +319,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:0e65de5934db4f0eae02835ba7227dcc": {
-  "name": "Barn owl",
-  "author": "Virtual Museums of Ma\u0142opolska",
-  "author_url": "https://sketchfab.com/WirtualneMuzeaMalopolski",
-  "source": "https://sketchfab.com/3d-models/barn-owl-0e65de5934db4f0eae02835ba7227dcc",
-  "licence": "cc0",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:11b5b94688bc4ee380849585086da98a": {
   "name": "Sparrow",
   "author": "Chenchanchong",
   "author_url": "https://sketchfab.com/Chenchanchong",
   "source": "https://sketchfab.com/3d-models/sparrow-11b5b94688bc4ee380849585086da98a",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:12dae70316694b5c9ae92bdb30f38f82": {
-  "name": "Momiji manju",
-  "author": "kaz003",
-  "author_url": "https://sketchfab.com/kaz003",
-  "source": "https://sketchfab.com/3d-models/momiji-manju-12dae70316694b5c9ae92bdb30f38f82",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -452,22 +348,6 @@
   "author": "Kisielev Mikhail",
   "author_url": "https://sketchfab.com/kiselevmiki",
   "source": "https://sketchfab.com/3d-models/a-fountain-pen-18b147a4dca547649b5f6ee65c954458",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:1912d5ed6498459abb50cda71a288258": {
-  "name": "cat sleeping on tatami",
-  "author": "sekiri",
-  "author_url": "https://sketchfab.com/sekiri",
-  "source": "https://sketchfab.com/3d-models/cat-sleeping-on-tatami-1912d5ed6498459abb50cda71a288258",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:2144079e664740b19997c83d07c3c0f8": {
-  "name": "Samurai Armor Scan",
-  "author": "adrianovalentini",
-  "author_url": "https://sketchfab.com/adrianocanotto",
-  "source": "https://sketchfab.com/3d-models/samurai-armor-scan-2144079e664740b19997c83d07c3c0f8",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -527,46 +407,6 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:2a94f9c0de5149dfbf9c0bbea1a0ee59": {
-  "name": "scantest4",
-  "author": "keharafont",
-  "author_url": "https://sketchfab.com/keharafont",
-  "source": "https://sketchfab.com/3d-models/scantest4-2a94f9c0de5149dfbf9c0bbea1a0ee59",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:2c2baa9563db4f20ba23f869ec3288dc": {
-  "name": "Sleepy Comfy Cat",
-  "author": "L\u00e9onard_Doye / Leoskateman",
-  "author_url": "https://sketchfab.com/leoskateman",
-  "source": "https://sketchfab.com/3d-models/sleepy-comfy-cat-2c2baa9563db4f20ba23f869ec3288dc",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:2c94940fb10a4b3899f19eb0f07b79db": {
-  "name": "Hakone Gardens Stone Lantern",
-  "author": "lord.xiphos",
-  "author_url": "https://sketchfab.com/lord.xiphos",
-  "source": "https://sketchfab.com/3d-models/hakone-gardens-stone-lantern-2c94940fb10a4b3899f19eb0f07b79db",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:2cb15ab24c1a468b931b30793d7c1296": {
-  "name": "Sakuramochi",
-  "author": "tessie675",
-  "author_url": "https://sketchfab.com/tessie675",
-  "source": "https://sketchfab.com/3d-models/sakuramochi-2cb15ab24c1a468b931b30793d7c1296",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:2e240bc3ebd241ccba0dfa19736397d7": {
-  "name": "CC0 \u30b5\u30ad\u30b7\u30de\u30d2\u30e9\u30bf\u30af\u30ef\u30ac\u30bf \u2642 Sakishima Stag Beetle",
-  "author": "ffish.asia / floraZia.com",
-  "author_url": "https://sketchfab.com/ffishAsia-and-floraZia",
-  "source": "https://sketchfab.com/3d-models/cc0-sakishima-stag-beetle-2e240bc3ebd241ccba0dfa19736397d7",
-  "licence": "cc0",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:2eea678d5ade4c4a9f8b55f5872af92c": {
   "name": "Daruma",
   "author": "e6life",
@@ -580,22 +420,6 @@
   "author": "Chenchanchong",
   "author_url": "https://sketchfab.com/Chenchanchong",
   "source": "https://sketchfab.com/3d-models/orange-tabby-cat-36bc3223d8ab49b39bc1f105f9b4dbb3",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:382be6710803495da6cc2035967f9648": {
-  "name": "Fried Shrimp (3D scan)",
-  "author": "3D scan studio \"iris\"",
-  "author_url": "https://sketchfab.com/ss-iris",
-  "source": "https://sketchfab.com/3d-models/fried-shrimp-3d-scan-382be6710803495da6cc2035967f9648",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:3bf1533c76f94fcd94fe61da58fb4cdc": {
-  "name": "Netsuke in shape of puppy",
-  "author": "Chester Beatty",
-  "author_url": "https://sketchfab.com/chesterbeatty",
-  "source": "https://sketchfab.com/3d-models/netsuke-in-shape-of-puppy-3bf1533c76f94fcd94fe61da58fb4cdc",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -639,27 +463,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:46469c568b3743ec8fb4bb711949d49a": {
-  "name": "Giant Isopod",
-  "author": "RISD Nature Lab",
-  "author_url": "https://sketchfab.com/RISDNaturelab",
-  "source": "https://sketchfab.com/3d-models/giant-isopod-46469c568b3743ec8fb4bb711949d49a",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:4ae3704cd65b423ab994545988d4db1a": {
   "name": "Kitten",
   "author": "FainoDS",
   "author_url": "https://sketchfab.com/doinspire",
   "source": "https://sketchfab.com/3d-models/kitten-4ae3704cd65b423ab994545988d4db1a",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:4e5df1084d524a83aa3bacdd41660fb7": {
-  "name": "Bunny plush toy",
-  "author": "astistudio",
-  "author_url": "https://sketchfab.com/astistudio",
-  "source": "https://sketchfab.com/3d-models/bunny-plush-toy-4e5df1084d524a83aa3bacdd41660fb7",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -679,27 +487,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:50f286afdcf14b54bf35f22affb0b15c": {
-  "name": "Udon Scaniverse 2023-02-17 120102",
-  "author": "O_Hitsuji",
-  "author_url": "https://sketchfab.com/OHitsuji",
-  "source": "https://sketchfab.com/3d-models/udon-scaniverse-2023-02-17-120102-50f286afdcf14b54bf35f22affb0b15c",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:51cc3bfb49b64128aa54ffa29f36d8c1": {
   "name": "cat",
   "author": "toti.shroom",
   "author_url": "https://sketchfab.com/toti.shroom",
   "source": "https://sketchfab.com/3d-models/cat-51cc3bfb49b64128aa54ffa29f36d8c1",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:530b15ed5bbb461982f692bc10966a02": {
-  "name": "dorayaki",
-  "author": "gillga",
-  "author_url": "https://sketchfab.com/gillga",
-  "source": "https://sketchfab.com/3d-models/dorayaki-530b15ed5bbb461982f692bc10966a02",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -759,35 +551,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:6395f798f7d243e19975a55b76608a8b": {
-  "name": "CC0 \u30ab\u30d6\u30c8\u30e0\u30b7 \u2642 Japanese Rhinoceros Beetle",
-  "author": "ffish.asia / floraZia.com",
-  "author_url": "https://sketchfab.com/ffishAsia-and-floraZia",
-  "source": "https://sketchfab.com/3d-models/cc0-japanese-rhinoceros-beetle-6395f798f7d243e19975a55b76608a8b",
-  "licence": "cc0",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:6465a297fa784598adc49f6e0042d449": {
   "name": "Tyrant King - Tyrannosaurus",
   "author": "Marcel Schanz",
   "author_url": "https://sketchfab.com/mschanz",
   "source": "https://sketchfab.com/3d-models/tyrant-king-tyrannosaurus-6465a297fa784598adc49f6e0042d449",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:65d2444648ce4bd8850525de1b8bacee": {
-  "name": "190402 Pheasant",
-  "author": "clementvalla1",
-  "author_url": "https://sketchfab.com/clementvalla1",
-  "source": "https://sketchfab.com/3d-models/190402-pheasant-65d2444648ce4bd8850525de1b8bacee",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:69db9de4d5c446a895cec3c2a048f7a8": {
-  "name": "Cat",
-  "author": "mustafasahinfb",
-  "author_url": "https://sketchfab.com/mustafasahinfb",
-  "source": "https://sketchfab.com/3d-models/cat-69db9de4d5c446a895cec3c2a048f7a8",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -808,7 +576,7 @@
   "note": "Credit the author when you share anything made from this model."
  },
  "sketchfab:6fd5dcdb4702409a8be04e5f0fb2c316": {
-  "name": "Japanese Lamp / Ch\u014dchin",
+  "name": "Japanese Lamp / Chōchin",
   "author": "i bull your wife",
   "author_url": "https://sketchfab.com/ugly_kid",
   "source": "https://sketchfab.com/3d-models/japanese-lamp-chochin-6fd5dcdb4702409a8be04e5f0fb2c316",
@@ -832,7 +600,7 @@
   "note": "Credit the author when you share anything made from this model."
  },
  "sketchfab:75a9949393034d5cbc18625bc2bdb810": {
-  "name": "\u6e0b\u8c37\u99c5\u30cf\u30c1\u516c\u50cf Hachiko Statue Loyal Akita Inu (3D)",
+  "name": "渋谷駅ハチ公像 Hachiko Statue Loyal Akita Inu (3D)",
   "author": "Elliott Santana",
   "author_url": "https://sketchfab.com/billycarlos354",
   "source": "https://sketchfab.com/3d-models/hachiko-statue-loyal-akita-inu-3d-75a9949393034d5cbc18625bc2bdb810",
@@ -855,14 +623,6 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:7f9164e6018c4ec7a3585bbf6e6d70df": {
-  "name": "Fire Hydrant",
-  "author": "jvouillon",
-  "author_url": "https://sketchfab.com/jvouillon",
-  "source": "https://sketchfab.com/3d-models/fire-hydrant-7f9164e6018c4ec7a3585bbf6e6d70df",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:7fcd555c03de4411a83aa5685fac1b5b": {
   "name": "Ice Cream Sundae",
   "author": "Discover",
@@ -879,51 +639,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:8376d2613cb74acdbfad039e7b5e161c": {
-  "name": "National Rice Cooker",
-  "author": "National Heritage Board",
-  "author_url": "https://sketchfab.com/nhbheritage",
-  "source": "https://sketchfab.com/3d-models/national-rice-cooker-8376d2613cb74acdbfad039e7b5e161c",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:83eb9c35e5784c33b4f94e730b93fd15": {
-  "name": "Lamb",
-  "author": "pillyliu",
-  "author_url": "https://sketchfab.com/pillyliu",
-  "source": "https://sketchfab.com/3d-models/lamb-83eb9c35e5784c33b4f94e730b93fd15",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:8cf8ce4a480e43dbafa390ae5394c627": {
-  "name": "Japanese Peach",
-  "author": "STUDIO DUCKBILL",
-  "author_url": "https://sketchfab.com/DuckbillStudio",
-  "source": "https://sketchfab.com/3d-models/japanese-peach-8cf8ce4a480e43dbafa390ae5394c627",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:938e05641929403cab1f0c77376e0d9b": {
-  "name": "Japanese Matcha Bowl",
-  "author": "Vision Fountain",
-  "author_url": "https://sketchfab.com/visionfountain",
-  "source": "https://sketchfab.com/3d-models/japanese-matcha-bowl-938e05641929403cab1f0c77376e0d9b",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:977d38f89ca54c8b91b9667d52cb3d79": {
   "name": "Flapjack Dumbo Octopus Adorabilis",
   "author": "Andrea Rosini",
   "author_url": "https://sketchfab.com/andrearosini",
   "source": "https://sketchfab.com/3d-models/flapjack-dumbo-octopus-adorabilis-977d38f89ca54c8b91b9667d52cb3d79",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:9899bf74b406468b9efd32e4a32dd7a8": {
-  "name": "Persian Cat Sleeping - Gato Persa Dormindo",
-  "author": "RomanSn",
-  "author_url": "https://sketchfab.com/romansn",
-  "source": "https://sketchfab.com/3d-models/persian-cat-sleeping-gato-persa-dormindo-9899bf74b406468b9efd32e4a32dd7a8",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -935,27 +655,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:9a9460010885486f93774384609fe24f": {
-  "name": "Fox toy",
-  "author": "adamaf",
-  "author_url": "https://sketchfab.com/adamaf",
-  "source": "https://sketchfab.com/3d-models/fox-toy-9a9460010885486f93774384609fe24f",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:9abfce885a834399b2c3ccaed51cd474": {
   "name": "Animated Dog, Shiba Inu",
   "author": "quander",
   "author_url": "https://sketchfab.com/quander",
   "source": "https://sketchfab.com/3d-models/animated-dog-shiba-inu-9abfce885a834399b2c3ccaed51cd474",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:9b4acc4a177c41e984a0199c6fdcf90e": {
-  "name": "Nautilus Shell",
-  "author": "RISD Nature Lab",
-  "author_url": "https://sketchfab.com/RISDNaturelab",
-  "source": "https://sketchfab.com/3d-models/nautilus-shell-9b4acc4a177c41e984a0199c6fdcf90e",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -980,14 +684,6 @@
   "author": "Shadow Models 3D",
   "author_url": "https://sketchfab.com/shadowmodels3d",
   "source": "https://sketchfab.com/3d-models/ninja-a0bbe212318b4ee9bfaec55a3e060227",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:a0df91f135d447acb9b69b1deeefbdcf": {
-  "name": "Kosmo Sleeping Cat Scan",
-  "author": "samhodge",
-  "author_url": "https://sketchfab.com/samhodge",
-  "source": "https://sketchfab.com/3d-models/kosmo-sleeping-cat-scan-a0df91f135d447acb9b69b1deeefbdcf",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1016,7 +712,7 @@
   "note": "Credit the author when you share anything made from this model."
  },
  "sketchfab:a9c0b6ab4cb146d8a003d6c894af3fd4": {
-  "name": "Kagami-mochi\ud83d\udcae\ud83d\udcf7",
+  "name": "Kagami-mochi💮📷",
   "author": "ayumi ikeda",
   "author_url": "https://sketchfab.com/rxf10240",
   "source": "https://sketchfab.com/3d-models/kagami-mochi-a9c0b6ab4cb146d8a003d6c894af3fd4",
@@ -1036,14 +732,6 @@
   "author": "CinekR9",
   "author_url": "https://sketchfab.com/CinekR9",
   "source": "https://sketchfab.com/3d-models/vintage-scooter-ad0f9220657c43fb89692dcf7a6b45a8",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:af9a74ebe6ee4e23b0c2b41d82a958a7": {
-  "name": "Kitsune statue in Nagoya - MTSU Animation",
-  "author": "MTSU Animation Virtual Production",
-  "author_url": "https://sketchfab.com/fusion",
-  "source": "https://sketchfab.com/3d-models/kitsune-statue-in-nagoya-mtsu-animation-af9a74ebe6ee4e23b0c2b41d82a958a7",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1069,14 +757,6 @@
   "author_url": "https://sketchfab.com/sahirvirmani",
   "source": "https://sketchfab.com/3d-models/kitsune-fox-shrine-statue-b51e4bb527d749c38bfb6f964b2b9ead",
   "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:b67fb6cbe3fa455c81373aaa9f91fa1a": {
-  "name": "CC0 \u30ab\u30d6\u30c8\u30e0\u30b7 \u2642 Japanese Rhinoceros Beetle",
-  "author": "ffish.asia / floraZia.com",
-  "author_url": "https://sketchfab.com/ffishAsia-and-floraZia",
-  "source": "https://sketchfab.com/3d-models/cc0-japanese-rhinoceros-beetle-b67fb6cbe3fa455c81373aaa9f91fa1a",
-  "licence": "cc0",
   "note": "Credit the author when you share anything made from this model."
  },
  "sketchfab:b7cebcfb4b1c4d4a97e22072800704ca": {
@@ -1111,14 +791,6 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:c199a59fc6b248b99261f24173d2a384": {
-  "name": "Beagle 200424 F From Gestltator A",
-  "author": "gsteptech",
-  "author_url": "https://sketchfab.com/gsteptech",
-  "source": "https://sketchfab.com/3d-models/beagle-200424-f-from-gestltator-a-c199a59fc6b248b99261f24173d2a384",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:cc027effc78844f6a3774ca0352a20f9": {
   "name": "Kitsune Mask",
   "author": "fenixman12",
@@ -1127,35 +799,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:cdc2fa52cccf476fab8b64370455dd34": {
-  "name": "Sleeping Cat",
-  "author": "Erik",
-  "author_url": "https://sketchfab.com/3rik",
-  "source": "https://sketchfab.com/3d-models/sleeping-cat-cdc2fa52cccf476fab8b64370455dd34",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:d14eb14d83bd4e7ba7cbe443d76a10fd": {
-  "name": "\u26e8 The Forgotten Knight \u26e8",
+  "name": "⛨ The Forgotten Knight ⛨",
   "author": "dark_igorek",
   "author_url": "https://sketchfab.com/dark_igorek",
   "source": "https://sketchfab.com/3d-models/the-forgotten-knight-d14eb14d83bd4e7ba7cbe443d76a10fd",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:d404f8700b304a91ad13924fa6af94d6": {
-  "name": "Pencil sharpener",
-  "author": "Lassi Kaukonen",
-  "author_url": "https://sketchfab.com/thesidekick",
-  "source": "https://sketchfab.com/3d-models/pencil-sharpener-d404f8700b304a91ad13924fa6af94d6",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:d45ea22770f44818949e8933b853c6c4": {
-  "name": "Butterfly",
-  "author": "Diana Liu",
-  "author_url": "https://sketchfab.com/Diana123456",
-  "source": "https://sketchfab.com/3d-models/butterfly-d45ea22770f44818949e8933b853c6c4",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1172,22 +820,6 @@
   "author": "Truhvanor",
   "author_url": "https://sketchfab.com/truhvanor",
   "source": "https://sketchfab.com/3d-models/jellyfish-d9262b63d7e042c0a455dc5d84cda1f9",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:de0f08813c6f4090b1b163bfc94e5688": {
-  "name": "Giant Tower of TEMPURA Rice Bowl",
-  "author": "Nantsune Co. Ltd",
-  "author_url": "https://sketchfab.com/nantsune",
-  "source": "https://sketchfab.com/3d-models/giant-tower-of-tempura-rice-bowl-de0f08813c6f4090b1b163bfc94e5688",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:df2871d10eca42b68b9347dbd97d498e": {
-  "name": "Day 189: Takoyaki (Photocatch) - 1scanaday",
-  "author": "Emm",
-  "author_url": "https://sketchfab.com/edemaistre",
-  "source": "https://sketchfab.com/3d-models/day-189-takoyaki-photocatch-1scanaday-df2871d10eca42b68b9347dbd97d498e",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1215,14 +847,6 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:e328e8d141de47829040efaf55306148": {
-  "name": "Rainbow Narwhal Plushie Artec Spider 3D Scan",
-  "author": "ianroy",
-  "author_url": "https://sketchfab.com/ianroy",
-  "source": "https://sketchfab.com/3d-models/rainbow-narwhal-plushie-artec-spider-3d-scan-e328e8d141de47829040efaf55306148",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:e530fd4c7f264088ad8dce405349f88e": {
   "name": "Redcap Oranda goldfish",
   "author": "somitsu",
@@ -1231,43 +855,11 @@
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
- "sketchfab:e821b05809e54ab18d53b51de529666e": {
-  "name": "CC0 \u30df\u30e4\u30de\u30af\u30ef\u30ac\u30bf \u2642 Mountain Stag Beetle",
-  "author": "ffish.asia / floraZia.com",
-  "author_url": "https://sketchfab.com/ffishAsia-and-floraZia",
-  "source": "https://sketchfab.com/3d-models/cc0-mountain-stag-beetle-e821b05809e54ab18d53b51de529666e",
-  "licence": "cc0",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:e93553d6796644818ee7bded37d3b5d9": {
-  "name": "Taiyaki (Naruto_Taiyaki/High Poly)",
-  "author": "okajima",
-  "author_url": "https://sketchfab.com/okajima",
-  "source": "https://sketchfab.com/3d-models/taiyaki-naruto-taiyakihigh-poly-e93553d6796644818ee7bded37d3b5d9",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
  "sketchfab:e980d78b5535474e85c085e652eb9e4c": {
   "name": "Japanese Mailbox",
   "author": "javileria",
   "author_url": "https://sketchfab.com/javileria",
   "source": "https://sketchfab.com/3d-models/japanese-mailbox-e980d78b5535474e85c085e652eb9e4c",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:ea9fefe65291491b97412972884657f1": {
-  "name": "Cicada",
-  "author": "lh",
-  "author_url": "https://sketchfab.com/lhsf",
-  "source": "https://sketchfab.com/3d-models/cicada-ea9fefe65291491b97412972884657f1",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:eb654151f2d54b3a89169af96da09f89": {
-  "name": "White-throated Kingfisher",
-  "author": "RISD Nature Lab",
-  "author_url": "https://sketchfab.com/RISDNaturelab",
-  "source": "https://sketchfab.com/3d-models/white-throated-kingfisher-eb654151f2d54b3a89169af96da09f89",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1297,17 +889,9 @@
  },
  "sketchfab:f537e142a592428d85ca7a940be221d3": {
   "name": "Vending Machine",
-  "author": "\u00a1Jacques",
+  "author": "¡Jacques",
   "author_url": "https://sketchfab.com/iJacques",
   "source": "https://sketchfab.com/3d-models/vending-machine-f537e142a592428d85ca7a940be221d3",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:f54db6b8e26f427b9ba93ca993dc234a": {
-  "name": "Owl",
-  "author": "Horton",
-  "author_url": "https://sketchfab.com/Horton",
-  "source": "https://sketchfab.com/3d-models/owl-f54db6b8e26f427b9ba93ca993dc234a",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1332,14 +916,6 @@
   "author": "MightyPinecone",
   "author_url": "https://sketchfab.com/Mighty.Pinecone",
   "source": "https://sketchfab.com/3d-models/turtle-kaiju-f8fbbd4a2f05416288e4f7836ec61a11",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:f9785f6152484a44bbd73508655a9741": {
-  "name": "Japanese Geta",
-  "author": "Takuma Nakata",
-  "author_url": "https://sketchfab.com/takumanakata",
-  "source": "https://sketchfab.com/3d-models/japanese-geta-f9785f6152484a44bbd73508655a9741",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },
@@ -1380,14 +956,6 @@
   "author": "foxcc",
   "author_url": "https://sketchfab.com/foxcc007",
   "source": "https://sketchfab.com/3d-models/moon-jellyfish-fb53480e510c40a7bd5e12e0b182621e",
-  "licence": "by",
-  "note": "Credit the author when you share anything made from this model."
- },
- "sketchfab:fde417a3962547d9a15e71f55c1b90d8": {
-  "name": "Sleeping Cat Scan 3d",
-  "author": "mustafasahinfb",
-  "author_url": "https://sketchfab.com/mustafasahinfb",
-  "source": "https://sketchfab.com/3d-models/sleeping-cat-scan-3d-fde417a3962547d9a15e71f55c1b90d8",
   "licence": "by",
   "note": "Credit the author when you share anything made from this model."
  },

@@ -9043,5 +9043,62 @@
    0.039
   ],
   "bytes": 50896
+ },
+ "yokai_kappa": {
+  "id": "yokai_kappa",
+  "name": "Kappa",
+  "src": "sketchfab:136cd1ad671c4b208cdf64aab42ea172",
+  "title": "Kappa",
+  "author": "samnorwoodgo",
+  "authorUrl": "https://sketchfab.com/samnorwoodgo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kappa-136cd1ad671c4b208cdf64aab42ea172",
+  "site": "Sketchfab",
+  "tris": 3499,
+  "tex": 512,
+  "size": [
+   0.758,
+   0.95,
+   0.383
+  ],
+  "bytes": 103824
+ },
+ "yokai_kasa": {
+  "id": "yokai_kasa",
+  "name": "Kasa-obake",
+  "src": "sketchfab:95eae9bdbd1147a1b7ceae594e4ea6fd",
+  "title": "Kasa-obake",
+  "author": "B.imed",
+  "authorUrl": "https://sketchfab.com/imed",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kasa-obake-95eae9bdbd1147a1b7ceae594e4ea6fd",
+  "site": "Sketchfab",
+  "tris": 3996,
+  "tex": 512,
+  "size": [
+   2.032,
+   1.15,
+   2.032
+  ],
+  "bytes": 92116
+ },
+ "yokai_kitsune": {
+  "id": "yokai_kitsune",
+  "name": "kitsune",
+  "src": "sketchfab:92e7c87ace4b4dd986e85a1e184d2b85",
+  "title": "kitsune",
+  "author": "divivan",
+  "authorUrl": "https://sketchfab.com/divivan",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kitsune-92e7c87ace4b4dd986e85a1e184d2b85",
+  "site": "Sketchfab",
+  "tris": 3999,
+  "tex": 456,
+  "size": [
+   0.646,
+   0.65,
+   1.112
+  ],
+  "bytes": 116572
  }
 }

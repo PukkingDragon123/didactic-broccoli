@@ -12,7 +12,7 @@
      0.755,
      0.135,
      0.815,
-     "auto"
+     "#2e3034"
     ],
     [
      0.055,
@@ -71,15 +71,21 @@
   "tris": 14000,
   "err": 0.03,
   "drop": [
-   "LicensePlate",
-   "LicensePlate.001",
-   "Shadow21Mtl",
+   "Crown",
    "Crown.001",
    "Crown.003",
-   "Crown.008"
+   "Crown.008",
+   "Crown.014",
+   "Crown.016",
+   "Crown.017",
+   "Crown.018",
+   "LicensePlate",
+   "LicensePlate.001",
+   "Material.008",
+   "Shadow21Mtl"
   ],
   "paint": {
-   "Meshpart1Mtl.001": "#d9a52e"
+   "Fix0101Mtl": "#d9a52e"
   },
   "retouch": {
    "Dashboard": [
@@ -107,6 +113,18 @@
      0.09,
      0.8,
      "auto"
+    ]
+   ]
+  },
+  "cut": {
+   "Material.014": [
+    [
+     -0.1,
+     0.6,
+     2.1,
+     0.1,
+     0.82,
+     2.5
     ]
    ]
   }

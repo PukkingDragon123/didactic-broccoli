@@ -33,15 +33,6 @@
   "author": "rud.olenka",
   "reasons": []
  },
- "0a43eeb601264d728fb5848ee62482b5": {
-  "verdict": "scan",
-  "name": "Dinosaur",
-  "author": "mortalityrexotable",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "0ac619b7b276445cb69c1887dd21ede9": {
   "verdict": "ok",
   "name": "Samurai",
@@ -54,26 +45,11 @@
   "author": "Mad_Lobster_Workshop",
   "reasons": []
  },
- "0e65de5934db4f0eae02835ba7227dcc": {
-  "verdict": "ok",
-  "name": "Barn owl",
-  "author": "WirtualneMuzeaMalopolski",
-  "reasons": []
- },
  "11b5b94688bc4ee380849585086da98a": {
   "verdict": "ok",
   "name": "Sparrow",
   "author": "Chenchanchong",
   "reasons": []
- },
- "12dae70316694b5c9ae92bdb30f38f82": {
-  "verdict": "scan",
-  "name": "Momiji manju",
-  "author": "kaz003",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "1673131f9e914d60af48d2dd51b85339": {
   "verdict": "ok",
@@ -92,23 +68,6 @@
   "name": "a fountain pen",
   "author": "kiselevmiki",
   "reasons": []
- },
- "1912d5ed6498459abb50cda71a288258": {
-  "verdict": "ok",
-  "name": "cat sleeping on tatami",
-  "author": "sekiri",
-  "reasons": [
-   "scan"
-  ]
- },
- "2144079e664740b19997c83d07c3c0f8": {
-  "verdict": "scan",
-  "name": "Samurai Armor Scan",
-  "author": "adrianocanotto",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "228fddb7362f42e2a349b84cbe8191b4": {
   "verdict": "ok",
@@ -168,43 +127,6 @@
    "model text mentions AI: \"AI\"; author: 3/24 recent uploads are AI-tagged"
   ]
  },
- "2a94f9c0de5149dfbf9c0bbea1a0ee59": {
-  "verdict": "ok",
-  "name": "scantest4",
-  "author": "keharafont",
-  "reasons": [
-   "scan"
-  ]
- },
- "2c2baa9563db4f20ba23f869ec3288dc": {
-  "verdict": "ok",
-  "name": "Sleepy Comfy Cat",
-  "author": "leoskateman",
-  "reasons": [
-   "scan"
-  ]
- },
- "2c94940fb10a4b3899f19eb0f07b79db": {
-  "verdict": "ok",
-  "name": "Hakone Gardens Stone Lantern",
-  "author": "lord.xiphos",
-  "reasons": []
- },
- "2cb15ab24c1a468b931b30793d7c1296": {
-  "verdict": "scan",
-  "name": "Sakuramochi",
-  "author": "tessie675",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
- "2e240bc3ebd241ccba0dfa19736397d7": {
-  "verdict": "ok",
-  "name": "CC0 サキシマヒラタクワガタ ♂ Sakishima Stag Beetle",
-  "author": "ffishAsia-and-floraZia",
-  "reasons": []
- },
  "2eea678d5ade4c4a9f8b55f5872af92c": {
   "verdict": "ok",
   "name": "Daruma",
@@ -230,15 +152,6 @@
   "name": "桜餅 (Sakuramochi Japanese Sweets)",
   "author": "horse_water",
   "reasons": []
- },
- "3bf1533c76f94fcd94fe61da58fb4cdc": {
-  "verdict": "scan",
-  "name": "Netsuke in shape of puppy",
-  "author": "chesterbeatty",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "3cc5fe7b9ee34d448b16e04985a0cdf2": {
   "verdict": "ok",
@@ -284,29 +197,11 @@
   "author": "zixisun51",
   "reasons": []
  },
- "46469c568b3743ec8fb4bb711949d49a": {
-  "verdict": "scan",
-  "name": "Giant Isopod",
-  "author": "RISDNaturelab",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "4ae3704cd65b423ab994545988d4db1a": {
   "verdict": "ok",
   "name": "Kitten",
   "author": "doinspire",
   "reasons": []
- },
- "4e5df1084d524a83aa3bacdd41660fb7": {
-  "verdict": "scan",
-  "name": "Bunny plush toy",
-  "author": "astistudio",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "4fcb87e8e80c4e16b6c6a24804567372": {
   "verdict": "ok",
@@ -326,30 +221,12 @@
   "author": "juang3d",
   "reasons": []
  },
- "50f286afdcf14b54bf35f22affb0b15c": {
-  "verdict": "scan",
-  "name": "Udon Scaniverse 2023-02-17 120102",
-  "author": "OHitsuji",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "51cc3bfb49b64128aa54ffa29f36d8c1": {
   "verdict": "ai-rejected",
   "name": "cat",
   "author": "toti.shroom",
   "reasons": [
    "by eye: cat (toti.shroom): 49,999-face export, rejected by the ANIMALS review as AI-made"
-  ]
- },
- "530b15ed5bbb461982f692bc10966a02": {
-  "verdict": "scan",
-  "name": "dorayaki",
-  "author": "gillga",
-  "reasons": [
-   "scan",
-   "scanned model"
   ]
  },
  "573feef839d7450cb3e12da9986e7a98": {
@@ -402,40 +279,17 @@
   "author": "Mr.Octopus",
   "reasons": []
  },
- "6395f798f7d243e19975a55b76608a8b": {
-  "verdict": "ok",
-  "name": "CC0 カブトムシ ♂ Japanese Rhinoceros Beetle",
-  "author": "ffishAsia-and-floraZia",
-  "reasons": []
- },
  "6465a297fa784598adc49f6e0042d449": {
   "verdict": "ok",
   "name": "Tyrant King - Tyrannosaurus",
   "author": "mschanz",
   "reasons": []
  },
- "65d2444648ce4bd8850525de1b8bacee": {
-  "verdict": "scan",
-  "name": "190402 Pheasant",
-  "author": "clementvalla1",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "68d9b8434ee6407da1e6fda1166d3ad2": {
   "verdict": "ok",
   "name": "Japan Train Station Bench",
   "author": "Mxstifie",
   "reasons": []
- },
- "69db9de4d5c446a895cec3c2a048f7a8": {
-  "verdict": "ok",
-  "name": "Cat",
-  "author": "mustafasahinfb",
-  "reasons": [
-   "scan"
-  ]
  },
  "6e10c14d33c14963b01fd8d825ea0fe5": {
   "verdict": "ok",
@@ -491,15 +345,6 @@
   "author": "Jambon3D",
   "reasons": []
  },
- "7f9164e6018c4ec7a3585bbf6e6d70df": {
-  "verdict": "scan",
-  "name": "Fire Hydrant",
-  "author": "jvouillon",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "7fcd555c03de4411a83aa5685fac1b5b": {
   "verdict": "ok",
   "name": "Ice Cream Sundae",
@@ -526,15 +371,6 @@
   "author": "tiagobarrozzo",
   "reasons": []
  },
- "83eb9c35e5784c33b4f94e730b93fd15": {
-  "verdict": "scan",
-  "name": "Lamb",
-  "author": "pillyliu",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "867bb6cc590441a0a0bf0341da9b2c93": {
   "verdict": "ok",
   "name": "3D scaned Shark plush toy",
@@ -551,29 +387,11 @@
    "model text mentions AI: \"Rodin\"; author: 17/24 recent uploads are AI-tagged"
   ]
  },
- "8cf8ce4a480e43dbafa390ae5394c627": {
-  "verdict": "scan",
-  "name": "Japanese Peach",
-  "author": "DuckbillStudio",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "926b53a3423d4dc4834c2196fe6c9e79": {
   "verdict": "ok",
   "name": "dorayaki",
   "author": "BuuMya",
   "reasons": []
- },
- "938e05641929403cab1f0c77376e0d9b": {
-  "verdict": "scan",
-  "name": "Japanese Matcha Bowl",
-  "author": "visionfountain",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "9709067ffaf2424b9bbaf1e08a46afac": {
   "verdict": "ai-rejected",
@@ -588,14 +406,6 @@
   "name": "Flapjack Dumbo Octopus Adorabilis",
   "author": "andrearosini",
   "reasons": []
- },
- "9899bf74b406468b9efd32e4a32dd7a8": {
-  "verdict": "ok",
-  "name": "Persian Cat Sleeping - Gato Persa Dormindo",
-  "author": "romansn",
-  "reasons": [
-   "scan"
-  ]
  },
  "98da5c4c2fff4c05898ba82c244b9eec": {
   "verdict": "ok",
@@ -618,29 +428,11 @@
   "author": "patrakeevasveta",
   "reasons": []
  },
- "9a9460010885486f93774384609fe24f": {
-  "verdict": "scan",
-  "name": "Fox toy",
-  "author": "adamaf",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "9abfce885a834399b2c3ccaed51cd474": {
   "verdict": "ok",
   "name": "Animated Dog, Shiba Inu",
   "author": "quander",
   "reasons": []
- },
- "9b4acc4a177c41e984a0199c6fdcf90e": {
-  "verdict": "scan",
-  "name": "Nautilus Shell",
-  "author": "RISDNaturelab",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "9b8de0c57d6446b1a29913094cfc9e3c": {
   "verdict": "ai-rejected",
@@ -667,14 +459,6 @@
   "name": "Ninja",
   "author": "shadowmodels3d",
   "reasons": []
- },
- "a0df91f135d447acb9b69b1deeefbdcf": {
-  "verdict": "ok",
-  "name": "Kosmo Sleeping Cat Scan",
-  "author": "samhodge",
-  "reasons": [
-   "scan"
-  ]
  },
  "a6393c1d79e14ae1bce17031fc0ac91c": {
   "verdict": "ok",
@@ -734,15 +518,6 @@
   "author": "CinekR9",
   "reasons": []
  },
- "af9a74ebe6ee4e23b0c2b41d82a958a7": {
-  "verdict": "scan",
-  "name": "Kitsune statue in Nagoya - MTSU Animation",
-  "author": "fusion",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "b16585738a284cafbb3c209766408b3a": {
   "verdict": "ok",
   "name": "Generic 70s Police Cruiser (+ Civillian Sedan)",
@@ -759,12 +534,6 @@
   "verdict": "ok",
   "name": "Kitsune Fox Shrine Statue",
   "author": "sahirvirmani",
-  "reasons": []
- },
- "b67fb6cbe3fa455c81373aaa9f91fa1a": {
-  "verdict": "ok",
-  "name": "CC0 カブトムシ ♂ Japanese Rhinoceros Beetle",
-  "author": "ffishAsia-and-floraZia",
   "reasons": []
  },
  "b7cebcfb4b1c4d4a97e22072800704ca": {
@@ -787,25 +556,11 @@
    "one material, 51294 faces, 2024: look at it"
   ]
  },
- "c199a59fc6b248b99261f24173d2a384": {
-  "verdict": "ok",
-  "name": "Beagle 200424 F From Gestltator A",
-  "author": "gsteptech",
-  "reasons": []
- },
  "cc027effc78844f6a3774ca0352a20f9": {
   "verdict": "ok",
   "name": "Kitsune Mask",
   "author": "fenixman12",
   "reasons": []
- },
- "cdc2fa52cccf476fab8b64370455dd34": {
-  "verdict": "ok",
-  "name": "Sleeping Cat",
-  "author": "3rik",
-  "reasons": [
-   "scan"
-  ]
  },
  "d09c2142da5c41e498d4e8ce1e5a5502": {
   "verdict": "ok",
@@ -820,15 +575,6 @@
   "name": "⛨ The Forgotten Knight ⛨",
   "author": "dark_igorek",
   "reasons": []
- },
- "d404f8700b304a91ad13924fa6af94d6": {
-  "verdict": "scan",
-  "name": "Pencil sharpener",
-  "author": "thesidekick",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "d642db74a3fa491a8143bd088b408094": {
   "verdict": "ok",
@@ -860,24 +606,6 @@
    "model text mentions AI: \"AI\"; author: 3/24 recent uploads are AI-tagged"
   ]
  },
- "de0f08813c6f4090b1b163bfc94e5688": {
-  "verdict": "scan",
-  "name": "Giant Tower of TEMPURA Rice Bowl",
-  "author": "nantsune",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
- "df2871d10eca42b68b9347dbd97d498e": {
-  "verdict": "scan",
-  "name": "Day 189: Takoyaki (Photocatch) - 1scanaday",
-  "author": "edemaistre",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "df2a3ce6d7934aefbc66d23006393c36": {
   "verdict": "review",
   "name": "Vintage Spinning Top Toy (Game Ready / Low Poly)",
@@ -904,15 +632,6 @@
   "author": "Bazylonator",
   "reasons": []
  },
- "e328e8d141de47829040efaf55306148": {
-  "verdict": "scan",
-  "name": "Rainbow Narwhal Plushie Artec Spider 3D Scan",
-  "author": "ianroy",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "e530fd4c7f264088ad8dce405349f88e": {
   "verdict": "ok",
   "name": "Redcap Oranda goldfish",
@@ -927,34 +646,11 @@
    "model text mentions AI: \"Rodin\"; author: 17/24 recent uploads are AI-tagged"
   ]
  },
- "e821b05809e54ab18d53b51de529666e": {
-  "verdict": "ok",
-  "name": "CC0 ミヤマクワガタ ♂ Mountain Stag Beetle",
-  "author": "ffishAsia-and-floraZia",
-  "reasons": []
- },
- "e93553d6796644818ee7bded37d3b5d9": {
-  "verdict": "ok",
-  "name": "Taiyaki (Naruto_Taiyaki/High Poly)",
-  "author": "okajima",
-  "reasons": [
-   "scan"
-  ]
- },
  "e980d78b5535474e85c085e652eb9e4c": {
   "verdict": "ok",
   "name": "Japanese Mailbox",
   "author": "javileria",
   "reasons": []
- },
- "eb654151f2d54b3a89169af96da09f89": {
-  "verdict": "scan",
-  "name": "White-throated Kingfisher",
-  "author": "RISDNaturelab",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
  },
  "ec088115ec8746d79c41f2db69665f15": {
   "verdict": "ok",
@@ -980,15 +676,6 @@
   "author": "iJacques",
   "reasons": []
  },
- "f54db6b8e26f427b9ba93ca993dc234a": {
-  "verdict": "scan",
-  "name": "Owl",
-  "author": "Horton",
-  "reasons": [
-   "scan",
-   "scanned model"
-  ]
- },
  "f5a4479d211e49d49937b55fd9478e85": {
   "verdict": "ok",
   "name": "Old king armor",
@@ -1013,15 +700,6 @@
   "author": "dylantneal",
   "reasons": [
    "model text mentions AI: \"createdwithai\""
-  ]
- },
- "f9785f6152484a44bbd73508655a9741": {
-  "verdict": "scan",
-  "name": "Japanese Geta",
-  "author": "takumanakata",
-  "reasons": [
-   "scan",
-   "scanned model"
   ]
  },
  "f98c55a24c644051aaa8ac7461b98468": {
@@ -1068,14 +746,6 @@
   "author": "wz",
   "reasons": []
  },
- "fde417a3962547d9a15e71f55c1b90d8": {
-  "verdict": "ok",
-  "name": "Sleeping Cat Scan 3d",
-  "author": "mustafasahinfb",
-  "reasons": [
-   "scan"
-  ]
- },
  "fe9acba84eed4a43b4315200aefbead1": {
   "verdict": "ok",
   "name": "Vintage Television",
@@ -1111,14 +781,6 @@
   "name": "American Football",
   "author": "Riley Queen",
   "reasons": []
- },
- "polyhaven:bananas": {
-  "verdict": "scan",
-  "name": "Bananas",
-  "author": "Alexander Shulha",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
  },
  "polyhaven:baseball_01": {
   "verdict": "ok",
@@ -1156,27 +818,11 @@
   "author": "Rico Cilliers",
   "reasons": []
  },
- "polyhaven:carrot_cake": {
-  "verdict": "scan",
-  "name": "Carrot Cake",
-  "author": "Greg Zaal, James Ray Cock",
-  "reasons": [
-   "scanned model (Food & Kitchen/Prepared Food/Cakes & Pastries)"
-  ]
- },
  "polyhaven:cassette_player": {
   "verdict": "ok",
   "name": "Cassette Player",
   "author": "Oday Abuzaeed",
   "reasons": []
- },
- "polyhaven:croissant": {
-  "verdict": "scan",
-  "name": "Croissant",
-  "author": "Greg Zaal, Dario Barresi",
-  "reasons": [
-   "scanned model (Food & Kitchen/Prepared Food/Cakes & Pastries)"
-  ]
  },
  "polyhaven:dartboard": {
   "verdict": "ok",
@@ -1190,46 +836,6 @@
   "author": "PeterM",
   "reasons": []
  },
- "polyhaven:food_apple_01": {
-  "verdict": "scan",
-  "name": "Food Apple 01",
-  "author": "Oliver Harries",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
- },
- "polyhaven:food_ginger_01": {
-  "verdict": "scan",
-  "name": "Food Ginger 01",
-  "author": "Oliver Harries",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Vegetables)"
-  ]
- },
- "polyhaven:food_lychee_01": {
-  "verdict": "scan",
-  "name": "Food Lychee 01",
-  "author": "Oliver Harries",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
- },
- "polyhaven:food_pears_asian_01": {
-  "verdict": "scan",
-  "name": "Pears Asian 01",
-  "author": "Amal Kumar",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
- },
- "polyhaven:food_pomegranate_01": {
-  "verdict": "scan",
-  "name": "Food Pomegranate 01",
-  "author": "Oliver Harries",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
- },
  "polyhaven:hand_plane_no4": {
   "verdict": "ok",
   "name": "Hand Plane No4",
@@ -1241,14 +847,6 @@
   "name": "Jug 01",
   "author": "Kuutti Siitonen",
   "reasons": []
- },
- "polyhaven:lemon": {
-  "verdict": "scan",
-  "name": "Lemon",
-  "author": "Kuutti Siitonen",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Fruit)"
-  ]
  },
  "polyhaven:metal_jug": {
   "verdict": "ok",
@@ -1291,14 +889,6 @@
   "name": "Small Oil Can 01",
   "author": "Raven van de Werken",
   "reasons": []
- },
- "polyhaven:sweet_potato": {
-  "verdict": "scan",
-  "name": "Sweet Potato",
-  "author": "Jan Martens",
-  "reasons": [
-   "scanned model (Food & Kitchen/Produce/Vegetables)"
-  ]
  },
  "polyhaven:tea_set_01": {
   "verdict": "ok",

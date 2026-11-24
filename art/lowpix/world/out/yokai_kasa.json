@@ -1,0 +1,67 @@
+{
+ "id": "yokai_kasa",
+ "src": "sketchfab:95eae9bdbd1147a1b7ceae594e4ea6fd",
+ "credit": {
+  "title": "Kasa-obake",
+  "author": "B.imed",
+  "authorUrl": "https://sketchfab.com/imed",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/kasa-obake-95eae9bdbd1147a1b7ceae594e4ea6fd",
+  "site": "Sketchfab"
+ },
+ "tris": 3996,
+ "tex": 512,
+ "size": [
+  2.032,
+  1.15,
+  2.032
+ ],
+ "colours": 31,
+ "palette": {
+  "m0": [
+   "#6e2921",
+   "#8d402e",
+   "#aa5a3c",
+   "#be7a54",
+   "#c79a77",
+   "#ccae8c",
+   "#d2bfa1",
+   "#d9ceb4",
+   "#e1dbc7"
+  ],
+  "m1": [
+   "#200b06",
+   "#291209",
+   "#321a0c",
+   "#3a220f",
+   "#422c13",
+   "#6d5022",
+   "#977933",
+   "#bca348",
+   "#c9be76"
+  ],
+  "m2": [
+   "#2b2b3b",
+   "#3a3b4b",
+   "#494c5a",
+   "#5a5e68",
+   "#6c6f75",
+   "#838485",
+   "#989898",
+   "#ababab",
+   "#bfbfbf"
+  ],
+  "m3": [
+   "#531d11",
+   "#6b2e19",
+   "#824221",
+   "#97582a",
+   "#ac7134",
+   "#c28f45",
+   "#c9a966",
+   "#d0be86",
+   "#d9d1a4"
+  ]
+ },
+ "warnings": []
+}

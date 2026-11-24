@@ -1,15 +1,11 @@
 """Fake Food Window (サンプル食堂): the plastic food samples of a Showa restaurant window, made from real food models
-(hand-made and scanned, Sketchfab CC BY / Poly Haven CC0, art/lowpix/figures/SOURCES.json) in the line's finish. One
+(hand-made only, never scans: Sketchfab CC BY / Poly Haven CC0, art/lowpix/figures/SOURCES.json) in the line's finish. One
 dish per figure, every dish its own model, each sitting in its own bowl, plate or glass: no stand."""
 from figlib import Fig
 from props import plate
 
 S = "sampuru"
 RAMEN = "sketchfab:f65a8eab51794fbc8c7941101a354a54"     # Japanese Ramen (senkinsky): shoyu, naruto, egg, chopsticks
-TEMPURA = "sketchfab:de0f08813c6f4090b1b163bfc94e5688"   # Giant Tower of TEMPURA Rice Bowl (nantsune, scan)
-UDON = "sketchfab:50f286afdcf14b54bf35f22affb0b15c"      # Udon (OHitsuji, Scaniverse scan): kitsune udon on its tray
-CROISSANT = "polyhaven:croissant"                        # a butter croissant
-CAKE = "polyhaven:carrot_cake"                           # an iced ring cake, the sponge showing under the icing
 SUNDAE = "sketchfab:7fcd555c03de4411a83aa5685fac1b5b"    # Ice Cream Sundae (Discovered)
 FORK = "sketchfab:6f9efa17eab544eba05518bf29454895"      # Spaghetti and Fork (OsianOHM)
 
@@ -17,31 +13,6 @@ FORK = "sketchfab:6f9efa17eab544eba05518bf29454895"      # Spaghetti and Fork (O
 def ramen():
     F = Fig(f"{S}/ramen", "Shoyu Ramen", "Naruto, a soft egg, nori and the chopsticks resting on the bowl. Smells of nothing at all.")
     F.model("bowl", RAMEN, w=32, d=32, yaw=-20)
-    return F
-
-
-def katsu():
-    F = Fig(f"{S}/katsu", "Morning Set Croissant", "The kissaten's morning set: a butter croissant on a gold-rimmed plate, coffee not included.")
-    top = plate(F, "plate", 14.0, (0, 0, 0), col="#f4f2ea", rim="#c8a040")
-    F.model("bread", CROISSANT, L=24, at=(0, top - 0.3, 0), yaw=-25, tris=1000)
-    return F
-
-
-def udon():
-    F = Fig(f"{S}/udon", "Kitsune Udon", "Two sheets of sweet fried tofu on a bowl of thick noodles, for the fox in you.")
-    F.model("bowl", UDON, w=34, d=32, yaw=-10, level=True, cut=0.07, smooth=2.0)
-    return F
-
-
-def ebifry():
-    F = Fig(f"{S}/ebifry", "Tower Tendon", "Prawns, squid and lotus root stacked as high as the cook dared, in a black lacquer bowl.")
-    F.model("bowl", TEMPURA, h=40, w=30, d=30, yaw=-20, cut=0.04)
-    return F
-
-
-def pudding():
-    F = Fig(f"{S}/pudding", "Iced Ring Cake", "The kissaten's ring cake under the counter glass, the icing running down the sponge. Nobody has ever been sold a slice.")
-    F.model("cake", CAKE, L=36, h=26, yaw=-20)
     return F
 
 
@@ -59,4 +30,4 @@ def fork():
     return F
 
 
-FIGS = {"ramen": ramen, "katsu": katsu, "udon": udon, "ebifry": ebifry, "pudding": pudding, "sundae": sundae, "fork": fork}
+FIGS = {"ramen": ramen, "sundae": sundae, "fork": fork}

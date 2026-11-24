@@ -4089,6 +4089,78 @@
    "tris": 200,
    "cap": 256,
    "name": "Bath mirror (our own model, hand-painted)"
+  },
+  {
+   "id": "yokai_kitsune",
+   "src": "sketchfab:92e7c87ace4b4dd986e85a1e184d2b85",
+   "h": 0.65,
+   "ppm": 320,
+   "tris": 4000,
+   "cap": 512,
+   "name": "kitsune"
+  },
+  {
+   "id": "yokai_kasa",
+   "src": "sketchfab:95eae9bdbd1147a1b7ceae594e4ea6fd",
+   "h": 1.15,
+   "ppm": 260,
+   "tris": 4000,
+   "cap": 512,
+   "name": "Kasa-obake"
+  },
+  {
+   "id": "yokai_kappa",
+   "src": "sketchfab:136cd1ad671c4b208cdf64aab42ea172",
+   "h": 0.95,
+   "ppm": 300,
+   "tris": 3500,
+   "cap": 512,
+   "name": "Kappa"
+  },
+  {
+   "id": "house_jp",
+   "src": "sketchfab:58a9edfc71ab4adc869061d4e5e862d1",
+   "h": 7.0,
+   "ppm": 48,
+   "tris": 6000,
+   "cap": 1024,
+   "name": "Japanese two-storey house"
+  },
+  {
+   "id": "house_modern",
+   "src": "sketchfab:d690f83d8e8d48e6a532bebe84901595",
+   "h": 7.0,
+   "ppm": 48,
+   "tris": 2000,
+   "cap": 1024,
+   "name": "Japanese Residential Home 01"
+  },
+  {
+   "id": "sleepbag",
+   "src": "sketchfab:d2ab6e8a8ffc472e9fca8b920662dafe",
+   "h": 0.24,
+   "ppm": 320,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Camping sleeping bag"
+  },
+  {
+   "id": "loafers",
+   "src": "sketchfab:50b7cf68173541c1a16b0dfaf39911af",
+   "h": 0.08,
+   "ppm": 500,
+   "tris": 1800,
+   "cap": 512,
+   "name": "Shoes loafers"
+  },
+  {
+   "id": "clothes_folded",
+   "src": "sketchfab:ac31c5ae6eb0449091c371556bb63e00",
+   "h": 0.18,
+   "ppm": 420,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Stack of Folded Clothes"
   }
  ]
 }

@@ -7,10 +7,11 @@ author's recent uploads, known AI uploaders and photo-to-3D pet services, mass u
 by eye, entered in VISUAL below, as does anything that looks AI-made whatever its metadata says (melted over-smooth
 forms, mushy paws, plasticky gloss, big glossy cartoon eyes, smeared baked lighting). The result goes to
 art/lowpix/figures/AI_CHECK.json, which audit.py reports (no network there):
-  "ok"           hand-made by a real artist, or a real photogrammetry / LiDAR scan, and looked at
+  "ok"           hand-made by a real artist, and looked at
+  "scan"         a photogrammetry / LiDAR / scan-app model (owner rule: never scans): counts as a failure, replace it
   "ai-rejected"  AI output, an AI uploader, or the AI look (the reasons are listed)
   "review"       not decided yet: counts as a failure in the audit
-Poly Haven assets are made by the Poly Haven team (scans and hand modelling) and are "ok" without a lookup.
+Poly Haven models are made by the Poly Haven team; the scanned ones (their notes say so) are "scan" like any other.
 """
 import glob
 import importlib.util
@@ -63,7 +64,7 @@ def main():
         _, v, why, m = T.verdict(uid)
         verdict = {"OK": "ok", "REJECT": "ai-rejected", "REVIEW": "review"}[v]
         reasons = [why] if why else []
-        if verdict != "ai-rejected" and (why == "scan" or T.SCAN.search(json.dumps(m or {}))):
+        if (why or "").startswith("scan:") or T.scan_hit(m or {}):
             verdict = "scan"  # OWNER RULE: never use scans (photogrammetry, LiDAR, Object Capture...): hand-made models only
             reasons.append("scanned model")
         elif uid in VISUAL and verdict != "ai-rejected":

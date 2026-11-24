@@ -40,7 +40,7 @@ function plate({ town = '上山', cls = '480', kana = 'さ', num = '12-34' } = {
 
 // the imported models' materials, by their source names: real glass (see-through, the sky and the street in it),
 // chrome, the paint with a little clear-coat sheen; and where each one's plates go (front / rear height, metres)
-const GLASS = /glass|window|blinn1SG|Material\.00[2-7]$/i, CHROME = /chrome|^crown(\.0\d\d)?$|caders/i, PAINT = /^(body|lambert2SG|Meshpart1Mtl\.001)$/i;
+const GLASS = /glass|window|blinn1SG|Material\.00[2-7]$/i, CHROME = /chrome|^crown(\.0\d\d)?$|caders/i, PAINT = /^(body|lambert2SG|Fix0101Mtl)$/i;
 export const CAR_PLATES = { mini_truck: [0.36, 0.5], kei_van: [0.38, 0.52], taxi_sedan: [0.42, 0.62] };
 const GLASS_M = new Map();
 function dress(g) {

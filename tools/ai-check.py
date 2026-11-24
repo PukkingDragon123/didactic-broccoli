@@ -5,8 +5,11 @@ Finds every Sketchfab model id the repo uses (art/, src/, CREDITS), fetches its 
 uploads from the Sketchfab API, and flags:
   REJECT  the model or its author is AI output (Meshy, Tripo, Rodin/Hyper3D, Luma, CSM, Kaedim, "made with AI",
           photo-of-your-pet-to-3D services, mass uploaders of unrelated subjects)
+          and every scan (owner rule: never scans): photogrammetry / LiDAR / Object Capture words or tags, or a scan
+          app named in the text, tags or upload source (Polycam, Scaniverse, RealityCapture / RealityScan, Metashape,
+          Luma, KIRI Engine, Photocatch, Trnio, Qlone, Artec, Meshroom...): the reason starts with "scan:"
   REVIEW  metadata looks like AI output (one material, dense mesh, 2024+, SEO-style title): look at it yourself
-  OK      everything else (hand-made by a person, or a real photogrammetry / LiDAR scan)
+  OK      everything else (hand-made by a person)
 Usage: python3 tools/ai-check.py [--only REJECT|REVIEW] > shots/audit/AI_CHECK.txt
 Network: api.sketchfab.com (the proxy adds the token). Results are cached in node_modules/.cache/ai-check/.
 """
@@ -20,7 +23,16 @@ AI = re.compile(r'\b(ai[- ]?generated|generated (by|with|using) ai|made with ai|
                 r'rodin|hyper3d|csm(\.ai)?|kaedim|text[- ]?to[- ]?3d|image[- ]?to[- ]?3d|3d ai studio|rapidassets|'
                 r'ai generation|genie|trellis|hunyuan ?3d|ai)\b', re.I)
 NOT_AI = re.compile(r'generative AI programs|NoAI|\bno[- ]ai\b|not ai|sitescape', re.I)
-SCAN = re.compile(r'photogramm|scan|object ?capture|photocatch|realityscan|polycam|scaniverse|metashape|photoscan|lidar|trnio', re.I)
+SCAN = re.compile(r'photogramm|\b3d[- ]?scan|scan[- ]?3d|\bscan(s|ned|ning|ner|data)?\b|\w+scan\b|object ?capture|photocatch|'
+                  r'reality ?scan|reality ?capture|capturing ?reality|polycam|scaniverse|metashape|agisoft|photoscan|lidar|'
+                  r'trnio|\bluma\b|kiri ?engine|qlone|\bartec\b|meshroom|3df ?zephyr|gaussian ?splat|structured light|'
+                  r'3d scanner app|recap photo|widar|display\.land|itseez3d', re.I)
+NOT_SCAN = re.compile(r'scanline|scandinav|scanner (prop|model)|barcode scan|\bnot (a )?scan|\bno scan', re.I)
+MODELLED = re.compile(r'modell?ed|sculpt|blender|maya|3ds ?max|zbrush|substance|low ?poly|hand[- ]?painted|retopo', re.I)
+# Scan archives, museum digitisation accounts and scan-first uploaders (their models are scans even when a model's
+# own text does not say so)
+KNOWN_SCAN_AUTHORS = {'ffishAsia-and-floraZia', 'WirtualneMuzeaMalopolski', 'RISDNaturelab', 'chesterbeatty', 'nhbheritage',
+                      'gsteptech', 'lord.xiphos', 'mustafasahinfb', 'Horton', 'clementvalla1', 'jvouillon', 'nantsune', 'OHitsuji'}
 PET_SERVICE = re.compile(r'photo of your pet|customi[sz]e a 3d model|available for 3d print', re.I)
 # Authors the lead checked by hand (their uploads are AI output or AI-based)
 KNOWN_AI_AUTHORS = {'qanitaarif0207', 'timmygeorgy', 'stevelamuerte', 'restore50', 'powerengine98', 'rt699448',
@@ -56,6 +68,17 @@ def used_ids():
     return uses
 
 
+def scan_hit(m):
+    """The scan word, tag or scan app in a model's metadata (name, description, tags, categories, upload source), or ''."""
+    tags = ' '.join(t['name'] for t in m.get('tags', []))
+    for field in (m.get('name', ''), m.get('description') or '', tags, str(m.get('source') or ''),
+                  ' '.join(c.get('name', '') for c in m.get('categories', []) if isinstance(c, dict))):
+        f = NOT_SCAN.sub(' ', field)
+        hit = SCAN.search(f)
+        if hit: return hit.group(0)
+    return ''
+
+
 def verdict(uid):
     m = get(f'https://api.sketchfab.com/v3/models/{uid}', os.path.join(CACHE, 'm', uid + '.json'))
     if not m.get('uid'): return uid, 'REVIEW', 'metadata not found (model removed?)', {}
@@ -69,16 +92,21 @@ def verdict(uid):
     ai_ups = sum(1 for u in ups if AI.search(text(u)) and not NOT_AI.search(text(u)))
     dates = sorted(u['publishedAt'][:10] for u in ups if u.get('publishedAt'))
     span = (datetime.date.fromisoformat(dates[-1]) - datetime.date.fromisoformat(dates[0])).days if len(dates) > 1 else 999
-    scan = bool(SCAN.search(t) or SCAN.search(str(m.get('source', ''))))
+    scan = scan_hit(m)
+    if not scan and user in KNOWN_SCAN_AUTHORS: scan = 'author is a scan archive / scanner'
+    scans_up = sum(1 for u in ups if scan_hit(u))
+    if not scan and len(ups) >= 6 and scans_up * 3 >= len(ups) and not MODELLED.search(t):
+        scan = f'author mostly uploads scans ({scans_up}/{len(ups)}) and nothing says this one is modelled'
     if ai_ups >= 3 and not scan: reasons.append(f'author: {ai_ups}/{len(ups)} recent uploads are AI-tagged')
     if len(ups) >= 20 and span < 15 and not scan: reasons.append(f'mass uploader: {len(ups)} uploads in {span} days')
+    if scan: reasons.insert(0, 'scan: "' + scan + '" (owner rule: hand-made models only, never scans)')
     if reasons: return uid, 'REJECT', '; '.join(reasons), m
     pub = (m.get('publishedAt') or '')[:4]
     seo = re.search(r'3d model( free)?|game ready|high quality|cute and realistic|realistic .* 3d model', m.get('name', ''), re.I)
     if not scan and pub >= '2024' and m.get('materialCount', 9) <= 1 and m.get('faceCount', 0) > 40000:
         return uid, 'REVIEW', f'one material, {m["faceCount"]} faces, {pub}' + (', SEO title' if seo else '') + ': look at it', m
     if seo and pub >= '2024' and not scan: return uid, 'REVIEW', 'SEO-style title, ' + pub + ': look at it', m
-    return uid, 'OK', 'scan' if scan else '', m
+    return uid, 'OK', '', m
 
 
 def main():

@@ -590,10 +590,12 @@ export class Town {
       B.box(m.pv, 8.26, 0.14, 0.05, 0, H - 0.06, 6.16, { tint: 0x3a3430 });
       for (const sx of [-1, 1]) B.box(m.metal, 0.04, 0.5, 0.04, sx * 3.95, H - 0.4, 5.85, { rx: -0.9, tint: 0x5a5a58 });
     }
-    if (!archPlace('garage_shell', this.group, { cast: false })) {
-      // the garage roof behind the parapet + an exterior skin on the exposed east wall
-      B.box(m.tin, 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
-      B.box(m.tin, 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
+    {
+      // the garage roof behind the parapet + an exterior skin on the exposed east wall; over the lowpix shell (painted
+      // at 24 px/m) they are drawn as HD corrugated steel covers (256 px/m, src/gfx/hdtex.js)
+      const lp = !!archPlace('garage_shell', this.group, { cast: false }), cv = (mt) => (lp ? this.coverMat(mt) : mt);
+      B.box(cv(m.tin), 8.7, 0.12, 10.6, 0, H + 0.14, -0.1, { k: 0.8 });
+      B.box(cv(m.tin), 0.06, H + 0.25, 10.4, 4.24, 0, -0.05, { uv: [0, 0.2], ao: 0.2, k: 0.9 });
     }
     this.shop = { openG: new THREE.Group(), closedG: new THREE.Group() };
     this.add(this.shop.openG); this.add(this.shop.closedG);

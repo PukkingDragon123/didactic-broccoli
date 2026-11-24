@@ -488,5 +488,8 @@ export const LP_WORLD = {
   wear_usagi_mask: { size: [0.13, 0.22, 0.072], credit: "Japanese rabit Mask 07 by Delzaar Studio (CC BY 4.0)" },
   wear_wagasa2: { size: [0.494, 0.5, 0.526], credit: "Fenshui Oil‑Paper Umbrella (Luzhou, China) by hualin (CC BY 4.0)" },
   wear_woodchicken: { size: [0.27, 0.2, 0.039], credit: "Pecking Chicken Wooden Toy by trinityscsp (CC BY 4.0)" },
+  yokai_kappa: { size: [0.758, 0.95, 0.383], credit: "Kappa by samnorwoodgo (CC BY 4.0)" },
+  yokai_kasa: { size: [2.032, 1.15, 2.032], credit: "Kasa-obake by B.imed (CC BY 4.0)" },
+  yokai_kitsune: { size: [0.646, 0.65, 1.112], credit: "kitsune by divivan (CC BY 4.0)" },
 };
 export const lpAsset = (id) => 'lowpix/world/' + id;

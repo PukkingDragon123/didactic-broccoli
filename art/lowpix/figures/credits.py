@@ -36,9 +36,12 @@ def main():
         md.append(f"- {name} by {author} ({url}), {lic} ({lurl}). Converted with lowpix (pixel-hd), used in {figs}")
         txt.append(f"- {name} by {author}, {lic}: {url} ({', '.join(sorted(used[s]))})")
     head_md = ["## 3D models: toy figures (Sketchfab CC BY / CC0, Poly Haven CC0)", "",
-               "Real models (hand-made by their artists, or photogrammetry scans) made small for the capsule toys: converted by",
-               "lowpix in one pixel-art finish, cut out / levelled where a scan needed it, with lowpix-modelled street furniture",
-               "and clear stands (art/lowpix/figures). No AI-generated models (art/lowpix/figures/AI_CHECK.json).", ""]
+               "Real models hand-made by their artists, made small for the capsule toys: converted by lowpix in one pixel-art",
+               "finish (art/lowpix/figures). No AI-generated models and no scans (art/lowpix/figures/AI_CHECK.json).", ""]
+    if not md:
+        head_md[2:4] = ["None ship at present: every toy in the game is modelled in Blender (art/blender/toys). No AI-generated",
+                        "models and no scans."]
+        txt = ["None ship at present: every toy in the game is modelled in Blender (art/blender/toys)."]
     for path, body, head in ((os.path.join(ROOT, "CREDITS.md"), md, head_md),
                              (os.path.join(ROOT, "public", "CREDITS.txt"), txt, ["3D models: toy figures (Sketchfab CC BY / CC0, Poly Haven CC0)", ""])):
         cur = open(path, encoding="utf8").read()

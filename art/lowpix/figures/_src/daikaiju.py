@@ -4,7 +4,6 @@ from figlib import Fig
 
 S = "daikaiju"
 TREX = "sketchfab:6465a297fa784598adc49f6e0042d449"      # Tyrant King - Tyrannosaurus
-SAURO = "sketchfab:0a43eeb601264d728fb5848ee62482b5"     # Dinosaur (long neck)
 CRAB = "sketchfab:6295676291c141728457ef7550b0650a"      # Giant Crab
 TURTLE = "sketchfab:f8fbbd4a2f05416288e4f7836ec61a11"    # Turtle Kaiju
 TOAD = "sketchfab:3cc5fe7b9ee34d448b16e04985a0cdf2"      # Kaiju : Toad
@@ -38,11 +37,4 @@ def gamagon():
     return F
 
 
-def okami():
-    F = Fig(f"{S}/okami", "Longneck", "Peers over the five-storey pagoda to see who is ringing the bell.")
-    F.model("m", SAURO, L=50, h=44, yaw=-40, level=True)
-    F.model_clip("model_m", "turn", 2.4, amp=20)
-    return F
-
-
-FIGS = {"gyaosaur": gyaosaur, "kanigon": kanigon, "iwagame": iwagame, "gamagon": gamagon, "okami": okami}
+FIGS = {"gyaosaur": gyaosaur, "kanigon": kanigon, "iwagame": iwagame, "gamagon": gamagon}

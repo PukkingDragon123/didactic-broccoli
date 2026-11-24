@@ -34,6 +34,12 @@ for (const s of root.listSkins()) s.dispose();
 // drop what the lane must not show (e.g. a shadow plane, a roof sign of the wrong company)
 for (const m of root.listMeshes()) for (const p of m.listPrimitives()) if ((CFG.drop || []).includes(p.getMaterial()?.getName())) p.dispose();
 
+// paint colours: a material's base colour factor (the texture's shading stays). Set before anything is merged, so
+// a repainted material keeps its own identity (dedup would fold it into its look-alikes)
+for (const m of root.listMaterials()) {
+  const want = CFG.paint?.[m.getName()];
+  if (want) m.setBaseColorFactor([...[1, 3, 5].map((i) => (parseInt(want.slice(i, i + 2), 16) / 255) ** 2.2), 1]);
+}
 // bake every node's transform into its mesh (flatten puts each node under the scene with its world transform;
 // clearNodeTransform then bakes that into the mesh, cloning meshes shared by several nodes)
 await doc.transform(flatten());
@@ -62,6 +68,20 @@ if (process.env.DEBUG) {
     e.n += (p.getIndices()?.getCount() || P.getCount()) / 3; by.set(k2, e);
   }
   for (const [k2, e] of by) console.log('  ', k2.padEnd(22), String(Math.round(e.n)).padStart(6), e.lo.map((x) => x.toFixed(2)).join(','), '..', e.hi.map((x) => x.toFixed(2)).join(','));
+}
+// cut: drop a material's triangles inside boxes (metres, after the fit): a maker's emblem modelled into a grille
+for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
+  const boxes = CFG.cut?.[p.getMaterial()?.getName()];
+  const I = p.getIndices();
+  if (!boxes || !I) continue;
+  const P = p.getAttribute('POSITION'), v = [0, 0, 0], keep = [];
+  for (let t = 0; t < I.getCount(); t += 3) {
+    const c = [0, 0, 0];
+    for (let j = 0; j < 3; j++) { P.getElement(I.getScalar(t + j), v); for (let q = 0; q < 3; q++) c[q] += v[q] / 3; }
+    if (boxes.some(([x0, y0, z0, x1, y1, z1]) => c[0] > x0 && c[0] < x1 && c[1] > y0 && c[1] < y1 && c[2] > z0 && c[2] < z1)) continue;
+    keep.push(I.getScalar(t), I.getScalar(t + 1), I.getScalar(t + 2));
+  }
+  I.setArray(P.getCount() > 65535 ? new Uint32Array(keep) : new Uint16Array(keep));
 }
 // one primitive per material, welded and simplified into the budget (the silhouette and seams kept)
 await doc.transform(join(), weld(), dedup());
@@ -111,11 +131,6 @@ for (const tex of root.listTextures()) {
   const png = isColour ? await out.png({ palette: true, colours: 96, dither: 0, effort: 10 }).toBuffer() : await out.png({ compressionLevel: 9 }).toBuffer();
   tex.setImage(png); tex.setMimeType('image/png');
   console.log('texture', name, meta.width + 'px ->', target + 'px', isColour ? '(colour, posterised)' : '');
-}
-// paint colours: a material's base colour factor (the texture's shading stays)
-for (const m of root.listMaterials()) {
-  const want = CFG.paint?.[m.getName()];
-  if (want) m.setBaseColorFactor([...[1, 3, 5].map((i) => (parseInt(want.slice(i, i + 2), 16) / 255) ** 2.2), 1]);
 }
 
 await doc.transform(dedup(), prune(), reorder({ encoder: MeshoptEncoder }), quantize());

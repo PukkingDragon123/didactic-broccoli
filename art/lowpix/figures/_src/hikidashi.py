@@ -1,5 +1,5 @@
-"""Desk Drawer (つくえのひきだし): the things in a Showa schoolchild's desk drawer, made small from hand-made models,
-scans (Sketchfab CC BY) and Poly Haven CC0 models (credits in art/lowpix/figures/SOURCES.json), in the line's finish.
+"""Desk Drawer (つくえのひきだし): the things in a Showa schoolchild's desk drawer, made small from hand-made models
+(Sketchfab CC BY) and Poly Haven CC0 models (credits in art/lowpix/figures/SOURCES.json), in the line's finish.
 Everything lies or stands on its own, as it would on the desk."""
 from figlib import Fig
 
@@ -7,7 +7,6 @@ S = "hikidashi"
 SET = "sketchfab:62d50825c5de4d1ba574356fbe9b2985"        # Pencil case, pencil, sharpener, eraser and ruler (Mr.Octopus)
 CUP = "sketchfab:fa72296b31164928b45b7732fb5bf9ae"        # pencil case Model (daand): a pencil cup
 STAPLER = "polyhaven:vintage_stapler"                     # a teal enamel office stapler
-SHARPENER = "sketchfab:d404f8700b304a91ad13924fa6af94d6"  # Pencil sharpener (thesidekick, scan): a crank sharpener
 PEN = "sketchfab:b4676e41c38a4348af933f1d00051afb"        # Fountain Pen (gazgolder)
 WATCH = "polyhaven:vintage_pocket_watch"                  # an engraved gold pocket watch
 
@@ -31,13 +30,6 @@ def stapler():
     return F
 
 
-def kezuri():
-    F = Fig(f"{S}/kezuri", "Crank Sharpener", "Clamp it to the desk, turn the handle: the best smell in the classroom.")
-    F.model("m", SHARPENER, h=32, w=30, d=26, yaw=-25, mat="gloss")
-    F.model_clip("model_m", "wobble", 0.8, amp=4)
-    return F
-
-
 def pen():
     F = Fig(f"{S}/pen", "Fountain Pen", "Father's red fountain pen. You were absolutely not to touch it.")
     F.model("m", PEN, L=46, yaw=-30, mat="gloss", rest=True)
@@ -51,4 +43,4 @@ def golden():
     return F
 
 
-FIGS = {"fudebako": fudebako, "cup": cup, "stapler": stapler, "kezuri": kezuri, "pen": pen, "golden": golden}
+FIGS = {"fudebako": fudebako, "cup": cup, "stapler": stapler, "pen": pen, "golden": golden}
