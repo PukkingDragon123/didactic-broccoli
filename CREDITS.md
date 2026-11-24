@@ -2301,6 +2301,307 @@ The foliage sheet `img/foliage.png` (leaf, needle, blossom and grass sprigs on t
 - Attribution: "Free ice texture" by monkeywing, licensed under CC BY 2.0
 - Shipped as: `img/tex/frosted_glass.jpg` (+ `_n.jpg` normal map where the scan has one) (the frosted glass surface texture)
 
+### HD surface textures (256 px/m: floors, walls, ceilings, counters, roads)
+
+The close-up surfaces of the game (`public/textures/hd/*.webp`, loaded by `src/gfx/hdtex.js`) are high-res pixel art made
+by `art/lowpix/world_arch/hd/make_hd.py` from these CC0 photo scans from Poly Haven (https://polyhaven.com): each cut,
+laid out and toned at 256 texels a metre (tiles, boards and blocks one by one), painted over, reduced to a small palette
+and finished with hand-placed pixel strokes (grout, seams, nail heads, cracks, stains). Sources: `art/lowpix/world_arch/hd/sources.json`.
+
+#### Ash Veneer
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/ash_veneer
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` houseWall, shopCeiling
+
+#### Asphalt 01
+
+- Author: Dario Barresi, Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/asphalt_01
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` asphaltHD, sf_asphalt
+
+#### Asphalt 02
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/asphalt_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` asphalt
+
+#### Asphalt 04
+
+- Author: Jenelle van Heerden, Sergej Majboroda (Poly Haven)
+- Source: https://polyhaven.com/a/asphalt_04
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` sf_asphalt
+
+#### Beige Wall 001
+
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/beige_wall_001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` houseWall, mallCeil, prefabPanel, shikkui
+
+#### Beige Wall 002
+
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/beige_wall_002
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` mortar
+
+#### Black Walnut Veneer 01
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/black_walnut_veneer_01
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` woodDark
+
+#### Blue Metal Plate
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/blue_metal_plate
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` hazard, steel
+
+#### Brown Planks 08
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/brown_planks_08
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` boardWall
+
+#### Brushed Concrete 
+
+- Author: Dario Barresi, Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/brushed_concrete
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` floorHD, garageSlab
+
+#### Caban
+
+- Author: colormass, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/caban
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` felt
+
+#### Cherry Veneer
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/cherry_veneer
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` woodTable
+
+#### Clay Floor 001
+
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/clay_floor_001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` bathTile, brickHD, mallTile1-4, pTile, shopTile, tile, tileSkirt
+
+#### Clay Plaster
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/clay_plaster
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` juraku, oyaStone
+
+#### Concrete Floor 02
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_floor_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` blockHD, concrete, genkanTile, gutterLid, paving, sf_cblock, sf_concrete, sf_paving
+
+#### Concrete Floor Worn 001
+
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_floor_worn_001
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` garageSlab, shopTile
+
+#### Concrete Wall 003
+
+- Author: Dimitrios Savva, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_wall_003
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` concreteHD, roadPaint, sf_concrete
+
+#### Concrete Wall 004
+
+- Author: Dario Barresi, Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_wall_004
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` mortar
+
+#### Concrete Wall 006
+
+- Author: Dario Barresi, Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/concrete_wall_006
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` concreteHD, tunnelWall
+
+#### Corrugated Iron 02
+
+- Author: Jenelle van Heerden, Sergej Majboroda (Poly Haven)
+- Source: https://polyhaven.com/a/corrugated_iron_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` corrugatedHD
+
+#### Dirt
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/dirt
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` sf_park_ground
+
+#### Granite Tile 04
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/granite_tile_04
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` kenchi
+
+#### Gravel
+
+- Author: Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/gravel
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` ballast
+
+#### Grey Roof Tiles
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/grey_roof_tiles
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` roofTile
+
+#### Grey Roof Tiles 02
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/grey_roof_tiles_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` slateRoof
+
+#### Hessian 380
+
+- Author: colormass, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/hessian_380
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` cardboard
+
+#### Japanese Cedar Planks
+
+- Author: Charlotte Baglioni, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/japanese_cedar_planks
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` koshiita
+
+#### Knitted Fleece
+
+- Author: colormass, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/knitted_fleece
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` velvet
+
+#### Oak Veneer 01
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/oak_veneer_01
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` flooring
+
+#### Oak Veneer 02
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/oak_veneer_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` woodLight
+
+#### Oak Veneer 05
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/oak_veneer_05
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` shopFloor, woodFloor
+
+#### Okoume Veneer
+
+- Author: Jenelle van Heerden (Poly Haven)
+- Source: https://polyhaven.com/a/okoume_veneer
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` ceilingBoards
+
+#### Painted Metal Shutter
+
+- Author: Dario Barresi, Rico Cilliers, Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/painted_metal_shutter
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` shutter
+
+#### Painted Plaster Wall
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/painted_plaster_wall
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` plaster, sf_detail_paint
+
+#### Plywood
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/plywood
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` sf_plywood
+
+#### Rocky Trail 02
+
+- Author: Amal Kumar (Poly Haven)
+- Source: https://polyhaven.com/a/rocky_trail_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` sf_park_ground
+
+#### Rusty Corrugated Iron
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/rusty_corrugated_iron
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` metalRoof
+
+#### Rusty Metal 02
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/rusty_metal_02
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` grate, sf_detail_metal
+
+#### Sand 01
+
+- Author: Rob Tuytel (Poly Haven)
+- Source: https://polyhaven.com/a/sand_01
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` juraku, sf_sand
+
+#### Tatami Mat
+
+- Author: Charlotte Baglioni (Poly Haven)
+- Source: https://polyhaven.com/a/tatami_mat
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` tatami, tatamiFloor, tatamiMat
+
+#### Terlenka
+
+- Author: colormass, Rico Cilliers (Poly Haven)
+- Source: https://polyhaven.com/a/terlenka
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` wallpaper
+
+#### Weathered Planks
+
+- Author: Dario Barresi, Dimitrios Savva (Poly Haven)
+- Source: https://polyhaven.com/a/weathered_planks
+- Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)
+- Used for: `public/textures/hd/` sf_detail_wood, siding
+
 ### Window views (the views out of the annex shutter and the Kaikan windows)
 
 Made by `tools/make-views.py` (`src/growth/views.js`): cropped to the window and turned into high-resolution pixel art
@@ -2392,11 +2693,14 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - mk watch case by Gacha Garage (made for the game, art/lowpix/world/made/watchcase.glb), CC0 1.0. Shipped as `models/lowpix/world/watchcase.glb`
 - Paint roller (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/roller.glb), CC0 1.0. Shipped as `models/lowpix/world/roller_m.glb`
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0. Shipped as `models/lowpix/world/pinkphone.glb`
+- Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb), CC0 1.0. Shipped as `models/lowpix/world/vacuum_dock_m.glb`
 - room cupnoodle by Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsnoodle.glb`
 - Rubbish pile by Gacha Garage (made for the game, art/lowpix/world/made/rubbishpile.glb), CC0 1.0. Shipped as `models/lowpix/world/rubbishpile.glb`
 - Shaved-ice flag (氷) by Gacha Garage (made for the game, art/lowpix/world/made/kakigori.glb), CC0 1.0. Shipped as `models/lowpix/world/kakigori.glb`
 - shop counter by Gacha Garage (made for the game, art/lowpix/world/made/showcase.glb), CC0 1.0. Shipped as `models/lowpix/world/showcase.glb`
 - Shopfront bench (縁台) by Gacha Garage (made for the game, art/lowpix/world/made/engawabench.glb), CC0 1.0. Shipped as `models/lowpix/world/engawabench.glb`
+- Sign hook (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hook.glb), CC0 1.0. Shipped as `models/lowpix/world/hook_m.glb`
+- Stacked tyres (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/tyres.glb), CC0 1.0. Shipped as `models/lowpix/world/tires.glb`
 - Standing ashtray (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray_own.glb), CC0 1.0. Shipped as `models/lowpix/world/ashtray_own.glb`
 - Standing ashtray (灰皿) by Gacha Garage (made for the game, art/lowpix/world/made/ashtray.glb), CC0 1.0. Shipped as `models/lowpix/world/ashtray_stand.glb`
 - Stop sign (止まれ) by Gacha Garage (made for the game, art/lowpix/world/made/tomare.glb), CC0 1.0. Shipped as `models/lowpix/world/tomare.glb`
@@ -2712,7 +3016,6 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Old spoon by SusanKing (https://sketchfab.com/3d-models/old-spoon-e55af322cf8f43fa9b4fb2b368bafd0f), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/spoon_old.glb`
 - Old Stone Well by Theory.OAD (https://sketchfab.com/3d-models/old-stone-well-a2b8df0058254881b75a791bc4f9ae4a), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/haunted_well.glb`
 - Old Tea Kettle by mickeymoose1204 (https://sketchfab.com/3d-models/old-tea-kettle-0eb111108b4f40d9881a29d7a073c6b4), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/kettle.glb`
-- Old, dirty, stacked tires, PBR textures [free] by ZiemniaQ (https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/tires.glb`
 - Oni Mask by MadeByYeshe (https://sketchfab.com/3d-models/oni-mask-73385f62e966493ab23d17bdf2180f33), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_onimask3.glb`
 - Oni Mask Low Poly by thanoskt (https://sketchfab.com/3d-models/oni-mask-low-poly-e4f4bdea1c3744e4baf27e15d80cb5d5), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/wear_onimask2.glb`
 - Onigiri by _dark_alice_ (https://sketchfab.com/3d-models/onigiri-2e91a361342f42fd967c91717e17ec69), CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Shipped as `models/lowpix/world/food_onigiri2.glb`

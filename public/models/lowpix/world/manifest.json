@@ -2858,6 +2858,24 @@
   ],
   "bytes": 27452
  },
+ "hook_m": {
+  "id": "hook_m",
+  "name": "Sign hook (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hook.glb",
+  "title": "Sign hook (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hook.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 188,
+  "tex": 64,
+  "size": [
+   0.019,
+   0.025,
+   0.044
+  ],
+  "bytes": 9712
+ },
  "iron_antique": {
   "id": "iron_antique",
   "name": "Antique Iron",
@@ -6374,22 +6392,21 @@
  },
  "tires": {
   "id": "tires",
-  "name": "Old, dirty, stacked tires, PBR textures ",
-  "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
-  "title": "Old, dirty, stacked tires, PBR textures [free]",
-  "author": "ZiemniaQ",
-  "authorUrl": "https://sketchfab.com/ZiemniaQ",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663",
-  "site": "Sketchfab",
-  "tris": 1000,
-  "tex": 352,
+  "name": "Stacked tyres (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/tyres.glb",
+  "title": "Stacked tyres (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tyres.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 960,
+  "tex": 496,
   "size": [
-   0.49,
+   0.771,
    0.57,
-   0.488
+   0.76
   ],
-  "bytes": 32000
+  "bytes": 75792
  },
  "toaster": {
   "id": "toaster",
@@ -6931,6 +6948,24 @@
    6.139
   ],
   "bytes": 27280
+ },
+ "vacuum_dock_m": {
+  "id": "vacuum_dock_m",
+  "name": "Robot vacuum dock (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/vacuum_dock.glb",
+  "title": "Robot vacuum dock (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 384,
+  "tex": 148,
+  "size": [
+   0.278,
+   0.11,
+   0.139
+  ],
+  "bytes": 17084
  },
  "vase_brass": {
   "id": "vase_brass",

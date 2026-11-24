@@ -14,7 +14,7 @@
 //       source: units are the jars themselves), label }
 import * as THREE from 'three';
 import { archPlace } from './archModels.js';
-import { propGeometry } from './props.js';
+import { propGeometry, propMesh, propAsset } from './props.js';
 import { mikawayaAtlas, tatamiTexture, tvScreen } from './mikawayaArt.js';
 import { hasHD, hdMap } from '../gfx/hdtex.js';
 
@@ -375,7 +375,18 @@ export function buildCornerShop(t) {
   // ---- assemble: batch + two merged voxel meshes + the TV screen
   Bi.build(shop);
   const vm = t.indoorVoxel();
-  const fixtures = mergeVoxelProps(big, vm), detail = mergeVoxelProps(small, vm);
+  // props drawn with a model (src/data/propModels.js) keep their own textured materials, one mesh each: the merge below
+  // only carries the six voxel materials, so a model's groups would be dropped and the prop would vanish
+  const modelled = (list) => list.filter((it) => {
+    if (!propAsset(it.id)) return true;
+    const mesh = propMesh(it.id, { castShadow: false });
+    if (Array.isArray(mesh.material)) mesh.material = mesh.material.map((mt) => (mt?.isMeshStandardMaterial ? t.indoor(mt) : mt));
+    mesh.position.set(it.x, it.y, it.z); mesh.rotation.set(it.rx || 0, it.ry || 0, it.rz || 0, 'YXZ'); mesh.scale.setScalar(it.s || 1);
+    mesh.receiveShadow = true;
+    shop.add(mesh);
+    return false;
+  });
+  const fixtures = mergeVoxelProps(modelled(big), vm), detail = mergeVoxelProps(modelled(small), vm);
   fixtures.name = 'mikawaya:fixtures'; detail.name = 'mikawaya:detail';
   shop.add(fixtures, detail);
   const tv = tvScreen();

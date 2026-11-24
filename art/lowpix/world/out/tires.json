@@ -1,33 +1,32 @@
 {
  "id": "tires",
- "src": "sketchfab:f9d64bd1fdde49fe8571f83f59114663",
+ "src": "art/lowpix/world/made/tyres.glb",
  "credit": {
-  "title": "Old, dirty, stacked tires, PBR textures [free]",
-  "author": "ZiemniaQ",
-  "authorUrl": "https://sketchfab.com/ZiemniaQ",
-  "license": "CC BY 4.0",
-  "url": "https://sketchfab.com/3d-models/old-dirty-stacked-tires-pbr-textures-free-f9d64bd1fdde49fe8571f83f59114663",
-  "site": "Sketchfab"
+  "title": "Stacked tyres (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/tyres.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
  },
- "tris": 1000,
- "tex": 352,
+ "tris": 960,
+ "tex": 496,
  "size": [
-  0.49,
+  0.771,
   0.57,
-  0.488
+  0.76
  ],
  "colours": 8,
  "palette": {
   "m0": [
-   "#21181b",
-   "#2a2022",
-   "#33292a",
-   "#3b3233",
-   "#423c3c",
-   "#5b5858",
-   "#747474",
-   "#8e8e8e",
-   "#a9a9a9"
+   "#131117",
+   "#19171d",
+   "#1f1e23",
+   "#252529",
+   "#2c2c2e",
+   "#4a4a4a",
+   "#676767",
+   "#848484",
+   "#a0a0a0"
   ]
  },
  "warnings": []

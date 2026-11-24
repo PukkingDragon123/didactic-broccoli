@@ -3826,6 +3826,24 @@
    "tris": 300,
    "cap": 128,
    "name": "Wrapped fruit candy (our own model, hand-painted)"
+  },
+  {
+   "id": "vacuum_dock_m",
+   "src": "art/lowpix/world/made/vacuum_dock.glb",
+   "h": 0.11,
+   "ppm": 700,
+   "tris": 500,
+   "cap": 256,
+   "name": "Robot vacuum dock (our own model, hand-painted)"
+  },
+  {
+   "id": "hook_m",
+   "src": "art/lowpix/world/made/hook.glb",
+   "h": 0.025,
+   "ppm": 3000,
+   "tris": 200,
+   "cap": 64,
+   "name": "Sign hook (our own model, hand-painted)"
   }
  ]
 }

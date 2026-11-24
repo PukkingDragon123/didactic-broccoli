@@ -1,0 +1,77 @@
+{
+ "id": "vacuum_dock_m",
+ "src": "art/lowpix/world/made/vacuum_dock.glb",
+ "credit": {
+  "title": "Robot vacuum dock (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 384,
+ "tex": 148,
+ "size": [
+  0.278,
+  0.11,
+  0.139
+ ],
+ "colours": 35,
+ "palette": {
+  "m0": [
+   "#723915",
+   "#92541e",
+   "#b17428",
+   "#cd9636",
+   "#d2b05a",
+   "#d5c273",
+   "#dad18c",
+   "#dfdda4",
+   "#e5e5ba"
+  ],
+  "m1": [
+   "#53597a",
+   "#727c99",
+   "#99a1b0",
+   "#bec3ca",
+   "#e1e3e5",
+   "#e6e7e8",
+   "#eaebeb",
+   "#efefef",
+   "#f2f2f2"
+  ],
+  "m2": [
+   "#1c1c27",
+   "#252532",
+   "#30313c",
+   "#3a3c45",
+   "#46484e",
+   "#616265",
+   "#7c7c7c",
+   "#959595",
+   "#aeaeae"
+  ],
+  "m3": [
+   "#030d91",
+   "#0722ba",
+   "#0d3fe2",
+   "#2d6bf0",
+   "#5a96f0",
+   "#73aff0",
+   "#8bc4f0",
+   "#a3d6f1",
+   "#bae4f3"
+  ],
+  "m4": [
+   "#001ac8",
+   "#063bff",
+   "#447bff",
+   "#81b1ff",
+   "#bedcff",
+   "#c8e5fe",
+   "#d1edfe",
+   "#dbf3fd",
+   "#e4f8fd"
+  ]
+ },
+ "warnings": []
+}

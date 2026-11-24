@@ -1,0 +1,33 @@
+{
+ "id": "hook_m",
+ "src": "art/lowpix/world/made/hook.glb",
+ "credit": {
+  "title": "Sign hook (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hook.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 188,
+ "tex": 64,
+ "size": [
+  0.019,
+  0.025,
+  0.044
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3c2b27",
+   "#4c3b35",
+   "#5c4c44",
+   "#6a5d53",
+   "#786e64",
+   "#8a837a",
+   "#999793",
+   "#aaaaaa",
+   "#bebebe"
+  ]
+ },
+ "warnings": []
+}
