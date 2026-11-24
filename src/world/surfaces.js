@@ -5,7 +5,10 @@
 //   detailize(material, kind)     gives a plain vertex-tinted material real surface detail: a neutral grey detail map
 //                                 ('paint' | 'metal' | 'wood', mean 0.85, so the colour is lifted to match), in place
 //   boxUV(geometry)               world-metre UVs projected along each face's main axis (for geometry that has none)
+// Each has an HD version at 256 px/m (art/lowpix/world_arch/hd/make_hd.py, key 'sf_<name>', same metres per repeat:
+// src/gfx/hdtex.js), used whenever it exists; the 128 px/m PNGs stay as the fallback.
 import * as THREE from 'three';
+import { hasHD, hdTexture } from '../gfx/hdtex.js';
 
 const cache = new Map();
 const url = (name) => new URL(`${import.meta.env.BASE_URL}textures/lowpix/world_arch/${name}.png`, document.baseURI).href;
@@ -14,7 +17,7 @@ const loader = new THREE.TextureLoader();
 export function surfaceTex(name, tile = 4) {
   const k = name + '|' + tile;
   if (cache.has(k)) return cache.get(k);
-  const t = loader.load(url(name));
+  const t = hasHD('sf_' + name) ? hdTexture('sf_' + name) : loader.load(url(name));
   t.colorSpace = THREE.SRGBColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.magFilter = THREE.NearestFilter;

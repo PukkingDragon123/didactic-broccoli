@@ -4,6 +4,7 @@ import '@fontsource/pixelify-sans/400.css';
 import './ui/fonts.css';
 import './style.css';
 import * as THREE from 'three';
+import './gfx/giShader.js'; // (first: the room light hook must see every material created after it)
 import { whenPrint } from './gfx/printAtlas.js';
 import { whenHD } from './gfx/hdtex.js';
 import { Game } from './game/Game.js';

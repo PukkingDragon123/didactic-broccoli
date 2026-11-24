@@ -4,7 +4,7 @@
 // pixel grids, so it always shows at a whole-number scale. It hangs from the top of the picture on two pixel-art chains
 // hooked into its top line; under GARAGE a small navy enamel plate with ガチャ・ガレージ hangs on two S-hooks.
 //   loadTitle() -> Promise<{ sizes: [{ w, h, src, hooks: [[x, y], [x, y]] }] }>
-//   pickTitle(meta, maxW, maxH) -> { size, s }      paintChain(len) -> art      paintKanaPlate() -> { art, hooks }
+//   pickTitle(meta, maxW, maxH, pen) -> { size, s }  (pen: how much a bigger texel costs against a finer grid)      paintChain(len) -> art      paintKanaPlate() -> { art, hooks }
 import { art, textMask, kanaMask, rng, hex, shade, INK } from './pixel.js';
 
 const BASE = (import.meta.env?.BASE_URL || '/') + 'img/menu/';
@@ -18,12 +18,12 @@ export function loadTitle() {
 }
 
 /** The best (size, whole-number scale) for a box: as big as fits, preferring finer grids over bigger texels. */
-export function pickTitle(m, maxW, maxH) {
+export function pickTitle(m, maxW, maxH, pen = 130) {
   let best = null;
   for (const size of m.sizes) for (let s = 1; s <= 4; s++) {
     const w = size.w * s, h = size.h * s;
     if (w > maxW || h > maxH) continue;
-    const score = w - 130 * (s - 1);
+    const score = w - pen * (s - 1);
     if (!best || score > best.score) best = { size, s, score };
   }
   if (!best && m.sizes.length) best = { size: m.sizes[0], s: 1 };

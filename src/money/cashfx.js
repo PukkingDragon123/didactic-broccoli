@@ -42,7 +42,7 @@ export function noteTexture(denom) {
   const n = String(denom);
   drawPx(g, n, 30, 6, { col: C.ink, s: 0.5, align: 'center' });
   g.fillStyle = C.ink; g.fillRect(22, 14, 16, 1);
-  drawPx(g, 'YEN', 23, 16, { col: C.mid });
+  drawPx(g, 'YEN', 30, 18, { col: C.mid, s: 0.5, align: 'center' });
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = THREE.NearestFilter; t.minFilter = THREE.LinearMipmapLinearFilter;

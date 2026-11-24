@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
+import { hasHD, hdMap } from '../gfx/hdtex.js';
 import { propGeometry, propSize } from '../world/props.js';
 import { voxelMaterials } from '../voxel/materials.js';
 import { flyerTexture } from '../gfx/flyers.js';
@@ -85,13 +86,18 @@ class Batch {
 const std = (o) => new THREE.MeshStandardMaterial({ vertexColors: true, ...o });
 /** A textured surface (src/gfx/geo.js pixMat) tinted per part by vertex colour (the Batch's tint). */
 function tinted(m, color = null) { const t = m.clone(); t.vertexColors = color == null; if (color != null) t.color.set(color); return t; }
-function texMat(pix, { repeat = 1, rough = 0.85, ...o } = {}) {
+function texMat(pix, { repeat = 1, rough = 0.85, hd = null, ...o } = {}) {
+  // the HD version (src/gfx/hdtex.js, 256 px/m) when there is one; pix is a function so the old one is only drawn as a fallback
+  if (hd && hasHD(hd)) return new THREE.MeshStandardMaterial({ map: hdMap(hd), vertexColors: true, roughness: rough, ...o });
+  if (typeof pix === 'function') pix = pix();
   const map = T.texOf(pix);
   map.wrapS = map.wrapT = THREE.RepeatWrapping;
   map.repeat.set(1 / repeat, 1 / repeat);
   return new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough, ...o });
 }
-function unitMat(pix, o = {}) {
+function unitMat(pix, { hd = null, ...o } = {}) {
+  if (hd && hasHD(hd)) return new THREE.MeshStandardMaterial({ map: hdMap(hd, true), vertexColors: true, roughness: 0.8, ...o });
+  if (typeof pix === 'function') pix = pix();
   return new THREE.MeshStandardMaterial({ map: T.texOf(pix), vertexColors: true, roughness: 0.8, ...o });
 }
 
@@ -110,12 +116,12 @@ export function buildRoom(game, group) {
   const R = ROOM, B = new Batch(), O = new Batch(); // O: unlit things outside the window
   const out = { targets: {}, obstacles: [], figSlots: [], props: {}, swaps: [] };
   const M = {
-    juraku: texMat(juraku(), { rough: 0.95 }),
-    paper: texMat(T.wallpaper(), { rough: 0.9 }),
-    ceil: texMat(T.ceilingBoards(), { repeat: 0.9, rough: 0.8 }),
-    floor: texMat(T.flooring(), { rough: 0.55 }),
-    genkan: texMat(T.genkanTile(), { rough: 0.7 }),
-    tatami: unitMat(T.tatamiFloor(), { roughness: 0.9 }),
+    juraku: texMat(juraku, { rough: 0.95, hd: 'juraku' }),
+    paper: texMat(T.wallpaper, { rough: 0.9, hd: 'wallpaper' }),
+    ceil: texMat(T.ceilingBoards, { repeat: 0.9, rough: 0.8, hd: 'ceilingBoards' }),
+    floor: texMat(T.flooring, { rough: 0.55, hd: 'flooring' }),
+    genkan: texMat(T.genkanTile, { rough: 0.7, hd: 'genkanTile' }),
+    tatami: unitMat(T.tatamiFloor, { roughness: 0.9, hd: 'tatamiFloor' }),
     wood: pixMat('woodDark', { roughness: 0.6, bump: 0.3 }).clone(),
     woodL: pixMat('woodLight', { roughness: 0.6, bump: 0.3 }).clone(),
     // (painted and metal parts carry a real surface texture, tinted per part: nothing in the room is a flat colour)

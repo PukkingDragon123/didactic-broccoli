@@ -110,11 +110,15 @@ export class Lighting {
       tubeK *= Math.random() < 0.45 ? 0.08 : 1;
     }
     const d = 1 - this.dimLevel * 0.93;
+    let live = 0;
     for (const tb of L.tubes) {
       const k = tb.dead ? 0 : tubeK; // a dead tube stays dark until it's replaced
-      tb.light.intensity = tb.base * k * d;
+      // (the shadowed key below carries most of the tubes' light: the points keep a share as soft fill)
+      tb.light.intensity = tb.base * k * d * (L.tubeKey ? 0.45 : 1);
       tb.mat.color.setScalar(0.15 + 2.05 * k * d);
+      live += k;
     }
+    if (L.tubeKey) L.tubeKey.light.intensity = L.tubeKey.base * d * live / Math.max(1, L.tubes.length);
     const lightsK = g.garage.lightsOn && power ? 1 : 0;
     // the sun by day, the moon by night (one shadow-casting light, so the renderer's god rays keep finding it)
     const sun = L.sun, useMoon = S.moonI > S.sunI;
@@ -172,6 +176,8 @@ export class Lighting {
     sun.position.copy(this.target0).addScaledVector(ROOM_KEY, 16);
     sun.color.lerp(_c.set(lamp?.color ?? 0xfff2e0), on);
     sun.intensity = (1.5 * on + 0.35 * sunI * off) * dim;
+    // (the renderer's room lighting lights this room with real lamps and its bounce: no overhead stand-in)
+    if (this.game.renderer?.gi?.lampOff) sun.intensity = 0;
     _c.set(lamp?.color ?? 0xfff2e0).lerp(_c2.setHex(0xe6e2f2), 0.55);
     hemi.color.lerp(_c, on);
     hemi.groundColor.lerp(_c.setHex(0x8c7868), on);

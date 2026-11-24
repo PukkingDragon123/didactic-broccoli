@@ -161,6 +161,21 @@ html body.phys-ui #guide .g-head { margin-bottom: 8px; }
   html body.phys-ui #guide .g-say b { padding: 0 10px 2px; margin-bottom: 8px; }
   html body.phys-ui #guide .g-bar { height: 12px; margin-top: 16px; }
 }
-@media (min-height: 1300px) and (min-width: 2000px) {
-  html body.phys-ui #guide { width: min(880px, 40vw); }
+
+/* 1440p and up (polish 3): the objective and the floating talk one more whole step */
+@media (min-height: 1300px) and (min-width: 1700px) {
+  html body.phys-ui #guide { width: min(1000px, 42vw); }
+  html body.phys-ui #guide .g-head { font-size: 48px; line-height: 50px; margin-bottom: 14px; }
+  html body.phys-ui #guide .g-ico { width: 80px; height: 80px; }
+  html body.phys-ui #guide .g-ico .px-icon { transform: scale(2); }
+  html body.phys-ui #guide .g-t { font-size: 64px; line-height: 68px; }
+  html body.phys-ui #guide .g-s { font-size: 48px; line-height: 52px; margin-top: 10px; }
+  html body.phys-ui #guide .g-say { font-size: 48px; line-height: 54px; margin-top: 24px; padding-left: 30px; }
+  html body.phys-ui #guide .g-say::before { width: 10px; }
+  html body.phys-ui #guide .g-bar { height: 16px; margin-top: 20px; }
+  html body.phys-ui .ft-in, html body.phys-ui .ft-big .ft-in { font-size: 48px; line-height: 52px; max-width: min(900px, 42vw); }
+  html body.phys-ui .ft-name { font-size: 32px; line-height: 34px; }
+  html body.phys-ui .tk-opt, html body.phys-ui .tk-choices .tk-prompt, html body.phys-ui #sq-choice button { font-size: 48px; line-height: 54px; }
+  html body.phys-ui .tk-choices { max-width: min(1000px, 46vw); }
+  html body.phys-ui #tk-self span { font-size: 48px; line-height: 54px; }
 }

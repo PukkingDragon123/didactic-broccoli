@@ -1772,6 +1772,25 @@
   ],
   "bytes": 41104
  },
+ "donut_m": {
+  "id": "donut_m",
+  "name": "Glazed donut_simple model",
+  "src": "sketchfab:0bc473ee934f44c6bd124717cdf58c93",
+  "title": "Glazed donut_simple model",
+  "author": "JoelHdez",
+  "authorUrl": "https://sketchfab.com/JoelHdez",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/glazed-donut-simple-model-0bc473ee934f44c6bd124717cdf58c93",
+  "site": "Sketchfab",
+  "tris": 3000,
+  "tex": 512,
+  "size": [
+   0.207,
+   0.08,
+   0.207
+  ],
+  "bytes": 60684
+ },
  "drinking_fountain": {
   "id": "drinking_fountain",
   "name": "Drinking Fountain",
@@ -3318,6 +3337,25 @@
    0.062
   ],
   "bytes": 14148
+ },
+ "lollipop_m": {
+  "id": "lollipop_m",
+  "name": "A lollipop",
+  "src": "sketchfab:8c73bdf9f6304a3899b406483b5a6834",
+  "title": "A lollipop",
+  "author": "Fluffrier",
+  "authorUrl": "https://sketchfab.com/fluffrier",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/a-lollipop-8c73bdf9f6304a3899b406483b5a6834",
+  "site": "Sketchfab",
+  "tris": 2816,
+  "tex": 256,
+  "size": [
+   0.119,
+   0.3,
+   0.118
+  ],
+  "bytes": 33976
  },
  "lpg_small": {
   "id": "lpg_small",
@@ -5566,6 +5604,25 @@
   ],
   "bytes": 106528
  },
+ "softserve_m": {
+  "id": "softserve_m",
+  "name": "Low-Poly Stylized Ice Cream Cone",
+  "src": "sketchfab:38571b8e551a472087921e3322399505",
+  "title": "Low-Poly Stylized Ice Cream Cone",
+  "author": "kinto3d",
+  "authorUrl": "https://sketchfab.com/kinto3d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-stylized-ice-cream-cone-38571b8e551a472087921e3322399505",
+  "site": "Sketchfab",
+  "tris": 2992,
+  "tex": 256,
+  "size": [
+   0.13,
+   0.25,
+   0.127
+  ],
+  "bytes": 51840
+ },
  "sponge": {
   "id": "sponge",
   "name": "Sponge",
@@ -5734,6 +5791,25 @@
    0.183
   ],
   "bytes": 23656
+ },
+ "street_lamp_v": {
+  "id": "street_lamp_v",
+  "name": "Victorian Street Lamp",
+  "src": "sketchfab:5340eca1404742c3945d3862fcabcaed",
+  "title": "Victorian Street Lamp",
+  "author": "Sir Red Alfredo",
+  "authorUrl": "https://sketchfab.com/SirRedAlfredo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/victorian-street-lamp-5340eca1404742c3945d3862fcabcaed",
+  "site": "Sketchfab",
+  "tris": 894,
+  "tex": 368,
+  "size": [
+   0.304,
+   2.6,
+   0.304
+  ],
+  "bytes": 23676
  },
  "streetlight": {
   "id": "streetlight",

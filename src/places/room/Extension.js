@@ -17,6 +17,7 @@ import { getItem } from '../../data/series/index.js';
 import { RARITY_ORDER } from '../../data/rarity.js';
 import * as RT from '../../room/textures.js';
 import { pixMat } from '../../gfx/geo.js';
+import { hasHD, hdMap } from '../../gfx/hdtex.js';
 import { Zone, Batch, V, pick, goTo, canvasMat, pixText, grain } from '../../growth/kit.js';
 import { ORIGINS } from '../../growth/data.js';
 
@@ -73,17 +74,18 @@ export class Extension {
   get tier() { return this.G.has('hobby') ? 2 : this.G.has('home103') ? 1 : 0; }
 
   mats() {
-    const tex = (pix, { repeat = 1, rough = 0.85 } = {}) => { const map = RT.texOf(pix); map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(1 / repeat, 1 / repeat); return new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough }); };
+    // the HD versions (src/gfx/hdtex.js, 256 px/m) when there are; pix is a function so the old one is only a fallback
+    const tex = (pix, { repeat = 1, rough = 0.85, hd = null } = {}) => { if (hd && hasHD(hd)) return new THREE.MeshStandardMaterial({ map: hdMap(hd), vertexColors: true, roughness: rough }); if (typeof pix === 'function') pix = pix(); const map = RT.texOf(pix); map.wrapS = map.wrapT = THREE.RepeatWrapping; map.repeat.set(1 / repeat, 1 / repeat); return new THREE.MeshStandardMaterial({ map, vertexColors: true, roughness: rough }); };
     const Z = this.zone, M = (m) => Z.mat(m);
     const tinted = (m) => { const t = m.clone(); t.vertexColors = true; return t; };
     const wood = pixMat('woodDark', { roughness: 0.6, bump: 0.3 }).clone(); wood.vertexColors = true;
     const woodL = pixMat('woodLight', { roughness: 0.6, bump: 0.3 }).clone(); woodL.vertexColors = true;
     const tileP = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d'); x.fillStyle = '#d4e6ec'; x.fillRect(0, 0, 32, 32); x.fillStyle = '#9ab8c4'; for (let i = 0; i < 32; i += 8) { x.fillRect(i, 0, 1, 32); x.fillRect(0, i, 32, 1); } grain(x, 0, 0, 32, 32, ['#c8dce4', '#e0eef2'], 0.06, 5); const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); t.colorSpace = THREE.SRGBColorSpace; return t; })();
     this.M = {
-      paper: M(tex(RT.wallpaper(), { rough: 0.9 })), ceil: M(tex(RT.ceilingBoards(), { repeat: 0.9, rough: 0.8 })), floor: M(tex(RT.flooring(), { rough: 0.55 })),
-      genkan: M(tex(RT.genkanTile(), { rough: 0.7 })), tatami: M(new THREE.MeshStandardMaterial({ map: RT.texOf(RT.tatamiFloor()), vertexColors: true, roughness: 0.9 })),
+      paper: M(tex(RT.wallpaper, { rough: 0.9, hd: 'wallpaper' })), ceil: M(tex(RT.ceilingBoards, { repeat: 0.9, rough: 0.8, hd: 'ceilingBoards' })), floor: M(tex(RT.flooring, { rough: 0.55, hd: 'flooring' })),
+      genkan: M(tex(RT.genkanTile, { rough: 0.7, hd: 'genkanTile' })), tatami: M(new THREE.MeshStandardMaterial({ map: hasHD('tatamiFloor') ? hdMap('tatamiFloor', true) : RT.texOf(RT.tatamiFloor()), vertexColors: true, roughness: 0.9 })),
       wood: M(wood), woodL: M(woodL), paint: M(tinted(pixMat('plaster', { roughness: 0.7, bump: 0.25 }))), metal: M(tinted(pixMat('steel', { roughness: 0.35, metalness: 0.6, bump: 0.2 }))), // (textured, tinted per part: no flat colours)
-      tile: M(new THREE.MeshStandardMaterial({ map: tileP, vertexColors: true, roughness: 0.35 })),
+      tile: M(new THREE.MeshStandardMaterial({ map: hasHD('bathTile') ? hdMap('bathTile') : tileP, vertexColors: true, roughness: 0.35 })),
       glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
       glass: M(new THREE.MeshStandardMaterial({ color: 0xeaf2f8, transparent: true, opacity: 0.1, roughness: 0.2, envMapIntensity: 0.1, depthWrite: false })),
     };

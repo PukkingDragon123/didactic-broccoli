@@ -16,6 +16,7 @@ import * as THREE from 'three';
 import { archPlace } from './archModels.js';
 import { propGeometry } from './props.js';
 import { mikawayaAtlas, tatamiTexture, tvScreen } from './mikawayaArt.js';
+import { hasHD, hdMap } from '../gfx/hdtex.js';
 
 const ZF = 14.9; // the far building line (Town.js)
 const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _m = new THREE.Matrix4(), _v = new THREE.Vector3(), _s = new THREE.Vector3();
@@ -102,7 +103,7 @@ export function buildCornerShop(t) {
   const prodMat = I(new THREE.MeshStandardMaterial({ map: A.tex, vertexColors: true, roughness: 0.72 }));
   const decalMat = I(new THREE.MeshStandardMaterial({ map: A.tex, vertexColors: true, roughness: 0.85, alphaTest: 0.5, side: THREE.DoubleSide }));
   decalMat.polygonOffset = true; decalMat.polygonOffsetFactor = -2; decalMat.polygonOffsetUnits = -4;
-  const tat = tatamiTexture();
+  const tat = hasHD('tatamiMat') ? hdMap('tatamiMat') : tatamiTexture(); // HD: one 1.8 x 0.9 m mat at 256 px/m
   tat.repeat.set(1 / 1.8, 1 / 0.9);
   const tatamiMat = I(new THREE.MeshStandardMaterial({ map: tat, vertexColors: true, roughness: 0.92 }));
   const big = [], small = []; // voxel props for the two merged meshes

@@ -1,0 +1,34 @@
+{
+ "id": "street_lamp_v",
+ "src": "sketchfab:5340eca1404742c3945d3862fcabcaed",
+ "credit": {
+  "title": "Victorian Street Lamp",
+  "author": "Sir Red Alfredo",
+  "authorUrl": "https://sketchfab.com/SirRedAlfredo",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/victorian-street-lamp-5340eca1404742c3945d3862fcabcaed",
+  "site": "Sketchfab"
+ },
+ "tris": 894,
+ "tex": 368,
+ "size": [
+  0.304,
+  2.6,
+  0.304
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#223436",
+   "#2e4545",
+   "#3c5352",
+   "#49615d",
+   "#586d68",
+   "#6f817b",
+   "#88938f",
+   "#a2a5a3",
+   "#b9b9b9"
+  ]
+ },
+ "warnings": []
+}

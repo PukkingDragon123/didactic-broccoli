@@ -1690,10 +1690,11 @@ const TYPE_2X = new Set(['nobori', 'openPlate', 'clearance', 'clearancePlate', '
   'signMilk', 'parkName', 'parkArrow', 'wcSign', 'parkRules', 'kishibe', 'forSale', 'danger', 'pylonPlate', 'closedSign',
   'villaNo', 'chalk', 'tobaccoWin', 'otaFudosan', 'aptRecruit', 'forRent', 'babySign', 'patrolNote', 'aptNos', 'closedNotice',
   'pigeonBoard']);
+const TYPE_4X = new Set(['closedSign']); // two lines of type in a 16 px tall plate
 export function townPix(key, w, h) {
   const ck = key + w + 'x' + h;
   if (!townCache.has(ck)) {
-    let p = new Pix(w, h, 7 + w, TYPE_2X.has(key) ? 2 : 1);
+    let p = new Pix(w, h, 7 + w, TYPE_4X.has(key) ? 4 : TYPE_2X.has(key) ? 2 : 1);
     TOWN[key](p);
     if (p.overflow && p.k === 2) { p = new Pix(w, h, 7 + w, 4); TOWN[key](p); } // the type still too wide: a finer grid
     townCache.set(ck, p);

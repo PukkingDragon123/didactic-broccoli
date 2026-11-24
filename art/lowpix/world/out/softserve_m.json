@@ -1,0 +1,67 @@
+{
+ "id": "softserve_m",
+ "src": "sketchfab:38571b8e551a472087921e3322399505",
+ "credit": {
+  "title": "Low-Poly Stylized Ice Cream Cone",
+  "author": "kinto3d",
+  "authorUrl": "https://sketchfab.com/kinto3d",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/low-poly-stylized-ice-cream-cone-38571b8e551a472087921e3322399505",
+  "site": "Sketchfab"
+ },
+ "tris": 2992,
+ "tex": 256,
+ "size": [
+  0.13,
+  0.25,
+  0.127
+ ],
+ "colours": 26,
+ "palette": {
+  "m0": [
+   "#7f646d",
+   "#9e8a8f",
+   "#bbb2b4",
+   "#dad8d8",
+   "#fcfcfc",
+   "#fcfcfc",
+   "#fdfdfd",
+   "#fdfdfd",
+   "#fefefe"
+  ],
+  "m1": [
+   "#873110",
+   "#ad4e18",
+   "#d27021",
+   "#de9544",
+   "#e2b56e",
+   "#e4c784",
+   "#e6d59a",
+   "#e9e1ae",
+   "#edebc2"
+  ],
+  "m2": [
+   "#250a09",
+   "#30100d",
+   "#3a1811",
+   "#442216",
+   "#4d2c1b",
+   "#744a2c",
+   "#996c3e",
+   "#b69059",
+   "#c5af83"
+  ],
+  "m3": [
+   "#4c3334",
+   "#614745",
+   "#745c59",
+   "#87736d",
+   "#968a85",
+   "#a29c99",
+   "#aeadab",
+   "#bcbcbc",
+   "#cccccc"
+  ]
+ },
+ "warnings": []
+}

@@ -8,6 +8,8 @@
 //   hdSize(key)     [w, h] metres one repeat covers
 //   hdTexture(key)  a new repeating sRGB texture of it (nearest up close, trilinear mipmaps far away); repeat is
 //                   left at 1 (one repeat per UV unit): set it to 1 / hdSize for world-metre UVs
+//   hdMap(key, unit) hdTexture with its repeat set: 1 / hdSize for world-metre UVs, or 1 (unit = true) for a face
+//                   mapped 0..1 that is exactly hdSize metres (the six-mat tatami floor)
 //   whenHD()        resolves once every HD image is decoded (main.js awaits it before the world builds, so no
 //                   material is ever made with an empty texture)
 import * as THREE from 'three';
@@ -46,5 +48,11 @@ export function hdTexture(key) {
   t.anisotropy = 4;
   if (ok) t.needsUpdate = true;
   else im.ready.then((loaded) => { if (loaded) { t.image = im; t.needsUpdate = true; } });
+  return t;
+}
+
+export function hdMap(key, unit = false) {
+  const t = hdTexture(key);
+  if (!unit) { const [w, h] = hdSize(key); t.repeat.set(1 / w, 1 / h); }
   return t;
 }

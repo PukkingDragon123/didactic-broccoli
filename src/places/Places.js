@@ -209,15 +209,17 @@ export class Places {
     // the room's lamp(s), in view space for the interior shader
     const cam = g.camera;
     cam.updateMatrixWorld();
+    // (when the renderer's room lighting runs this room's lamps as real lights, the painted lamp term is off)
+    const paint = 1 - (g.renderer?.gi?.lampOff ?? 0);
     const L = d.lamp;
     if (L) {
       LAMP.pos.value.set(L.x, L.y, L.z).applyMatrix4(cam.matrixWorldInverse);
-      LAMP.col.value.set(L.color ?? 0xffe8c8).multiplyScalar((L.intensity ?? 1) * (L.k ?? 1));
+      LAMP.col.value.set(L.color ?? 0xffe8c8).multiplyScalar((L.intensity ?? 1) * (L.k ?? 1) * paint);
     }
     const L2 = d.lamp2;
     if (L2) {
       LAMP.pos2.value.set(L2.x, L2.y, L2.z).applyMatrix4(cam.matrixWorldInverse);
-      LAMP.col2.value.set(L2.color ?? 0xffe8c8).multiplyScalar((L2.intensity ?? 1) * (L2.k ?? 1));
+      LAMP.col2.value.set(L2.color ?? 0xffe8c8).multiplyScalar((L2.intensity ?? 1) * (L2.k ?? 1) * paint);
     }
   }
 }

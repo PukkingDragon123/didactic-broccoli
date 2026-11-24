@@ -621,6 +621,22 @@ export class Garage {
     this.game.renderer.registerShadowLight(spot, 0.5);
     this.lights.desk = spot;
 
+    // the tubes' shadowed share (src/game/Lighting.js drives it with the tubes): one wide spot under the ceiling between
+    // the two fixtures, so the table, the machines and the shelves cast soft shadows on the floor; the tubes' own point
+    // lights carry the rest
+    const tk = new THREE.SpotLight(0xf2f4ff, 0, 9, 1.36, 0.6, 2);
+    tk.name = 'garage:tubeKey';
+    tk.position.set(0, G.height - 0.25, -0.6);
+    tk.target.position.set(0, 0, -0.4);
+    tk.castShadow = true;
+    tk.shadow.bias = -0.0004;
+    tk.shadow.normalBias = 0.03;
+    tk.shadow.camera.near = 0.1;
+    tk.userData.shadowSoft = 2.2;
+    scene.add(tk, tk.target);
+    this.game.renderer.registerShadowLight(tk, 0.5);
+    this.lights.tubeKey = { light: tk, base: 16 };
+
     // warm bounce from the low sun hitting the floor
     const bounce = new THREE.PointLight(0xffd0a0, 2.0, 7, 1.8);
     bounce.position.set(0, 0.6, 4.2);

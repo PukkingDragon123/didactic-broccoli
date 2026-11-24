@@ -1,0 +1,45 @@
+{
+ "id": "lollipop_m",
+ "src": "sketchfab:8c73bdf9f6304a3899b406483b5a6834",
+ "credit": {
+  "title": "A lollipop",
+  "author": "Fluffrier",
+  "authorUrl": "https://sketchfab.com/fluffrier",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/a-lollipop-8c73bdf9f6304a3899b406483b5a6834",
+  "site": "Sketchfab"
+ },
+ "tris": 2816,
+ "tex": 256,
+ "size": [
+  0.119,
+  0.3,
+  0.118
+ ],
+ "colours": 12,
+ "palette": {
+  "m0": [
+   "#5f0020",
+   "#7d001f",
+   "#99011a",
+   "#b30413",
+   "#cc0808",
+   "#f0200d",
+   "#f05536",
+   "#f1835e",
+   "#f2aa86"
+  ],
+  "m1": [
+   "#413337",
+   "#524448",
+   "#625759",
+   "#726b6c",
+   "#808080",
+   "#919191",
+   "#a3a3a3",
+   "#b4b4b4",
+   "#c6c6c6"
+  ]
+ },
+ "warnings": []
+}

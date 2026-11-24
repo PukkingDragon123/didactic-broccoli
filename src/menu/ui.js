@@ -97,9 +97,9 @@ export class MenuUI {
   layout() {
     const W = innerWidth, H = innerHeight, portrait = H > W * 1.15;
     const pad = Math.max(16, Math.round(Math.min(W, H) * 0.03));
-    const tagS = W >= 2200 && H >= 1300 ? 3 : 2; // 1440p and up: 3 px a texel
+    const tagS = H >= 1300 && W >= 1700 ? 4 : H >= 900 && W >= 1200 ? 3 : 2; // the UI steps up with the view's height, in whole texels
     // the title: as big as fits about a third of the height (portrait: most of the width)
-    const P = pickTitle(this.meta, portrait ? W * 0.9 : Math.min(W * 0.42, 760), portrait ? H * 0.24 : H * 0.3);
+    const P = pickTitle(this.meta, portrait ? W * 0.9 : Math.min(W * 0.42, H >= 1300 ? 1100 : 760), portrait ? H * 0.24 : H * (H >= 1300 ? 0.33 : 0.3), H >= 1300 ? 40 : 130);
     const s = P?.s || 2, size = P?.size;
     const tw = size ? size.w * s : 300, th = size ? size.h * s : 120;
     const left = portrait ? Math.round((W - tw) / 2) : pad;

@@ -334,3 +334,47 @@ html body.phys-ui #pause .ph-grille { min-height: 160px; }
   html body.phys-ui #simclock .sc-time { font-size: 48px; line-height: 48px; }
   html body.phys-ui #simclock .sc-date, html body.phys-ui #simclock .sc-day { font-size: 32px; line-height: 34px; }
 }
+
+/* ================================================================ 1440p and up (polish 3): the next whole step for the HUD and the
+   settings cabinet, so the UI keeps its size against the view (720p x1, 1080p x2-ish, 1440p a step more) */
+@media (min-height: 1300px) and (min-width: 1700px) {
+  html body.phys-ui #pause .panel { width: min(1560px, 94vw); grid-template-columns: 400px minmax(0, 1fr); font-size: 48px; line-height: 50px; }
+  html body.phys-ui #pause .panel button { font-size: 48px; line-height: 50px; min-height: 76px; }
+  html body.phys-ui #pause .panel button.big { font-size: 64px; line-height: 64px; min-height: 96px; }
+  html body.phys-ui #pause .panel label { font-size: 48px; line-height: 50px; min-height: 62px; }
+  html body.phys-ui #pause .ph-sec-h { font-size: 48px; line-height: 50px; }
+  html body.phys-ui #pause .panel-title { font-size: 64px; line-height: 66px; }
+  html body.phys-ui #pause .panel .rows { padding: 60px 22px 20px; }
+  html body.phys-ui #pause .panel .rows::before { height: 40px; background-size: 128px 40px; }
+  html body.phys-ui #pause .panel .rows::after { height: 52px; width: 6px; }
+  html body.phys-ui #pause .panel select { height: 64px; font-size: 48px; }
+  html body.phys-ui .panel input[type=range] { height: 48px; }
+  html body.phys-ui .panel input[type=range]::-webkit-slider-runnable-track { height: 40px; background-size: var(--fill, 50%) 8px, 128px 40px; }
+  html body.phys-ui .panel input[type=range]::-webkit-slider-thumb { width: 36px; height: 44px; background-size: 36px 44px; }
+  html body.phys-ui .panel input[type=checkbox], html body.phys-ui .panel input[type=checkbox]:checked { width: 64px; height: 48px; background-size: 64px 48px; }
+  html body.phys-ui #pause .panel label .lbl[data-icon]::before, html body.phys-ui #pause .panel button:not(.x)[data-icon]::before { width: calc(var(--icon-w, 16px) * 3); height: calc(var(--icon-h, 16px) * 3); }
+  html body.phys-ui #pause #credits-btn .px-icon { zoom: 3; }
+  html body.phys-ui #pause .panel button.x, html body.phys-ui #share .panel button.x { width: 72px; height: 72px; }
+  html body.phys-ui #pause .ph-grille { background-size: 32px 32px; min-height: 420px; }
+  html body.phys-ui #pause .ph-grille span { font-size: 48px; line-height: 50px; }
+  html body.phys-ui #share .panel { width: min(900px, 94vw); font-size: 48px; line-height: 50px; }
+  html body.phys-ui #share .panel button { font-size: 48px; line-height: 50px; min-height: 76px; }
+  html body.phys-ui #share textarea { font-size: 32px; line-height: 36px; }
+  /* HUD */
+  html body.phys-ui #hotbar .slot { width: 96px; height: 96px; border-width: 12px; border-image-width: 12px; }
+  html body.phys-ui #hotbar .slot .ico { width: 96px; height: 96px; }
+  html body.phys-ui #hotbar .slot .key, html body.phys-ui #hotbar .slot .count { font-size: 48px; line-height: 48px; }
+  html body.phys-ui #hotbar .slot .key { left: -8px; top: -18px; }
+  html body.phys-ui #hotbar .slot .count { right: -8px; bottom: -14px; }
+  html body.phys-ui #hotbar .slots { border-width: 16px; border-image-width: 16px; gap: 6px; }
+  html body.phys-ui #hotbar .label { font-size: 48px; line-height: 50px; }
+  html body.phys-ui #money { font-size: 80px; line-height: 74px; border-width: 14px; border-image-width: 14px; }
+  html body.phys-ui #money .yen { font-size: 64px; line-height: 58px; }
+  html body.phys-ui #money .coin .px-icon, html body.phys-ui #money .coin canvas, html body.phys-ui #money .coin img { zoom: 1.5; }
+  html body.phys-ui #money-delta { font-size: 64px; line-height: 58px; }
+  html body #hint { font-size: 48px; line-height: 54px; }
+  html body #hint .sub { font-size: 32px; line-height: 36px; }
+  html body #news .item { font-size: 48px; line-height: 52px; }
+  html body.phys-ui #simclock .sc-time { font-size: 64px; line-height: 64px; }
+  html body.phys-ui #simclock .sc-date, html body.phys-ui #simclock .sc-day { font-size: 48px; line-height: 50px; }
+}

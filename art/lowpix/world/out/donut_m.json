@@ -1,0 +1,34 @@
+{
+ "id": "donut_m",
+ "src": "sketchfab:0bc473ee934f44c6bd124717cdf58c93",
+ "credit": {
+  "title": "Glazed donut_simple model",
+  "author": "JoelHdez",
+  "authorUrl": "https://sketchfab.com/JoelHdez",
+  "license": "CC BY 4.0",
+  "url": "https://sketchfab.com/3d-models/glazed-donut-simple-model-0bc473ee934f44c6bd124717cdf58c93",
+  "site": "Sketchfab"
+ },
+ "tris": 3000,
+ "tex": 512,
+ "size": [
+  0.207,
+  0.08,
+  0.207
+ ],
+ "colours": 4,
+ "palette": {
+  "m0": [
+   "#81656e",
+   "#9f8c91",
+   "#bdb5b6",
+   "#dddbdb",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff",
+   "#ffffff"
+  ]
+ },
+ "warnings": []
+}
