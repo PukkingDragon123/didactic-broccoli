@@ -28,6 +28,8 @@ export function tex(key) {
 }
 
 export function pixOf(key) { return mk(key, () => RECIPES[key]()); }
+/** Does a procedural recipe exist for this key (else it is an HD-only surface, src/gfx/hdtex.js)? */
+export const hasRecipe = (key) => typeof RECIPES[key] === 'function';
 
 const shadeC = (c, f) => {
   const r = Math.min(255, Math.round(((c >> 16) & 255) * f)), g = Math.min(255, Math.round(((c >> 8) & 255) * f)), b = Math.min(255, Math.round((c & 255) * f));

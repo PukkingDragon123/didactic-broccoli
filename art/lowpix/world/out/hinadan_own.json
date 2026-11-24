@@ -1,0 +1,99 @@
+{
+ "id": "hinadan_own",
+ "src": "art/lowpix/world/made/hinadan_own.glb",
+ "credit": {
+  "title": "Hina-dan with the emperor and empress dolls, gold byobu, bonbori and mosen (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hinadan_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 10362,
+ "tex": 2048,
+ "size": [
+  1.532,
+  1.373,
+  1.01
+ ],
+ "colours": 54,
+ "palette": {
+  "m0": [
+   "#0d080a",
+   "#110b0d",
+   "#150e0f",
+   "#181112",
+   "#1b1515",
+   "#3d3332",
+   "#5d5452",
+   "#7b7573",
+   "#989797"
+  ],
+  "m1": [
+   "#590827",
+   "#720c2b",
+   "#8a112c",
+   "#a1172a",
+   "#b81e26",
+   "#d72d28",
+   "#da5d4d",
+   "#df8771",
+   "#e4ab94"
+  ],
+  "m2": [
+   "#79360e",
+   "#9c5215",
+   "#bd731d",
+   "#da9729",
+   "#ddb34f",
+   "#dfc66a",
+   "#e2d684",
+   "#e5e29d",
+   "#eaeab5"
+  ],
+  "m3": [
+   "#592f19",
+   "#724523",
+   "#8a5d2e",
+   "#a1773a",
+   "#b79347",
+   "#bea863",
+   "#c6bb7f",
+   "#ceca99",
+   "#d8d8b3"
+  ],
+  "m4": [
+   "#133622",
+   "#1a4629",
+   "#225430",
+   "#2b6235",
+   "#346f3a",
+   "#468c48",
+   "#60a75b",
+   "#86b57d",
+   "#a7c49e"
+  ],
+  "m5": [
+   "#945b3f",
+   "#b6825d",
+   "#c7aa8c",
+   "#dbcdb9",
+   "#f0ece4",
+   "#f2efe8",
+   "#f3f2ec",
+   "#f5f5f0",
+   "#f7f7f4"
+  ],
+  "m6": [
+   "#961f69",
+   "#c02c7c",
+   "#d3508c",
+   "#dc7fa2",
+   "#e6acbd",
+   "#e8b9c3",
+   "#ebc5ca",
+   "#edd1d2",
+   "#f1dddd"
+  ]
+ },
+ "warnings": []
+}

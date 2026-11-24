@@ -416,11 +416,11 @@ function casterState(o) {
 // cutscenes (0: none), mb = motion blur taps (full resolution, 0: none), mbScale = its exposure, farPx = the widest
 // background blur (pixels at 1080 lines, cutscene aperture; play uses about 60% of it).
 export const QUALITY = {
-  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null, gi: { spacing: 1.0, per: 1, max: 90, ms: 2 }, giSoft: 2, shadowSoft: 1 },
-  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 }, gi: { spacing: 0.8, per: 2, max: 140, ms: 3 }, giSoft: 3, shadowSoft: 1.5 },
-  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: true, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, per: 3, max: 180, ms: 4 }, giSoft: 4, shadowSoft: 2 },
-  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.6, per: 4, max: 220, ms: 6 }, giSoft: 5, shadowSoft: 2.5 },
-  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.5, per: 6, max: 320, ms: 8 }, giSoft: 6, shadowSoft: 3 },
+  verylow: { pixelRatio: 0.6, maxPx: 0.6e6, shadows: 1024, ao: false, bloom: false, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 4, shadowMinR: 0.5, rays: 0, sharp: 0, lights: 2, view: 0.5, crowd: 0.45, lens: null, gi: { single: true, env: false, shadow: false, ms: 1.5 }, giSoft: 2, shadowSoft: 1 },
+  low: { pixelRatio: 0.75, maxPx: 1.0e6, shadows: 1024, ao: false, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 3, shadowMinR: 0.3, rays: 0, sharp: 0, lights: 4, view: 0.65, crowd: 0.6, lens: { dof: 8, near: 0, mb: 5, mbScale: 0.55, farPx: 6 }, gi: { single: true, env: false, shadow: false, ms: 2 }, giSoft: 3, shadowSoft: 1.5 },
+  medium: { pixelRatio: 1.0, maxPx: 2.1e6, shadows: 2048, ao: true, aoScale: 0.5, aoSamples: 8, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, shadowMinR: 0.15, rays: 1, sharp: 1, lights: 5, view: 0.8, crowd: 0.8, lens: { dof: 12, near: 10, mb: 7, mbScale: 0.65, farPx: 7, nearPx: 6 }, gi: { spacing: 0.7, max: 180, ms: 2 }, giSoft: 4, shadowSoft: 2 },
+  high: { pixelRatio: 1.0, shadows: 2048, ao: true, aoScale: 0.5, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 2, rays: 1, sharp: 1, lights: 6, view: 1, crowd: 1, lens: { dof: 16, near: 12, mb: 9, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.6, max: 220, ms: 2 }, giSoft: 5, shadowSoft: 2.5 },
+  ultra: { pixelRatio: 1.5, shadows: 4096, ao: true, aoScale: 1, bloom: true, aa: true, shadowType: THREE.PCFShadowMap, shadowEvery: 1, rays: 1, sharp: 1, lights: 8, view: 1.2, crowd: 1, lens: { dof: 20, near: 16, mb: 12, mbScale: 0.7, farPx: 8, nearPx: 7 }, gi: { spacing: 0.5, max: 320, ms: 2 }, giSoft: 6, shadowSoft: 3 },
 };
 
 export class Renderer {
@@ -572,9 +572,11 @@ export class Renderer {
 
   setQuality(name) {
     if (!QUALITY[name]) return;
-    if (QUALITY[name].gi?.spacing !== this.quality.gi?.spacing) this.gi.reset();
+    const a = QUALITY[name].gi, b = this.quality.gi;
+    if (a?.spacing !== b?.spacing || !!a?.single !== !!b?.single) this.gi.reset();
     this.qualityName = name;
     this.quality = QUALITY[name];
+    this.gi.applyQuality();
     if (this.scene) { this.buildComposer(); this.resize(); }
   }
 

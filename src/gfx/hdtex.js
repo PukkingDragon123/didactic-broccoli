@@ -49,6 +49,8 @@ function image(key) {
 }
 
 export const hasHD = (key) => HD_ON && Object.prototype.hasOwnProperty.call(MANIFEST, key);
+/** In the HD set at all (whatever the preset): an HD-only surface with no procedural recipe still loads its own image. */
+export const inHD = (key) => Object.prototype.hasOwnProperty.call(MANIFEST, key);
 export const hdSize = (key) => MANIFEST[key].m;
 export const hdKeys = () => Object.keys(MANIFEST);
 

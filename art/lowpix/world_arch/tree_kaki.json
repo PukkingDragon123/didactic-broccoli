@@ -2,7 +2,7 @@
  "name": "tree_kaki",
  "description": "Persimmon: crooked trunk, a few twisting limbs, an irregular rounded crown",
  "license": "CC0-1.0",
- "density": 96,
+ "density": 192,
  "budget": {
   "tris": 60000,
   "colors": 400

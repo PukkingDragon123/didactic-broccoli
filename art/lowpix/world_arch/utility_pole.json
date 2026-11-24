@@ -2,7 +2,7 @@
  "name": "utility_pole",
  "description": "Concrete utility pole with crossarms, insulators and transformers",
  "license": "CC0-1.0",
- "density": 160,
+ "density": 240,
  "budget": {
   "tris": 60000,
   "colors": 400

@@ -1,0 +1,66 @@
+{
+ "id": "pod2_own",
+ "src": "art/lowpix/world/made/pod2_own.glb",
+ "credit": {
+  "title": "Retro space-capsule exhibit base (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pod2_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 5980,
+ "tex": 784,
+ "size": [
+  0.989,
+  0.905,
+  0.989
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#611025",
+   "#7c1729",
+   "#961f2b",
+   "#b0282a",
+   "#c83c32",
+   "#cf624f",
+   "#d4866e",
+   "#daa48c",
+   "#e1bfa8"
+  ],
+  "m1": [
+   "#171724",
+   "#1f1f2e",
+   "#272937",
+   "#303340",
+   "#3a3e48",
+   "#545962",
+   "#70757b",
+   "#8d9091",
+   "#aaaaaa"
+  ],
+  "m2": [
+   "#783906",
+   "#9a560a",
+   "#bb7910",
+   "#db9f17",
+   "#e6be32",
+   "#e6d251",
+   "#e8e16f",
+   "#eaea8d",
+   "#eeeea9"
+  ],
+  "m3": [
+   "#5c2928",
+   "#753e37",
+   "#8d5447",
+   "#a56d58",
+   "#b08a75",
+   "#b89f8b",
+   "#c1b1a0",
+   "#cbc2b4",
+   "#d6d1c7"
+  ]
+ },
+ "warnings": []
+}

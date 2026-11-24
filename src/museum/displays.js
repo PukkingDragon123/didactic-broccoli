@@ -1,7 +1,7 @@
 // Display furniture for the museum. Each builder returns { group, slots, owner?, update?, light? }.
 // Local frame: origin at the footprint centre on the floor, front = +z. Textured throughout (src/gfx/hdtex.js); the
-// sculpted parts are our own lowpix models (art/lowpix/world/made/r4_props.py: the gold byobu, the shrine roof, the
-// space pod's base, the diorama landscape) and the wrapped candies (candy_own), loaded lazily.
+// sculpted parts are our own lowpix models (art/lowpix/world/made/r5_props.py: the hina-dan with its dolls, the space
+// capsule; r4_props.py: the shrine roof, the diorama landscape) and the wrapped candies (candy_own), loaded lazily.
 import * as THREE from 'three';
 import { pixMat, boxMesh } from '../gfx/geo.js';
 import { assetSlot, assetNow, loadAsset, preloadAssets } from '../kit/assets.js';
@@ -13,7 +13,7 @@ const glassMat = () => new THREE.MeshPhysicalMaterial({ color: 0xf4fbff, transpa
 const ledMat = (c = 0xfff0d8, k = 1.8) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k) });
 
 // the sculpted parts start loading with the museum (so the shop's previews have them); built lazily either way
-if (typeof document !== 'undefined') preloadAssets(['byobu_own', 'diorama_own', 'shrine_roof_own', 'pod_base_own', 'candy_own'].map(lpAsset));
+if (typeof document !== 'undefined') preloadAssets(['hinadan_own', 'diorama_own', 'shrine_roof_own', 'pod2_own', 'candy_own'].map(lpAsset));
 
 function add(group, mesh, x, y, z) { mesh.position.set(x, y, z); group.add(mesh); return mesh; }
 // the metals, the plaster and the cords, all painted textures
@@ -158,20 +158,15 @@ export const BUILDERS = {
   },
   hinadan() {
     const g = new THREE.Group(), slots = [];
-    const felt = pixMat('velvet', { roughness: 0.95, color: 0xffb0b0 });
     const mats = [];
+    // our own hina-dan (r5_props.py): four lacquered steps under a red mosen that hangs over the sides in folds, the
+    // emperor and empress before a six-panel gold byobu with two bonbori on the top step, the tachibana and the cherry,
+    // diamond rice cakes and lacquered tables at the ends; your toys stand in the middle of the three lower steps
+    own(g, 'hinadan_own', 0, 0, 0);
     for (let i = 0; i < 3; i++) {
-      const h = 0.25 + i * 0.25, z = 0.33 - i * 0.3;
-      add(g, boxMesh(1.5, h, 0.3, felt), 0, h / 2, z);
-      slotRow(slots, 6, h, z + 0.02, 1.38);
-      mats.push({ y: h + 0.0008, z, w: 1.48, d: 0.29 });
-    }
-    // the gold-leaf byobu (kin-byōbu) standing at the back of the top tier, as behind real hina dolls
-    own(g, 'byobu_own', 0, 0.75, -0.36);
-    // bonbori lanterns
-    for (const sx of [-1, 1]) {
-      add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.25, 6), pixMat('woodDark')), sx * 0.66, 0.875, -0.27);
-      add(g, new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.12, 12), ledMat(0xffe0b0, 1.4)), sx * 0.66, 1.05, -0.27);
+      const h = 0.25 + i * 0.25 + 0.003, z = 0.375 - i * 0.25;
+      slotRow(slots, 6, h, z + 0.01, 1.1);
+      mats.push({ y: h + 0.0008, z, w: 1.1, d: 0.22 });
     }
     return { group: g, slots, mats };
   },
@@ -224,8 +219,9 @@ export const BUILDERS = {
   },
   space_pod() {
     const g = new THREE.Group(), slots = [];
-    // the base: riveted metal with a light band, a starfield on top (our own model)
-    own(g, 'pod_base_own', 0, 0, 0);
+    // the base: a retro space capsule (our own model): fins, a riveted hull with its STAR POD-7 band and portholes, a chrome
+    // rim, and four ribs arching over the glass dome to a red beacon
+    own(g, 'pod2_own', 0, 0, 0);
     const turntable = new THREE.Group();
     turntable.position.y = 0.3;
     g.add(turntable);

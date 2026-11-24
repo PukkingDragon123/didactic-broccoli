@@ -106,14 +106,19 @@ export function install(game) {
   {
     const O = V(120, 0, -80);
     offMap('ramen', box(O.x - 3, 0, O.z - 2.5, O.x + 3, 2.6, O.z + 2.5), {
+      k: 1.3,
       at: V(O.x + 0.4, 1.35, O.z + 0.9),
-      key: { dy: -0.1, angle: 1.38, s: 1.15 }, fill: { angle: 1.3, s: 1.5 },
+      key: { dy: -0.1, angle: 1.42, pen: 0.65, s: 1.2 }, fill: { angle: 1.4, s: 1.9 },
     });
-    // the two outer pendants as short warm lights of their own (the light pool picks them up while you're inside)
+    // the two outer pendants as short warm lights of their own, and the shop's recessed ceiling lights over the
+    // customers' side (a ramen counter is brightly, warmly lit: the walls, the menu and the stools read; the light
+    // pool picks them up while you're inside)
     const pend = () => {
       const g = def('ramen')?.group;
       if (!g || g.userData.pendants) return;
-      g.userData.pendants = [-1.6, 1.4].map((x) => { const pl = new THREE.PointLight(0xffe2c0, 3.2, 3.6, 2); pl.position.set(O.x + x, 1.9, O.z + 0.2); g.add(pl); return pl; });
+      const pl = (x, y, z, c, i, d) => { const L = new THREE.PointLight(c, i, d, 2); L.position.set(O.x + x, y, O.z + z); g.add(L); return L; };
+      g.userData.pendants = [pl(-1.6, 1.9, 0.2, 0xffe2c0, 4.5, 3.8), pl(1.4, 1.9, 0.2, 0xffe2c0, 4.5, 3.8),
+        pl(-1.4, 2.5, 1.55, 0xfff1e0, 6.5, 6), pl(1.5, 2.5, 1.55, 0xfff1e0, 6.5, 6)];
     };
     pend();
   }

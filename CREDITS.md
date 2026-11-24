@@ -2720,6 +2720,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Gumball machine (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/gumball_machine_own.glb), CC0 1.0. Shipped as `models/lowpix/world/gumball_own.glb`
 - Hamaya (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hamaya_own.glb), CC0 1.0. Shipped as `models/lowpix/world/hamaya_own.glb`
 - Hat box (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hatbox.glb), CC0 1.0. Shipped as `models/lowpix/world/hatbox_own.glb`
+- Hina-dan with the emperor and empress dolls, gold byobu, bonbori and mosen (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/hinadan_own.glb), CC0 1.0. Shipped as `models/lowpix/world/hinadan_own.glb`
 - Kamidana (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/kamidana_own.glb), CC0 1.0. Shipped as `models/lowpix/world/kamidana_own.glb`
 - Laundry pole (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/laundry_pole.glb), CC0 1.0. Shipped as `models/lowpix/world/laundry_pole_own.glb`
 - milk carton by Gacha Garage (made for the game, art/lowpix/world/made/goodsmilk.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsmilk.glb`
@@ -2740,6 +2741,7 @@ Converted to the game's pixel-art style with lowpix (`python3 -m lowpix convert 
 - Petal drift (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/petal_drift_own.glb), CC0 1.0. Shipped as `models/lowpix/world/petal_drift_own.glb`
 - Pink phone (ピンク電話) by Gacha Garage (made for the game, art/lowpix/world/made/pinkphone.glb), CC0 1.0. Shipped as `models/lowpix/world/pinkphone.glb`
 - Recycle cage with cans and PET bottles (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/recycle_cage.glb), CC0 1.0. Shipped as `models/lowpix/world/recycle_cage_own.glb`
+- Retro space-capsule exhibit base (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/pod2_own.glb), CC0 1.0. Shipped as `models/lowpix/world/pod2_own.glb`
 - Robot vacuum dock (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/vacuum_dock.glb), CC0 1.0. Shipped as `models/lowpix/world/vacuum_dock_m.glb`
 - room cupnoodle by Gacha Garage (made for the game, art/lowpix/world/made/goodsnoodle.glb), CC0 1.0. Shipped as `models/lowpix/world/goodsnoodle.glb`
 - Route machines, black (our own model, hand-painted) by Gacha Garage (made for the game, art/lowpix/world/made/route_machine_black.glb), CC0 1.0. Shipped as `models/lowpix/world/route_black.glb`

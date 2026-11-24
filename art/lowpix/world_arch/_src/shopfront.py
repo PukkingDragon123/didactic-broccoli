@@ -73,7 +73,7 @@ def _common(S):
 
 
 def shopfront():
-    S = Spec('shopfront', ppm=96, desc="Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails")
+    S = Spec('shopfront', ppm=144, desc="Gacha Garage's lane face: box-profile false front, piers, eave, shutter hood and rails")
     _common(S)
     # ---------------------------------------------------------------- the two piers (cladding over the concrete walls)
     for sx in (-1, 1):
@@ -159,7 +159,7 @@ def shopfront():
 
 
 def garage_shell():
-    S = Spec('garage_shell', ppm=96, desc="The garage's corrugated roof behind the false front and its exposed east wall")
+    S = Spec('garage_shell', ppm=144, desc="The garage's corrugated roof behind the false front and its exposed east wall")
     _common(S)
     S.box('roof', 8.7, 0.1, 10.5, 0, H + 0.12, -0.15, style='galv', hide=['bottom'],
           paint={'layers': [{'id': 'corr', 'op': 'stripes', 'axis': 'x', 'period': 0.25, 'width': 0.4, 'shift': 0.9,

@@ -1,7 +1,7 @@
 // Geometry/material helpers for architecture: world-scaled UV boxes with pixel-art materials.
 import * as THREE from 'three';
-import { tex } from './textures.js';
-import { hasHD, hdSize, hdTexture } from './hdtex.js';
+import { tex, hasRecipe } from './textures.js';
+import { hasHD, inHD, hdSize, hdTexture } from './hdtex.js';
 import { patchTextureDetail } from '../voxel/materials.js';
 import { SURF } from '../voxel/VoxelModel.js';
 
@@ -53,7 +53,9 @@ export const HD_BUMP = 0.4;
 export function pixMat(key, opts = {}) {
   const ck = key + JSON.stringify(opts);
   if (matCache.has(ck)) return matCache.get(ck);
-  if (hasHD(key)) {
+  // (an HD-only surface, such as Mikawa-ya's doma, has no procedural recipe: on the presets that skip the HD set it
+  // still loads its one image instead of failing the world's build)
+  if (hasHD(key) || (!hasRecipe(key) && inHD(key))) {
     // the HD version (src/gfx/hdtex.js, 256 px/m): one repeat per its own size in metres, whatever opts.ppm said; its
     // colour map doubles as a gentle bump (the painted grout and seams read as relief)
     const map = hdTexture(key), [w, h] = hdSize(key);

@@ -2,7 +2,7 @@
  "name": "tree_keyaki",
  "description": "Keyaki (Japanese zelkova) park tree: vase of upswept limbs, broad crown",
  "license": "CC0-1.0",
- "density": 96,
+ "density": 120,
  "budget": {
   "tris": 60000,
   "colors": 400

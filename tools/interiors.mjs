@@ -28,7 +28,10 @@ const VIEWS = {
 const HOURS = { day: 13, night: 21.5 };
 const list = flag('views', Object.keys(VIEWS).flatMap((v) => [v + '_day', v + '_night']).join(',')).split(',');
 // --perf: one boot, every preset in --q switched at runtime, only timings (no pictures)
-const PERF = args.includes('--perf');
+const PERF = args.includes('--perf'), PICS = !PERF || args.includes('--pics');
+// --trace [frames]: at the end, the frame-time trace of walking into the garage (its room light baking in the
+// background within its budget): per frame the fenced frame time and the bake's own time
+const TRACE = args.includes('--trace') ? +(flag('trace', '90')) || 90 : 0;
 
 let chromium;
 try { ({ chromium } = await import('playwright')); } catch { ({ chromium } = createRequire('/opt/node-tools/node_modules/')('playwright')); }
@@ -80,22 +83,23 @@ try {
         // settle: autofocus, light pool fades, eye adaptation
         for (let i = 0; i < 4; i++) { g.update(1 / 30); R.render(1 / 30, g.time); }
         const gl = R.renderer.getContext(), px = new Uint8Array(4);
-        let ms = 0;
-        const info = R.renderer.info;
+        const info = R.renderer.info, all = [];
         info.autoReset = false;
         for (let i = 0; i < frames; i++) {
           info.reset();
           const t0 = performance.now();
           g.update(1 / 60); R.render(1 / 60, g.time);
           gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); // (a fence: waits for the frame)
-          ms += performance.now() - t0;
+          all.push(performance.now() - t0);
         }
+        all.sort((a, b) => a - b);
+        const ms = all[all.length >> 1] * frames; // (the median: a busy shared machine throws outliers)
         const calls = info.render.calls, tris = info.render.triangles;
         info.autoReset = true;
         R.render(1 / 60, g.time);
         return { ms: ms / frames, url: shot ? R.renderer.domElement.toDataURL('image/png') : '', calls, tris, lost: gl.isContextLost() };
-      }, { setup, hour: HOURS[when] ?? 13, frames: FRAMES, shot: !PERF });
-      if (!PERF) writeFileSync(resolve(dir, name + '.png'), Buffer.from(res.url.split(',')[1], 'base64'));
+      }, { setup, hour: HOURS[when] ?? 13, frames: FRAMES, shot: PICS });
+      if (PICS) writeFileSync(resolve(dir, name + '.png'), Buffer.from(res.url.split(',')[1], 'base64'));
       times[name] = { ms: +res.ms.toFixed(1), calls: res.calls, tris: res.tris, ...(res.lost ? { lost: true } : {}) };
       console.log(q, name, times[name]);
     }
@@ -104,6 +108,26 @@ try {
     if (!PERF) { await ctx.close(); pg = null; }
   }
   if (PERF) writeFileSync(resolve(root, 'shots/render', TAG, 'perf.json'), JSON.stringify(perfAll, null, 1));
+  if (TRACE && pg) {
+    const trace = await pg.evaluate(async (n) => {
+      const g = window.__game, dbg = window.dbg, R = g.renderer, gl = R.renderer.getContext(), px = new Uint8Array(4), out = [];
+      if (g.places?.where) g.places.setWhere(null);
+      dbg.time(13); dbg.shopOpen?.(); dbg.view(0.6, 14, 0, 0); // (out on the lane, past the garage's reach)
+      for (let i = 0; i < 3; i++) { g.update(1 / 60); R.render(1 / 60, g.time); }
+      R.gi.reset();
+      dbg.view(0.6, 3.4, 0.35, -0.12); // in through the shutter
+      for (let i = 0; i < n; i++) {
+        const t0 = performance.now();
+        g.update(1 / 60); R.render(1 / 60, g.time);
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        out.push({ frame: +(performance.now() - t0).toFixed(1), bake: +R.gi.lastMs.toFixed(2), debt: +R.gi.debt.toFixed(2), probes: R.gi.stats.probes });
+      }
+      return { quality: R.qualityName, room: R.gi.cur?.id, budget: R.gi.q.ms, frames: out };
+    }, TRACE);
+    writeFileSync(resolve(root, 'shots/render', TAG, 'trace_garage.json'), JSON.stringify(trace, null, 1));
+    const b = trace.frames.map((f) => f.bake).sort((x, y) => x - y);
+    console.log('trace', trace.quality, trace.room, 'bake ms p50', b[b.length >> 1], 'p95', b[Math.floor(b.length * 0.95)], 'max', b[b.length - 1], 'mean', (b.reduce((x, y) => x + y, 0) / b.length).toFixed(2));
+  }
 } catch (e) { console.error('ERROR', e.stack || e.message); }
 finally {
   if (errors.length) console.log('console errors:\n' + errors.slice(0, 30).join('\n'));

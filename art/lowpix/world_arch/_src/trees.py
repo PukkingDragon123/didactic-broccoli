@@ -72,7 +72,8 @@ def bend(a, b, sag, rng, n=4, wob=0.12):
 
 class Tree:
     def __init__(self, id, desc, seed, bark, bark_photo, leaf):
-        self.S = Spec(id, ppm=96, desc=desc)
+        # texels per metre: as high as fits one 2048 atlas (docs/ART.md: 256 close)
+        self.S = Spec(id, ppm={'tree_pine': 224, 'tree_kaki': 192, 'tree_sakura': 128, 'tree_keyaki': 120}.get(id, 96), desc=desc)
         _mats(self.S, bark, bark_photo, leaf)
         self.rng = random.Random(seed)
         self.clumps = []  # [x, y, z, rx, ry, rz]

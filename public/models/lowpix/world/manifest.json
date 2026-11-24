@@ -660,13 +660,13 @@
   "url": "https://polyhaven.com/a/cardboard_box_01",
   "site": "Poly Haven",
   "tris": 998,
-  "tex": 256,
+  "tex": 560,
   "size": [
    0.392,
    0.342,
    0.52
   ],
-  "bytes": 22084
+  "bytes": 61120
  },
  "breaker_lever_m": {
   "id": "breaker_lever_m",
@@ -1450,13 +1450,13 @@
   "url": "https://polyhaven.com/a/standing_chalkboard_01",
   "site": "Poly Haven",
   "tris": 1988,
-  "tex": 464,
+  "tex": 768,
   "size": [
    0.92,
    1.509,
    0.759
   ],
-  "bytes": 73220
+  "bytes": 185916
  },
  "chess": {
   "id": "chess",
@@ -3126,6 +3126,24 @@
    0.313
   ],
   "bytes": 27452
+ },
+ "hinadan_own": {
+  "id": "hinadan_own",
+  "name": "Hina-dan with the emperor and empress dolls, gold byobu, bonbori and mosen (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hinadan_own.glb",
+  "title": "Hina-dan with the emperor and empress dolls, gold byobu, bonbori and mosen (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hinadan_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 10362,
+  "tex": 2048,
+  "size": [
+   1.532,
+   1.373,
+   1.01
+  ],
+  "bytes": 639980
  },
  "hook_m": {
   "id": "hook_m",
@@ -5100,6 +5118,24 @@
    0.213
   ],
   "bytes": 30816
+ },
+ "pod2_own": {
+  "id": "pod2_own",
+  "name": "Retro space-capsule exhibit base (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/pod2_own.glb",
+  "title": "Retro space-capsule exhibit base (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pod2_own.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 5980,
+  "tex": 784,
+  "size": [
+   0.989,
+   0.905,
+   0.989
+  ],
+  "bytes": 182332
  },
  "pod_base_own": {
   "id": "pod_base_own",
@@ -7479,13 +7515,13 @@
   "url": "https://polyhaven.com/a/Television_01",
   "site": "Poly Haven",
   "tris": 975,
-  "tex": 352,
+  "tex": 512,
   "size": [
    0.6,
    0.457,
    0.471
   ],
-  "bytes": 25724
+  "bytes": 34712
  },
  "twin_tub_own": {
   "id": "twin_tub_own",

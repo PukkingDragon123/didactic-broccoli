@@ -2,7 +2,7 @@
  "name": "playground",
  "description": "Park play equipment: jungle gym, horizontal bars, swing rails",
  "license": "CC0-1.0",
- "density": 192,
+ "density": 256,
  "budget": {
   "tris": 60000,
   "colors": 400

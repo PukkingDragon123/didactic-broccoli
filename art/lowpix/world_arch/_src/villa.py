@@ -187,7 +187,7 @@ def villa():
 
 
 def toilet():
-    S = Spec('park_toilet', ppm=112, desc='The park public toilet block')
+    S = Spec('park_toilet', ppm=144, desc='The park public toilet block')
     _mats(S)
     x0, x1, z0, z1, H = 23.0, 25.75, -8.7, -5.85, 2.75
     xc, zc = (x0 + x1) / 2, (z0 + z1) / 2

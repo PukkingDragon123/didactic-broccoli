@@ -354,7 +354,8 @@
    "id": "tansu",
    "src": "sketchfab:48bbd9962cc04725907c14a1a98fb812",
    "h": 1.0,
-   "ppm": 140
+   "ppm": 380,
+   "cap": 1024
   },
   {
    "id": "tea_set",
@@ -631,19 +632,21 @@
    "id": "mk_ice_freezer",
    "src": "sketchfab:63f74a5275864eab9a51309b9c391cf4",
    "h": 0.88,
-   "ppm": 140,
+   "ppm": 450,
    "tris": 3000,
    "name": "Deep Freezer V1",
-   "prop": "mk_ice_freezer"
+   "prop": "mk_ice_freezer",
+   "cap": 2048
   },
   {
    "id": "mk_ramune_tub",
    "src": "sketchfab:66fd712372f14a8f8d83d4d1e4ff6dce",
    "h": 0.66,
-   "ppm": 180,
+   "ppm": 320,
    "tris": 3000,
    "name": "Ice Bucket",
-   "prop": "mk_ramune_tub"
+   "prop": "mk_ramune_tub",
+   "cap": 1024
   },
   {
    "id": "mk_peg_stand",
@@ -658,10 +661,11 @@
    "id": "mk_snack_carton",
    "src": "sketchfab:fb9958f7f2c74095a25589837e62aa9d",
    "h": 0.38,
-   "ppm": 180,
+   "ppm": 280,
    "tris": 1000,
    "name": "Carton Box_03_Open",
-   "prop": "mk_snack_carton"
+   "prop": "mk_snack_carton",
+   "cap": 1024
   },
   {
    "id": "mk_ashtray",
@@ -676,19 +680,21 @@
    "id": "mk_zabuton",
    "src": "sketchfab:1e2b4dc9efe348548b681a1fe0a1343b",
    "h": 0.12,
-   "ppm": 180,
+   "ppm": 290,
    "tris": 1000,
    "name": "Zafu and zabuton",
-   "prop": "mk_zabuton"
+   "prop": "mk_zabuton",
+   "cap": 1024
   },
   {
    "id": "mk_phone",
    "src": "sketchfab:1b3929f627a141be92f0c8c16a3ba296",
    "h": 0.12,
-   "ppm": 240,
+   "ppm": 310,
    "tris": 1000,
    "name": "Classic Telephone",
-   "prop": "mk_phone"
+   "prop": "mk_phone",
+   "cap": 1024
   },
   {
    "id": "mk_cigar_box",
@@ -1086,10 +1092,11 @@
    "id": "junk_box",
    "src": "sketchfab:ab5e036dd0244ad2afbd907d4a151b23",
    "h": 0.396,
-   "ppm": 180,
+   "ppm": 280,
    "tris": 3000,
    "name": "Junk Box",
-   "prop": "junk_box"
+   "prop": "junk_box",
+   "cap": 1024
   },
   {
    "id": "junk_box_open",
@@ -1213,10 +1220,11 @@
    "id": "mk_outbox",
    "src": "sketchfab:e12fde1101b84b6da40056336a7b309d",
    "h": 0.216,
-   "ppm": 180,
+   "ppm": 280,
    "tris": 1000,
    "name": "Wooden Crate",
-   "prop": "mk_outbox"
+   "prop": "mk_outbox",
+   "cap": 1024
   },
   {
    "id": "park_bench",
@@ -1298,10 +1306,11 @@
    "id": "cat_bed",
    "src": "sketchfab:f43199f19c3142c68cc672db55d9a40d",
    "h": 0.16,
-   "ppm": 180,
+   "ppm": 260,
    "tris": 1000,
    "name": "Cardboard Box",
-   "prop": "cat_bed"
+   "prop": "cat_bed",
+   "cap": 1024
   },
   {
    "id": "flyer_stack",
@@ -1442,10 +1451,11 @@
    "id": "pendulum_clock",
    "src": "sketchfab:a1399c9b33554b9a9d25ec9e5fbdd5ca",
    "h": 0.64,
-   "ppm": 180,
+   "ppm": 260,
    "tris": 1000,
    "name": "Antique Wall Pendulum Clock",
-   "prop": "pendulum_clock"
+   "prop": "pendulum_clock",
+   "cap": 1024
   },
   {
    "id": "lucky_cat_big",
@@ -1538,13 +1548,14 @@
    "id": "trash_bag",
    "src": "polyhaven:trashbag",
    "h": 0.48,
-   "ppm": 180,
+   "ppm": 270,
    "tris": 1000,
    "prop": "trash_bag",
    "smooth": 3.0,
    "grain": 0.0,
    "detail": 0.55,
-   "spread": 0.45
+   "spread": 0.45,
+   "cap": 1024
   },
   {
    "id": "grass_tuft",
@@ -1613,10 +1624,11 @@
    "id": "wall_shelf_jars",
    "src": "sketchfab:373ad4d8e5bb4783b6e76dbdf7732788",
    "h": 0.56,
-   "ppm": 140,
+   "ppm": 290,
    "tris": 3000,
    "name": "Jar Shelf",
-   "prop": "wall_shelf_jars"
+   "prop": "wall_shelf_jars",
+   "cap": 1024
   },
   {
    "id": "bonsai",
@@ -1643,11 +1655,11 @@
    "id": "kakigori",
    "src": "art/lowpix/world/made/kakigori.glb",
    "h": 1.545,
-   "ppm": 180,
+   "ppm": 250,
    "tris": 600,
    "name": "Shaved-ice flag (氷)",
    "prop": "kakigori_flag",
-   "cap": 512,
+   "cap": 1024,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -1714,11 +1726,11 @@
    "id": "cardboardmess",
    "src": "art/lowpix/world/made/cardboardmess.glb",
    "h": 0.216,
-   "ppm": 320,
+   "ppm": 490,
    "tris": 2000,
    "name": "Cardboard mess",
    "prop": "cardboard_mess",
-   "cap": 512,
+   "cap": 1024,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -1834,11 +1846,11 @@
    "id": "dairycase",
    "src": "art/lowpix/world/made/dairycase.glb",
    "h": 1.72,
-   "ppm": 300,
+   "ppm": 1120,
    "tris": 600,
    "name": "mk dairy case",
    "prop": "mk_dairy_case",
-   "cap": 512,
+   "cap": 2048,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -1882,11 +1894,11 @@
    "id": "dagashirack",
    "src": "art/lowpix/world/made/dagashirack.glb",
    "h": 1.215,
-   "ppm": 300,
+   "ppm": 1110,
    "tris": 600,
    "name": "dagashi rack",
    "prop": "dagashi_rack",
-   "cap": 512,
+   "cap": 2048,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -1894,11 +1906,11 @@
    "id": "showcase",
    "src": "art/lowpix/world/made/showcase.glb",
    "h": 0.96,
-   "ppm": 300,
+   "ppm": 1120,
    "tris": 600,
    "name": "shop counter",
    "prop": "shop_counter",
-   "cap": 512,
+   "cap": 2048,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -1942,11 +1954,11 @@
    "id": "garbagestation",
    "src": "art/lowpix/world/made/garbagestation.glb",
    "h": 1.74,
-   "ppm": 200,
+   "ppm": 500,
    "tris": 1500,
    "name": "Garbage station (ごみ集積所)",
    "prop": "garbage_station",
-   "cap": 512,
+   "cap": 1024,
    "grain": 0.0,
    "smooth": 1.0
   },
@@ -3782,9 +3794,9 @@
    "id": "kamidana_own",
    "src": "art/lowpix/world/made/kamidana_own.glb",
    "h": 0.4,
-   "ppm": 500,
+   "ppm": 1200,
    "tris": 600,
-   "cap": 256,
+   "cap": 1024,
    "name": "Kamidana (our own model, hand-painted)"
   },
   {
@@ -4064,9 +4076,9 @@
    "id": "broombin_own",
    "src": "art/lowpix/world/made/broombin_own.glb",
    "h": 1.25,
-   "ppm": 250,
+   "ppm": 440,
    "tris": 500,
-   "cap": 512,
+   "cap": 1024,
    "name": "Broombin (our own model, hand-painted)"
   },
   {
@@ -4128,9 +4140,9 @@
    "id": "sleepbag",
    "src": "sketchfab:d2ab6e8a8ffc472e9fca8b920662dafe",
    "h": 0.24,
-   "ppm": 320,
+   "ppm": 520,
    "tris": 1500,
-   "cap": 512,
+   "cap": 1024,
    "name": "Camping sleeping bag"
   },
   {
@@ -4182,9 +4194,9 @@
    "id": "bush_sign",
    "src": "art/lowpix/world/made/bush_sign.glb",
    "h": 0.741,
-   "ppm": 400,
+   "ppm": 560,
    "tris": 80,
-   "cap": 256,
+   "cap": 1024,
    "name": "Cardboard sign on a stick (our own model, hand-painted)"
   },
   {
@@ -4258,6 +4270,25 @@
    "tris": 600,
    "cap": 1024,
    "name": "Tiled ofuro with a hinoki rim (our own model, hand-painted)"
+  },
+  {
+   "id": "hinadan_own",
+   "src": "art/lowpix/world/made/hinadan_own.glb",
+   "h": 1.373,
+   "ppm": 500,
+   "tris": 12000,
+   "cap": 2048,
+   "ramps": 8,
+   "name": "Hina-dan with the emperor and empress dolls, gold byobu, bonbori and mosen (our own model, hand-painted)"
+  },
+  {
+   "id": "pod2_own",
+   "src": "art/lowpix/world/made/pod2_own.glb",
+   "h": 0.905,
+   "ppm": 320,
+   "tris": 7000,
+   "cap": 1024,
+   "name": "Retro space-capsule exhibit base (our own model, hand-painted)"
   }
  ]
 }
