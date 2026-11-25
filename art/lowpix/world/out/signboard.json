@@ -1,0 +1,44 @@
+{
+ "id": "signboard",
+ "src": "art/lowpix/world/made/signboard.glb",
+ "credit": {
+  "title": "Shop signboard (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/signboard.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 740,
+ "tex": 1024,
+ "size": [
+  2.3,
+  0.521,
+  0.166
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#2c0f0d",
+   "#391812",
+   "#452217",
+   "#502d1d",
+   "#5b3a24",
+   "#7e5936",
+   "#9f7a49",
+   "#b59a68",
+   "#c4b58e"
+  ],
+  "m1": [
+   "#1d1715",
+   "#251f1d",
+   "#2c2725",
+   "#33302d",
+   "#3a3836",
+   "#545353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

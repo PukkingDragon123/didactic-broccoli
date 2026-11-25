@@ -1,0 +1,66 @@
+{
+ "id": "gk_cordlamp",
+ "src": "art/lowpix/world/made/garage_kit/gk_cordlamp.glb",
+ "credit": {
+  "title": "Desk lamp flex and power strip (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_cordlamp.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 668,
+ "tex": 1024,
+ "size": [
+  0.473,
+  0.794,
+  4.707
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#160f0f",
+   "#1c1514",
+   "#221b1a",
+   "#272220",
+   "#2c2826",
+   "#494643",
+   "#656463",
+   "#818181",
+   "#9f9f9f"
+  ],
+  "m1": [
+   "#8a522d",
+   "#b0753e",
+   "#c49962",
+   "#d0b98d",
+   "#dfd4b6",
+   "#e2dcc1",
+   "#e6e3cc",
+   "#e9e9d7",
+   "#eeeee1"
+  ],
+  "m2": [
+   "#510c21",
+   "#681225",
+   "#7e1826",
+   "#942026",
+   "#a82c28",
+   "#c64434",
+   "#ce6d55",
+   "#d59278",
+   "#ddb299"
+  ],
+  "m3": [
+   "#404757",
+   "#56606e",
+   "#6e7984",
+   "#899197",
+   "#a4a8aa",
+   "#b3b3b3",
+   "#bfbfbf",
+   "#cbcbcb",
+   "#d7d7d7"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,77 @@
+{
+ "id": "barricade",
+ "src": "art/lowpix/world/made/barricade.glb",
+ "credit": {
+  "title": "Road barricade (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/barricade.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 344,
+ "tex": 512,
+ "size": [
+  1.3,
+  0.955,
+  0.5
+ ],
+ "colours": 37,
+ "palette": {
+  "m0": [
+   "#363a4a",
+   "#494f5f",
+   "#5e6472",
+   "#737a83",
+   "#8b8f93",
+   "#9e9e9f",
+   "#aeaeae",
+   "#bdbdbd",
+   "#cdcdcd"
+  ],
+  "m1": [
+   "#6f0c26",
+   "#8f1228",
+   "#ad1927",
+   "#ca2123",
+   "#da4337",
+   "#dc6b56",
+   "#df8d73",
+   "#e3ab90",
+   "#e8c4ab"
+  ],
+  "m2": [
+   "#92432a",
+   "#bb643a",
+   "#cb8e64",
+   "#d7b492",
+   "#e5d4bd",
+   "#e7dcc7",
+   "#eae4d1",
+   "#edeadb",
+   "#f1f0e4"
+  ],
+  "m3": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m4": [
+   "#970c25",
+   "#c21323",
+   "#e52123",
+   "#e75c51",
+   "#eb907f",
+   "#eca893",
+   "#edbda5",
+   "#efceb8",
+   "#f2ddc9"
+  ]
+ },
+ "warnings": []
+}

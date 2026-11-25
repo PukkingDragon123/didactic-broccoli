@@ -1,0 +1,77 @@
+{
+ "id": "stroller",
+ "src": "art/lowpix/world/made/stroller.glb",
+ "credit": {
+  "title": "Baby stroller (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/stroller.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 612,
+ "tex": 512,
+ "size": [
+  0.446,
+  0.97,
+  0.649
+ ],
+ "colours": 36,
+ "palette": {
+  "m0": [
+   "#550a21",
+   "#6d1024",
+   "#841525",
+   "#9b1c23",
+   "#b02824",
+   "#ce412f",
+   "#d46b52",
+   "#d99176",
+   "#e0b298"
+  ],
+  "m1": [
+   "#8c4f2c",
+   "#b3733d",
+   "#c69864",
+   "#d2b98f",
+   "#e1d5b9",
+   "#e4ddc4",
+   "#e7e4ce",
+   "#ebead9",
+   "#efefe2"
+  ],
+  "m2": [
+   "#434860",
+   "#5b637a",
+   "#757f91",
+   "#949ba4",
+   "#b1b5b9",
+   "#bebfc1",
+   "#c9c9c9",
+   "#d4d4d4",
+   "#dedede"
+  ],
+  "m3": [
+   "#110d0e",
+   "#161112",
+   "#1a1616",
+   "#1e1b1b",
+   "#222020",
+   "#404040",
+   "#5e5e5e",
+   "#7d7d7d",
+   "#9b9b9b"
+  ],
+  "m4": [
+   "#36101b",
+   "#451720",
+   "#531e24",
+   "#612628",
+   "#6e312e",
+   "#8d4a3f",
+   "#ab6552",
+   "#b88976",
+   "#c6aa98"
+  ]
+ },
+ "warnings": []
+}

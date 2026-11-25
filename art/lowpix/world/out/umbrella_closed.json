@@ -1,0 +1,55 @@
+{
+ "id": "umbrella_closed",
+ "src": "art/lowpix/world/made/umbrella_closed.glb",
+ "credit": {
+  "title": "Closed umbrella (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/umbrella_closed.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 164,
+ "tex": 304,
+ "size": [
+  0.09,
+  0.86,
+  0.09
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#0f0f2a",
+   "#141736",
+   "#1a2141",
+   "#212c4c",
+   "#283856",
+   "#3b5577",
+   "#507597",
+   "#6f94ad",
+   "#93b0be"
+  ],
+  "m1": [
+   "#363a4a",
+   "#494f5f",
+   "#5e6472",
+   "#737a83",
+   "#8b8f93",
+   "#9e9e9f",
+   "#aeaeae",
+   "#bdbdbd",
+   "#cdcdcd"
+  ],
+  "m2": [
+   "#2c0f0d",
+   "#381712",
+   "#442117",
+   "#4f2d1d",
+   "#5a3924",
+   "#7d5736",
+   "#9e7949",
+   "#b49968",
+   "#c3b48e"
+  ]
+ },
+ "warnings": []
+}

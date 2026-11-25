@@ -1,0 +1,44 @@
+{
+ "id": "sign_posts",
+ "src": "art/lowpix/world/made/sign_posts.glb",
+ "credit": {
+  "title": "Sign board posts (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/sign_posts.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 460,
+ "tex": 512,
+ "size": [
+  1.31,
+  1.8,
+  0.08
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#874f2e",
+   "#ac7140",
+   "#c19563",
+   "#ceb58d",
+   "#ddd1b5",
+   "#e0d9c1",
+   "#e4e1cc",
+   "#e8e7d6",
+   "#edede1"
+  ],
+  "m1": [
+   "#430d0d",
+   "#561913",
+   "#682719",
+   "#793720",
+   "#8a4928",
+   "#aa6736",
+   "#c2874c",
+   "#caa571",
+   "#d4bf94"
+  ]
+ },
+ "warnings": []
+}

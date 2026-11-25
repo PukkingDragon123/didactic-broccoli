@@ -1,0 +1,33 @@
+{
+ "id": "gk_toggle",
+ "src": "art/lowpix/world/made/garage_kit/gk_toggle.glb",
+ "credit": {
+  "title": "Light switch toggle (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_toggle.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 44,
+ "tex": 48,
+ "size": [
+  0.022,
+  0.036,
+  0.018
+ ],
+ "colours": 5,
+ "palette": {
+  "m0": [
+   "#8a4f2d",
+   "#b0723e",
+   "#c49762",
+   "#d0b78d",
+   "#dfd3b6",
+   "#e2dbc1",
+   "#e6e2cc",
+   "#e9e9d7",
+   "#eeeee1"
+  ]
+ },
+ "warnings": []
+}

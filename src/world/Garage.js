@@ -1,16 +1,16 @@
 // The garage: architecture, outside street at dusk, lighting and fixed interactables. It starts nearly empty: the
 // furniture and decor you buy are placed with the builder (src/build/) on the attach points below (ATTACH).
 import * as THREE from 'three';
-import { worldBox, worldPlane, pixMat, boxMesh, colMat as plainMat } from '../gfx/geo.js';
+import { worldBox, pixMat, boxMesh, colMat as plainMat } from '../gfx/geo.js';
 import { detailize, surfaceTex } from './surfaces.js';
 import { posterTexture, Pix } from '../gfx/textures.js';
 import { FONT_EN } from '../gfx/pix.js';
-import { propMesh, hasProp } from './props.js';
-import { SHOP_ART } from '../gfx/shopArt.js';
-import { hash2 } from '../core/util.js';
+import { propMesh, hasProp, propSize } from './props.js';
 import { Town } from './Town.js';
 import { archReady, archFace } from './archModels.js';
 import { GarageDetail, garageBatches, bakeInto, placeProp, surfMat } from './GarageDetail.js';
+import { GarageMess, kitMesh, kitOrigin, propMap, LANTERN_PTS } from './garageMess.js';
+import { dressGarage } from './garageLayout.js';
 
 // the garage's plain-coloured parts (frames, the door furniture, the bar, the table legs...) get real surface detail
 const colCache = new Map();
@@ -37,11 +37,12 @@ export const SHELF_SLOTS = [-0.55, 1.25, 3.05].map((z) => ({ x: 3.93, z, rotY: -
 const RACK_Y = [0.08, 0.62, 1.16, 1.7];
 export const ATTACH = {
   surfaces: [
-    { id: 'table', x0: -0.68, x1: 1.08, z0: -0.33, z1: 0.53, y: 0.78, h: 0.7 },
+    // (the middle of the counter: the rest of it is Grandpa's clutter, src/world/garageLayout.js)
+    { id: 'table', x0: -0.3, x1: 0.55, z0: -0.08, z1: 0.36, y: 0.78, h: 0.7 },
     { id: 'desk', x0: 3.29, x1: 3.95, z0: -4.68, z1: -3.2, y: 0.74, h: 0.9 },
-    ...[-3.25, -1.85].flatMap((x, r) => RACK_Y.map((y, i) => ({ id: `rack${r}_${i}`, x0: x - 0.58, x1: x + 0.58, z0: -4.92, z1: -4.5, y: y + 0.0125, h: i < 3 ? 0.5 : 0.9 }))),
-    { id: 'highShelf', x0: 3.75, x1: 3.98, z0: -1.1, z1: 3.76, y: 2.475, h: 0.5 },
-    { id: 'sill', x0: -3.99, x1: -3.83, z0: 1.0, z1: 2.7, y: 1.75, h: 0.55 },
+    // (the racks are full of Grandpa's stock: src/world/garageLayout.js)
+    { id: 'highShelf', x0: 3.75, x1: 3.98, z0: 0.9, z1: 3.76, y: 2.475, h: 0.5 },
+    { id: 'sill', x0: -3.99, x1: -3.83, z0: 1.45, z1: 2.2, y: 1.75, h: 0.55 },
   ],
   walls: [
     { id: 'back', face: '+z', at: -4.995, u0: -3.95, u1: 3.95, y0: 0.35, y1: 2.9 },
@@ -77,6 +78,22 @@ export const ATTACH = {
     { face: '+z', u0: 1.85, u1: 2.35, y0: 1.8, y1: 2.5 }, // a poster over the sink
     { face: '+z', u0: 2.88, u1: 3.43, y0: 1.9, y1: 2.4 }, // the dartboard
     { face: '+z', u0: -1.16, u1: -0.86, y0: 1.45, y1: 1.65 }, // the opening-hours card
+    // Grandpa's mess and its notices (src/world/garageLayout.js, src/world/GarageDetail.js electrical)
+    { face: '+z', u0: -1.2, u1: -0.7, y0: 0, y1: 1.95 }, // the broom bin and the no-credit notice
+    { face: '+z', u0: 1.45, u1: 1.8, y0: 1.42, y1: 1.95 }, // the kaiju poster over the fridge
+    { face: '+z', u0: 3.3, u1: 3.8, y0: 2.45, y1: 2.65 }, // the shoplifting notice
+    { face: '+z', u0: -2.4, u1: 2.4, y0: 2.95, y1: 3.2 }, // the knob-and-tube wiring
+    { face: '-x', u0: -0.85, u1: -0.25, y0: 2.0, y1: 2.25 }, // tin signs under the high shelf
+    { face: '-x', u0: 2.78, u1: 3.32, y0: 2.0, y1: 2.25 },
+    { face: '-x', u0: 1.88, u1: 2.42, y0: 0.9, y1: 1.95 }, // his jacket over the fan
+    { face: '-x', u0: -1.8, u1: -1.4, y0: 0, y1: 0.9 }, // crates of stock by the sell box
+    { face: '+x', u0: 0.5, u1: 0.82, y0: 1.85, y1: 2.55 }, // the soy sauce tin sign
+    { face: '+x', u0: -4.95, u1: -4.75, y0: 0, y1: 3.2 }, // the outlet and its conduit in the back corner
+    { face: '+x', u0: -4.9, u1: 4.9, y0: 3.05, y1: 3.3 }, // the wiring on the wall plate
+    { face: '+x', u0: -4.25, u1: -3.75, y0: 2.3, y1: 2.8 }, // posters over the plank shelves
+    { face: '+x', u0: -2.7, u1: -2.2, y0: 2.3, y1: 2.8 },
+    { face: '+z', u0: 2.45, u1: 2.85, y0: 2.0, y1: 2.5 }, // the Showa poster by the water heater
+    { face: '+x', u0: 3.05, u1: 3.35, y0: 1.35, y1: 1.75 }, // the lost-cat poster by the workbench
   ],
   keepClear: [
     { a: [0.4, 5.2], b: [0.4, 4.2], r: 0.45 }, // in under the shutter
@@ -89,26 +106,11 @@ export const ATTACH = {
   ],
 };
 
-/** A chōchin's turned body (0.2 m tall, ~0.15 m across): black rims top and bottom, the paper bulging between. */
-function chochinGeometry() {
-  const P = [[0, -0.1], [0.026, -0.1], [0.034, -0.097], [0.034, -0.087], [0.047, -0.081], [0.063, -0.06], [0.071, -0.031],
-    [0.073, 0], [0.071, 0.031], [0.063, 0.06], [0.047, 0.081], [0.034, 0.087], [0.034, 0.097], [0.026, 0.1], [0, 0.1]];
-  return new THREE.LatheGeometry(P.map(([r, y]) => new THREE.Vector2(r, y)), 10);
-}
-
-/** Its paper, hand-pixelled: warm lit paper with the bamboo ribs showing through, a seam, a darker band by each rim. */
-function chochinTex() {
-  const p = new Pix(32, 28, 21);
-  // rows follow the lathe profile: 4 points of rim (rows 0-7), 7 of paper (rows 8-19), 4 of rim (rows 20-27)
-  p.fill(0xf0c898);
-  for (let y = 9; y < 20; y += 2) p.rect(0, y, 32, 1, 0xdca676);
-  p.rect(0, 8, 32, 1, 0xd49a68); p.rect(0, 19, 32, 1, 0xd49a68);
-  p.rect(0, 0, 32, 8, 0x2a2220); p.rect(0, 20, 32, 8, 0x2a2220);
-  for (let x = 3; x < 32; x += 8) { p.rect(x, 1, 1, 6, 0x4a3a34); p.rect(x, 21, 1, 6, 0x4a3a34); } // the rims' lacquer catching the light
-  p.rect(0, 8, 1, 12, 0xc8905e); // the paper's glued seam
-  for (let x = 12; x < 20; x++) if (x % 3) p.px(x, 13, 0xe6b07e); // a faint brush mark on the paper
-  return p.texture();
-}
+// everything that stands, hangs or is fixed in the garage is a real model (src/world/garageMess.js): the invisible
+// boxes below only carry the physics and the placement surfaces of the work table and the PC desk
+const HIDDEN = new THREE.MeshBasicMaterial({ visible: false });
+// the steel racks (shelf_steel) scaled so their boards land on RACK_Y (+ 1.25 cm); the legs stand 5 cm into the slab
+const RACK_SY = 1.0672, RACK_DY = -0.0505;
 
 export class Garage {
   constructor(game) {
@@ -167,6 +169,7 @@ export class Garage {
     const H = G.height;
     // static decoration is merged into a few big meshes (SB: boxes / decals / cards, PB: voxel props)
     Object.assign(this, garageBatches(G));
+    this.mess = new GarageMess(this);
     // the HD surfaces at their authored 64 px/m (worn slab, blocks, ribbed steel, plywood sheets, form concrete)
     const concrete = surfMat('garageSlab', { ppm: 64, roughness: 0.84, bump: 0.3, color: 0xd2cabe });
     const block = surfMat('blockHD', { ppm: 64, roughness: 0.92, bump: 0.5 });
@@ -245,20 +248,17 @@ export class Garage {
     this.buildLights();
     this.buildDust();
     this.detail = new GarageDetail(this, G);
+    dressGarage(this);
+    this.mess.flush(this.group);
     this.SB.build(this.group, { cast: true });
     this.PB.build(this.group, true);
   }
 
   buildWindow(x, w) {
-    const frameMat = colMat(0xb8bdb8, { metalness: 0.5, roughness: 0.4 });
-    const fw = 0.04;
     const cz = (w.z0 + w.z1) / 2, cy = (w.y0 + w.y1) / 2;
-    const parts = [
-      [0.1, fw, w.z1 - w.z0, x, w.y0, cz], [0.1, fw, w.z1 - w.z0, x, w.y1 - fw, cz],
-      [0.1, w.y1 - w.y0, fw, x, w.y0, w.z0 + fw / 2], [0.1, w.y1 - w.y0, fw, x, w.y0, w.z1 - fw / 2],
-      [0.1, w.y1 - w.y0, fw * 0.8, x, w.y0, cz],
-    ];
-    for (const [a, b, c, px, py, pz] of parts) { const m = boxMesh(a, b, c, frameMat); m.position.set(px, py + b / 2, pz); this.bake(m); }
+    // the steel sash window with its wooden sill, and the cafe curtain bunched on its rod (the garage kit)
+    this.mess.put('gk_window', x, w.y0, cz, { ry: Math.PI / 2, hang: true, overlapOk: true });
+    this.mess.put('gk_curtain', x, w.y0, cz, { ry: Math.PI / 2, hang: true, overlapOk: true });
     // frosted wired glass (classic Japanese 網入りガラス)
     const p = new Pix(32, 32, 5);
     p.fill(0xdde6e6);
@@ -269,25 +269,18 @@ export class Garage {
     glass.rotation.y = Math.PI / 2;
     glass.position.set(x - 0.01, cy, cz);
     this.bake(glass);
-    // sill (the cactus, aloe and wind chime are in GarageDetail)
-    const sill = boxMesh(0.17, 0.03, w.z1 - w.z0 + 0.12, pixMat('woodLight'));
-    sill.position.set(x + 0.085, w.y0 - 0.015, cz);
-    this.bake(sill);
   }
 
   buildDoor() {
     const G = GARAGE;
     // steel door (opens later when the museum is unlocked)
-    const doorMat = pixMat('steelGreen', { roughness: 0.55, metalness: 0.35, color: 0xb8c8bc });
     const pivot = new THREE.Group();
     pivot.position.set(-G.doorHalf, 0, G.minZ + 0.02);
-    const door = boxMesh(G.doorHalf * 2, G.doorH, 0.05, doorMat);
-    door.position.set(G.doorHalf, G.doorH / 2, 0);
+    // the green steel door (garage kit): hinged at the pivot, lever handles both sides, a kick plate
+    const door = kitMesh('gk_door');
+    door.position.copy(kitOrigin('gk_door'));
+    door.castShadow = true;
     pivot.add(door);
-    const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.08, 12), colMat(0xd8d8d8, { metalness: 1, roughness: 0.25 }));
-    knob.rotation.x = Math.PI / 2;
-    knob.position.set(G.doorHalf * 2 - 0.1, 1.0, 0.05);
-    pivot.add(knob);
     // "for rent" sign taped to the door
     const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.42), new THREE.MeshStandardMaterial({ map: posterTexture('museumSign', 64, 54), roughness: 0.9 }));
     sign.position.set(G.doorHalf, 1.45, 0.03);
@@ -295,62 +288,30 @@ export class Garage {
     this.add(pivot);
     this.door = { pivot, door, sign, open: 0 };
     this.doorObstacle = this.game.player.addObstacle(-G.doorHalf, G.doorHalf, G.minZ - 0.25, G.minZ + 0.05);
-    const frame = colMat(0x4a4f4a, { metalness: 0.5, roughness: 0.5 });
-    for (const [w, h, x, y] of [[0.06, G.doorH, -G.doorHalf - 0.03, 0], [0.06, G.doorH, G.doorHalf + 0.03, 0], [G.doorHalf * 2 + 0.12, 0.06, 0, G.doorH]]) {
-      const m = boxMesh(w, h, 0.12, frame); m.position.set(x, y + h / 2, G.minZ); this.bake(m);
-    }
-    // light switch plate
-    const sw = boxMesh(0.08, 0.12, 0.02, colMat(0xf2efe6, { roughness: 0.5 }));
-    sw.position.set(G.doorHalf + 0.28, 1.2, G.minZ + 0.01);
+    this.mess.put('gk_doorframe', 0, 0, G.minZ, { hang: true });
+    // the light switch: a bakelite plate (the click target) and its toggle, which flips
+    const sw = kitMesh('gk_switch');
+    const oS = kitOrigin('gk_switch');
+    sw.position.set(G.doorHalf + 0.28, 1.2, G.minZ).add(oS);
     this.add(sw);
-    const toggle = boxMesh(0.025, 0.04, 0.02, colMat(0xffffff, { roughness: 0.4 }));
-    toggle.position.set(0, 0.012, 0.015);
+    const toggle = kitMesh('gk_toggle');
+    this.lightToggleBase = new THREE.Vector3(0, 0, 0.012).sub(oS).add(kitOrigin('gk_toggle'));
+    toggle.position.copy(this.lightToggleBase);
+    toggle.position.y += 0.012;
     sw.add(toggle);
     this.lightSwitch = sw;
     this.lightToggle = toggle;
   }
 
-  buildTools(x, y, z) {
-    const steel = colMat(0xb8bec4, { metalness: 0.9, roughness: 0.35 });
-    const red = colMat(0xc8352a, { roughness: 0.5 });
-    const wood = colMat(0x9a6a3f, { roughness: 0.7 });
-    const yellow = colMat(0xe8c22a, { roughness: 0.5 });
-    const T = (geoArgs, mat, px, py, pz, rx = 0) => {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(...geoArgs), mat);
-      m.position.set(x - 0.03, y + py, z + pz); m.rotation.x = rx; m.castShadow = true; this.bake(m); return m;
-    };
-    // hammer
-    T([0.02, 0.28, 0.025], wood, 0, 0.05, -0.5); T([0.03, 0.04, 0.11], steel, 0, 0.2, -0.5);
-    // wrenches
-    T([0.01, 0.24, 0.025], steel, 0, 0.05, -0.32); T([0.01, 0.04, 0.05], steel, 0, 0.18, -0.32);
-    T([0.01, 0.2, 0.022], steel, 0, 0.03, -0.24); T([0.01, 0.035, 0.045], steel, 0, 0.14, -0.24);
-    // screwdrivers
-    for (let i = 0; i < 4; i++) { T([0.02, 0.09, 0.02], [red, yellow, red, yellow][i], 0, 0.22, -0.08 + i * 0.05); T([0.006, 0.12, 0.006], steel, 0, 0.11, -0.08 + i * 0.05); }
-    // saw
-    T([0.004, 0.12, 0.42], steel, 0, -0.2, 0.25); T([0.03, 0.1, 0.1], wood, 0, -0.2, 0.47);
-    // tape measure + pliers
-    T([0.04, 0.07, 0.07], yellow, 0, 0.12, 0.2);
-    T([0.015, 0.16, 0.02], red, 0, 0.1, 0.36, 0.2); T([0.015, 0.16, 0.02], red, 0, 0.1, 0.4, -0.2);
-  }
-
   buildFurniture() {
     const G = GARAGE;
-    const tableMat = pixMat('woodTable', { roughness: 0.55 });
-    const legMat = pixMat('woodDark', { roughness: 0.7 });
-    // ---------------- work table (centre)
+    // ---------------- the work table / counter (centre): a grey steel office desk with its drawer pedestals
     const T = { x: 0.2, z: 0.1, w: 1.8, d: 0.9, h: 0.78 };
     this.table = T;
-    const top = this.solid(T.w, 0.06, T.d, tableMat, T.x, T.h - 0.06, T.z, { material: 'wood' });
+    this.mess.put('gm_desk', T.x, 0, T.z, { sx: T.w / 2.0, sy: T.h / 0.787, sz: T.d / 0.947, shadow: true });
+    const top = this.solid(T.w, 0.06, T.d, HIDDEN, T.x, T.h - 0.06, T.z, { material: 'metal', cast: false });
     top.userData.surface = true;
     this.tableTop = top;
-    for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-      const l = boxMesh(0.07, T.h - 0.06, 0.07, legMat);
-      l.position.set(T.x + sx * (T.w / 2 - 0.08), (T.h - 0.06) / 2, T.z + sz * (T.d / 2 - 0.08));
-      this.bake(l);
-    }
-    const apronM = boxMesh(T.w - 0.16, 0.08, 0.03, legMat); apronM.position.set(T.x, T.h - 0.1, T.z + T.d / 2 - 0.09); this.bake(apronM);
-    const apronB = boxMesh(T.w - 0.16, 0.08, 0.03, legMat); apronB.position.set(T.x, T.h - 0.1, T.z - T.d / 2 + 0.09); this.bake(apronB);
-    const shelfLow = boxMesh(T.w - 0.2, 0.025, T.d - 0.2, tableMat); shelfLow.position.set(T.x, 0.18, T.z); this.bake(shelfLow);
     this.game.player.addObstacle(T.x - T.w / 2, T.x + T.w / 2, T.z - T.d / 2, T.z + T.d / 2);
     // cutting mat
     const p = new Pix(64, 40, 9);
@@ -360,73 +321,36 @@ export class Garage {
     for (let x = 0; x < 64; x += 16) p.rect(x, 0, 1, 40, 0x5a8a72);
     for (let y = 0; y < 40; y += 16) p.rect(0, y, 64, 1, 0x5a8a72);
     p.noise(0.05);
-    const mat = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.004, 0.5), new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.75 }));
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.5), new THREE.MeshStandardMaterial({ map: p.texture(), roughness: 0.75 }));
+    mat.rotation.x = -Math.PI / 2;
     mat.position.set(T.x - 0.25, T.h + 0.002, T.z + 0.05);
     mat.receiveShadow = true;
     this.bake(mat);
     this.sprop('desk_lamp', T.x + 0.68, T.h, T.z - 0.28, -Math.PI * 0.75, { fallbackSize: [0.2, 0.5, 0.3], fallbackColor: 0x334455 });
-    // shadow under the table top on the low shelf
-    const sh = boxMesh(T.w - 0.22, 0.002, T.d - 0.22, colMat(0x2a2420, { roughness: 1, extra: { transparent: true, opacity: 0.35, depthWrite: false } }), { cast: false });
-    sh.position.set(T.x, 0.194, T.z);
-    this.bake(sh);
 
-    // ---------------- steel racks back-left
-    const rackMat = pixMat('steel', { roughness: 0.5, metalness: 0.55, color: 0xb8bcc0 });
-    const rack = (x, z, w = 1.2, d = 0.45, h = 1.9) => {
-      for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
-        const post = boxMesh(0.035, h, 0.035, rackMat);
-        post.position.set(x + sx * (w / 2 - 0.02), h / 2, z + sz * (d / 2 - 0.02));
-        this.bake(post);
-        // plastic foot caps
-        const foot = boxMesh(0.045, 0.02, 0.045, colMat(0x2a2a2a, { roughness: 0.8 }));
-        foot.position.set(x + sx * (w / 2 - 0.02), 0.01, z + sz * (d / 2 - 0.02));
-        this.bake(foot);
-      }
-      const levels = [0.08, 0.62, 1.16, 1.7];
-      for (const y of levels) {
-        const s = boxMesh(w, 0.025, d, rackMat);
-        s.position.set(x, y, z);
-        this.bake(s);
-        // folded front lip of each shelf
-        const lip = boxMesh(w, 0.04, 0.012, rackMat);
-        lip.position.set(x, y - 0.008, z + d / 2 - 0.006);
-        this.bake(lip);
-      }
-      // diagonal sway braces on the back
-      for (const k of [-1, 1]) {
-        const br = boxMesh(0.012, 1.6, 0.012, rackMat);
-        br.position.set(x, 0.95, z - d / 2 + 0.01);
-        br.rotation.z = k * 0.62;
-        this.bake(br);
-      }
+    // ---------------- steel racks back-left (shelf_steel: black angle frames, wooden boards)
+    const rack = (x, z, w = 1.2, d = 0.45) => {
+      this.mess.put('gm_rack', x, RACK_DY, z, { sx: w / 1.097, sy: RACK_SY, sz: d / 0.502, hang: true, overlapOk: true }); // (its feet in the slab)
       this.game.player.addObstacle(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
-      return levels;
     };
     // the racks start empty: their shelves are attach points (ATTACH.surfaces)
     rack(-3.25, G.minZ + 0.3);
     rack(-1.85, G.minZ + 0.3);
 
     // ---------------- back-right: fridge + radio, the fan by the sink
-    this.sprop('fridge', 1.25, 0, G.minZ + 0.3, 0, { fallbackSize: [0.5, 0.85, 0.5], player: true, phys: true });
-    this.radio = this.prop('radio', 1.25, 0.86, G.minZ + 0.3, -0.12, { fallbackSize: [0.5, 0.28, 0.16], fallbackColor: 0x444444 });
-    this.sprop('extinguisher', 0.82, 0, G.minZ + 0.14, 0, { fallbackSize: [0.18, 0.5, 0.18] });
+    // (the fridge against the wall, Grandpa's radio-cassette on top of it; the extinguisher by the PC desk)
+    const fs = propSize('fridge');
+    this.sprop('fridge', 1.25, 0, G.minZ + fs.z / 2 + 0.02, 0, { fallbackSize: [0.5, 0.85, 0.5], player: true, phys: true });
+    this.radio = this.prop('radio', 1.22, fs.y, G.minZ + fs.z / 2 + 0.04, -0.12, { fallbackSize: [0.5, 0.28, 0.16], fallbackColor: 0x444444 });
+    this.sprop('extinguisher', 3.12, 0, G.minZ + 0.16, -0.2, { fallbackSize: [0.18, 0.5, 0.18] });
 
     // ---------------- PC desk (back-right corner, against the right wall)
     const D = { x: 3.62, z: -3.95, w: 0.7, d: 1.5, h: 0.74 };
     this.pcDesk = D;
-    const dtop = this.solid(D.w, 0.04, D.d, pixMat('woodLight', { roughness: 0.6 }), D.x, D.h - 0.04, D.z);
+    // the same grey steel desk, turned to face the room
+    this.mess.put('gm_desk', D.x, 0, D.z, { ry: -Math.PI / 2, sx: D.d / 2.0, sy: D.h / 0.787, sz: D.w / 0.947 });
+    const dtop = this.solid(D.w, 0.04, D.d, HIDDEN, D.x, D.h - 0.04, D.z, { material: 'metal', cast: false });
     dtop.userData.surface = true;
-    const drawer = boxMesh(D.w - 0.04, D.h - 0.08, 0.42, pixMat('woodLight', { roughness: 0.7, color: 0xd8c8b0 }));
-    drawer.position.set(D.x, (D.h - 0.08) / 2, D.z + D.d / 2 - 0.23);
-    this.bake(drawer);
-    for (let i = 0; i < 3; i++) {
-      const h = boxMesh(0.02, 0.015, 0.1, colMat(0xd0d0d0, { metalness: 0.9, roughness: 0.3 }));
-      h.position.set(D.x - D.w / 2 + 0.005, 0.15 + i * 0.22, D.z + D.d / 2 - 0.23);
-      this.bake(h);
-    }
-    const legL = boxMesh(D.w - 0.04, D.h - 0.08, 0.04, pixMat('woodLight', { color: 0xd8c8b0 }));
-    legL.position.set(D.x, (D.h - 0.08) / 2, D.z - D.d / 2 + 0.03);
-    this.bake(legL);
     this.game.player.addObstacle(D.x - D.w / 2, D.x + D.w / 2, D.z - D.d / 2, D.z + D.d / 2);
     this.sprop('pipe_chair', D.x - 0.72, 0, D.z + 0.05, Math.PI / 2 + 0.15, { fallbackSize: [0.45, 0.8, 0.45] });
 
@@ -436,28 +360,22 @@ export class Garage {
     // ---------------- sell box & storage bin (by the PC)
     this.sellBox = this.makeCrate(3.55, -2.15, 0.5, 0.42, 0.42, 'sellBox');
     this.storageBox = this.makeBin(3.55, -2.78);
-    // delivery spot marker (tape square on the floor near the shutter)
-    const tapeM = colMat(0xffd23f, { roughness: 0.6 });
-    const DS = { x: 1.6, z: 4.1 };
-    this.deliverySpot = DS;
-    for (const [w, d, x, z] of [[0.9, 0.05, 0, -0.45], [0.9, 0.05, 0, 0.45], [0.05, 0.9, -0.45, 0], [0.05, 0.9, 0.45, 0]]) {
-      const t = boxMesh(w, 0.003, d, tapeM, { cast: false }); t.position.set(DS.x + x, 0.002, DS.z + z); this.bake(t);
-    }
+    // the delivery spot (a square of yellow floor tape near the shutter: GarageDetail.floor)
+    this.deliverySpot = { x: 1.6, z: 4.1 };
   }
 
   makeCrate(x, z, w, h, d, label) {
+    // an open cardboard box of odds and ends (junk_box) at the sell box's size, its paper label on the room side
     const g = new THREE.Group();
     g.position.set(x, 0, z);
-    const cb = pixMat('cardboard', { roughness: 0.95 });
-    const thick = 0.012;
-    const parts = [[w, thick, d, 0, thick / 2, 0], [thick, h, d, -w / 2, h / 2, 0], [thick, h, d, w / 2, h / 2, 0], [w, h, thick, 0, h / 2, -d / 2], [w, h, thick, 0, h / 2, d / 2]];
-    for (const [a, b, c, px, py, pz] of parts) { const m = boxMesh(a, b, c, cb); m.position.set(px, py, pz); g.add(m); }
-    // open flaps
-    const flap = (px, pz, ry, ww) => { const f = boxMesh(ww, 0.008, 0.18, cb); f.position.set(px, h + 0.04, pz); f.rotation.set(-0.9, ry, 0); g.add(f); return f; };
-    flap(0, d / 2 + 0.06, 0, w); flap(0, -d / 2 - 0.06, Math.PI, w);
+    const box = propMesh('gm_junkbox');
+    const s = propSize('gm_junkbox');
+    box.scale.set(w / s.x, h / s.y, d / s.z);
+    box.castShadow = true;
+    g.add(box);
     const lab = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.26), new THREE.MeshStandardMaterial({ map: posterTexture(label, 64, 50), roughness: 0.9 }));
     lab.rotation.y = -Math.PI / 2;
-    lab.position.set(-w / 2 - 0.003, h * 0.55, 0);
+    lab.position.set(-w / 2 - 0.004, h * 0.5, 0);
     g.add(lab);
     this.add(g);
     this.game.player.addObstacle(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
@@ -467,65 +385,28 @@ export class Garage {
   }
 
   makeBin(x, z) {
-    // translucent plastic storage bin with a blue lid
+    // the storage bin (garage kit: a frosted tub with a blue lid), its paper label on the room side
     const g = new THREE.Group();
     g.position.set(x, 0, z);
     const w = 0.5, h = 0.38, d = 0.5;
-    const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshPhysicalMaterial({ color: 0xe8f0f4, transparent: true, opacity: 0.55, roughness: 0.3, clearcoat: 0.6 }));
-    body.position.y = h / 2;
-    g.add(body);
-    const lid = boxMesh(w + 0.03, 0.04, d + 0.03, colMat(0x3f86e8, { roughness: 0.4 }));
-    lid.position.y = h + 0.02;
-    g.add(lid);
+    const bin = kitMesh('gk_bin');
+    bin.castShadow = true;
+    g.add(bin);
     const lab = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.12), new THREE.MeshStandardMaterial({ map: posterTexture('storageLabel', 48, 26), roughness: 0.9 }));
     lab.rotation.y = -Math.PI / 2;
-    lab.position.set(-w / 2 - 0.003, h * 0.62, 0);
+    lab.position.set(-0.249, h * 0.6, 0);
     g.add(lab);
-    // some blurry contents (colourful capsules) at the bottom
-    for (let i = 0; i < 7; i++) {
-      const c = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 8), colMat([0xff6f91, 0x5cc4ff, 0xffd23f, 0x58c06c][i % 4], { roughness: 0.3 }));
-      c.position.set((hash2(i, 1) - 0.5) * 0.36, 0.04, (hash2(i, 2) - 0.5) * 0.36);
-      g.add(c);
-    }
     this.add(g);
     this.game.player.addObstacle(x - w / 2, x + w / 2, z - d / 2, z + d / 2);
     this.game.physics.addBox({ center: new THREE.Vector3(x, h / 2, z), half: new THREE.Vector3(w / 2 + 0.015, h / 2 + 0.02, d / 2 + 0.015), material: 'wood' });
-    g.userData.lid = lid;
+    g.userData.lid = bin;
     return g;
   }
 
   buildPosters() {
-    const G = GARAGE;
-    // framed 3D pieces (wooden or metal frame, glass front) and thick enamel tin plates
-    const artTex = new Map();
-    const tex = (id) => {
-      if (!artTex.has(id)) { const a = SHOP_ART[id]; const p = new Pix(a.w * (a.px || 1), a.h * (a.px || 1), 4); a.paint(p); artTex.set(id, p.texture()); }
-      return artTex.get(id);
-    };
-    const frameM = colMat(0x3a2418, { roughness: 0.5 });
-    const glassM = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.08, roughness: 0.05, clearcoat: 1, depthWrite: false });
-    const P = (id, scale, x, y, z, ry, { framed = true, tilt = 0 } = {}) => {
-      const a = SHOP_ART[id];
-      if (!a) return;
-      const w = a.w * scale, h = a.h * scale;
-      const g = new THREE.Group();
-      g.position.set(x, y, z); g.rotation.set(0, ry, tilt);
-      const art = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.006), [frameM, frameM, frameM, frameM, new THREE.MeshStandardMaterial({ map: tex(id), roughness: framed ? 0.7 : 0.3, metalness: framed ? 0 : 0.15 }), frameM]);
-      art.position.z = framed ? 0.012 : 0.004;
-      art.castShadow = true;
-      g.add(art);
-      if (framed) {
-        const t = 0.022;
-        for (const [fw, fh, fx, fy] of [[w + 2 * t, t, 0, h / 2 + t / 2], [w + 2 * t, t, 0, -h / 2 - t / 2], [t, h, -w / 2 - t / 2, 0], [t, h, w / 2 + t / 2, 0]]) {
-          const f = new THREE.Mesh(new THREE.BoxGeometry(fw, fh, 0.03), frameM); f.position.set(fx, fy, 0.015); f.castShadow = true; g.add(f);
-        }
-        const gl = new THREE.Mesh(new THREE.PlaneGeometry(w, h), glassM); gl.position.z = 0.0255; gl.userData.noRim = true; g.add(gl);
-      }
-      this.bake(g);
-    };
-    // the walls start bare: posters, clocks and signs are bought and hung with the builder (ATTACH.walls)
-    void P;
-    this.buildGachaSign(G.minX + 0.14, 2.4, -0.6); // mounted proud of the steel column behind it
+    // the walls start bare: posters, clocks and signs are bought and hung with the builder (ATTACH.walls); Grandpa's
+    // own prints and notices are src/world/garageLayout.js and src/plugins/garageDressing.js
+    this.buildGachaSign(GARAGE.minX + 0.14, 2.4, -0.6); // mounted proud of the steel column behind it
   }
 
   /** Lit "ガチャコーナー" light-box sign + a string of paper lanterns over the machine row. */
@@ -538,36 +419,20 @@ export class Garage {
     p.text('ガチャガチャ', 96, 5, { size: 16, color: 0xe5383b, outline: 0xffffff, align: 'center' });
     p.text('GACHA CORNER', 96, 24, { font: FONT_EN, size: 16, color: 0x2a2220, align: 'center' });
     const t = p.texture();
-    const box = boxMesh(0.1, 0.42, 1.65, colMat(0x2a2220, { roughness: 0.5 }));
-    box.position.set(x + 0.05, y, z);
-    this.bake(box);
+    // the housing (garage kit), its back on the steel column, standoffs to the wall; the lit face recessed in its rim
+    this.mess.put('gk_lightbox', x, y - 0.21, z, { ry: Math.PI / 2, hang: true, overlapOk: true });
     const face = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.3, roughness: 0.6 }));
     face.rotation.y = Math.PI / 2;
-    face.position.set(x + 0.105, y, z);
+    face.position.set(x + 0.086, y, z);
     this.bake(face);
-    // paper lanterns (chōchin) strung along the wall: a turned paper body on bamboo ribs between black lacquer rims,
-    // hung on short wires from the cord; the paper is lit from inside (unlit material, bright enough to bloom softly)
-    const lanternMat = new THREE.MeshBasicMaterial({ map: chochinTex(), color: new THREE.Color(1.45, 1.38, 1.3) });
-    const capMat = colMat(0x2a2220);
-    const pts = [];
-    for (let i = 0; i <= 8; i++) {
-      const zz = -3.6 + i * 0.75;
-      const yy = 2.95 - Math.sin((i / 8) * Math.PI) * 0.22 - (i % 2) * 0.03;
-      pts.push(new THREE.Vector3(x + 0.35, yy, zz));
-    }
-    const cord = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.004, 4), capMat);
-    this.bake(cord);
-    const body = chochinGeometry();
+    // paper lanterns (chochin models) on a cord tied under the beams over the machine row, lit from inside (unlit
+    // material, bright enough to bloom softly)
+    this.mess.put('gk_lanterns', 0, 0, 0, { hang: true, overlapOk: true });
+    const lanternMat = new THREE.MeshBasicMaterial({ map: propMap('gm_chochin'), color: new THREE.Color(1.45, 1.38, 1.3) });
+    const lh = 0.24, ls = lh / this.mess.h('gm_chochin');
     for (let i = 1; i < 8; i++) {
-      const pt = new THREE.CatmullRomCurve3(pts).getPoint(i / 8);
-      const l = new THREE.Group();
-      l.position.copy(pt).add(new THREE.Vector3(0, -0.135, 0));
-      l.add(new THREE.Mesh(body, lanternMat));
-      const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.035, 4), capMat);
-      wire.position.y = 0.1175;
-      l.add(wire);
-      l.rotation.y = i * 0.7;
-      this.bake(l);
+      const [px, py, pz] = LANTERN_PTS[i];
+      this.mess.put('gm_chochin', px, py - 0.034 - lh, pz, { s: ls, ry: i * 0.7, mat: lanternMat, hang: true, overlapOk: true });
     }
     const pl = new THREE.PointLight(0xffa860, 1.6, 4, 1.6);
     pl.position.set(x + 0.6, 2.4, -0.6);
@@ -599,16 +464,13 @@ export class Garage {
     this.lights.tubes = [];
     for (const [x, z] of [[0, -2.0], [0, 0.8]]) {
       const top = G.height - 0.18;
-      const fix = boxMesh(0.24, 0.022, 1.3, colMat(0xf2f0ea, { roughness: 0.4 }), { cast: false });
-      fix.position.set(x, top + 0.011, z);
+      // the inverted-Fuji fixture (garage kit; the click target for the dead tube) and its two tubes
+      const fix = kitMesh('gk_fluoro');
+      fix.rotation.y = Math.PI / 2;
+      fix.position.set(x, top, z).add(kitOrigin('gk_fluoro').applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2));
       this.add(fix);
-      const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xeef4ff).multiplyScalar(2.2) });
-      for (const dx of [-0.034, 0.034]) {
-        const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.22, 8), tubeMat);
-        tube.rotation.x = Math.PI / 2;
-        tube.position.set(x + dx, top - 0.108, z);
-        this.bake(tube);
-      }
+      const tubeMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xeef4ff).multiplyScalar(2.2), map: propMap('gk_tube') });
+      for (const dx of [-0.034, 0.034]) this.mess.put('gk_tube', x + dx, top - 0.108, z, { ry: Math.PI / 2, mat: tubeMat, hang: true, overlapOk: true });
       // (a soft falloff, so the two fixtures light the whole room evenly like a cartoon interior; the light hangs a metre
       // under the ceiling, as if the fixture's reflector threw it down: 0.45 m under it, it blew the boards out to white)
       const pl = new THREE.PointLight(0xf0f2ff, 5.5, 9.5, 1.45);
@@ -724,7 +586,7 @@ export class Garage {
       t.mat.color.setScalar(lit ? 2.2 : 0.15);
     }
     this.lights.hemi.intensity = on ? 0.75 : 0.25;
-    this.lightToggle.position.y = on ? 0.012 : -0.012;
+    this.lightToggle.position.y = this.lightToggleBase.y + (on ? 0.012 : -0.012);
   }
 
   update(dt, t) {

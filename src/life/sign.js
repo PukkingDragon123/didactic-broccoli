@@ -3,6 +3,7 @@
 // come in while it shows OPEN (game.sim.isOpen reads life.signOpen). The town's own painted OPEN plate on that pier is
 // put away (this sign replaces it). The shop lanterns follow the sign once the shop has reopened.
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { audio } from '../core/audio.js';
 import { ease } from '../core/util.js';
@@ -34,13 +35,16 @@ export class OpenSign {
     const wood = new THREE.MeshStandardMaterial({ color: 0x8a5a30, roughness: 0.85 });
     const face = (open) => new THREE.MeshStandardMaterial({ map: signPix(open).texture(), roughness: 0.8 });
     this.openMat = face(true); this.closedMat = face(false);
-    const board = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.21, 0.022), [wood, wood, wood, wood, this.openMat, this.closedMat]);
+    void wood;
+    // the plaque on its cord: a real model (r6 hang_sign: chamfered board, brass eyelets, the cord to the hook), the
+    // OPEN / CLOSED prints on its two faces
+    grp.add(lpModel('hang_sign', 0, -0.375, 0));
+    const board = new THREE.Group();
     board.position.y = -0.27;
-    board.castShadow = true; board.receiveShadow = true;
+    for (const [mat, z, ry] of [[this.openMat, 0.0115, 0], [this.closedMat, -0.0115, Math.PI]]) { const f = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.19), mat); f.position.z = z; f.rotation.y = ry; board.add(f); }
     grp.add(board);
     const cordM = new THREE.MeshStandardMaterial({ color: 0x8a6a4a, roughness: 0.9 });
-    const cords = [-1, 1].map((s) => { const c = new THREE.BoxGeometry(0.006, 0.23, 0.006); c.rotateZ(s * 0.95); c.translate(s * 0.075, -0.075, 0); return c; });
-    grp.add(new THREE.Mesh(mergeGeometries(cords), cordM));
+    void cordM; void mergeGeometries;
     g.scene.add(grp);
     this.grp = grp;
     this.board = board;

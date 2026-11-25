@@ -1,0 +1,33 @@
+{
+ "id": "open_shelf5",
+ "src": "art/lowpix/world/made/open_shelf5.glb",
+ "credit": {
+  "title": "Open shelf unit (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/open_shelf5.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 440,
+ "tex": 512,
+ "size": [
+  2.6,
+  2.04,
+  0.33
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3b140f",
+   "#4c2015",
+   "#5c2d1c",
+   "#6b3d24",
+   "#7a4e2c",
+   "#9a6c3c",
+   "#b58d4f",
+   "#c0a874",
+   "#cdc097"
+  ]
+ },
+ "warnings": []
+}

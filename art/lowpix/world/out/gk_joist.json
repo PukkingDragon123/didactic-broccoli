@@ -1,0 +1,44 @@
+{
+ "id": "gk_joist",
+ "src": "art/lowpix/world/made/garage_kit/gk_joist.glb",
+ "credit": {
+  "title": "Sawn timber joist (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_joist.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 168,
+ "tex": 1024,
+ "size": [
+  5,
+  0.102,
+  0.05
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#512a21",
+   "#683d2e",
+   "#7d523b",
+   "#926849",
+   "#a58059",
+   "#ae9673",
+   "#b8aa8c",
+   "#c4bca4",
+   "#d0cdbb"
+  ],
+  "m1": [
+   "#1b1d26",
+   "#242730",
+   "#2e323a",
+   "#393d43",
+   "#44484c",
+   "#5f6264",
+   "#7a7a7a",
+   "#939393",
+   "#adadad"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,66 @@
+{
+ "id": "standpipe_tap",
+ "src": "art/lowpix/world/made/standpipe_tap.glb",
+ "credit": {
+  "title": "Garden standpipe tap (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/standpipe_tap.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 200,
+ "tex": 256,
+ "size": [
+  0.09,
+  0.818,
+  0.191
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m1": [
+   "#530b21",
+   "#6b1024",
+   "#811624",
+   "#971c23",
+   "#ac2824",
+   "#cb402f",
+   "#d36a51",
+   "#d89074",
+   "#dfb197"
+  ],
+  "m2": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ],
+  "m3": [
+   "#4d2723",
+   "#633930",
+   "#774d3e",
+   "#8b624d",
+   "#9d785d",
+   "#a88f76",
+   "#b3a48e",
+   "#bfb7a6",
+   "#ccc9bd"
+  ]
+ },
+ "warnings": []
+}

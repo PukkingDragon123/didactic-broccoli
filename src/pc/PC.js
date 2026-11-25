@@ -188,7 +188,7 @@ export async function installPC(game) {
   // power LED: green when on, amber on standby
   const led = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.008, 0.004), new THREE.MeshBasicMaterial({ color: 0xffa040 }));
   led.position.set(0.105, 0.075, -0.06 + 0.19);
-  root.add(led);
+  root.add(led); // arch: the PC's power LED (a light on the case)
 
   // ---- the CRT: a flat plane in the screen opening (the DOM layer is warped exactly onto it)
   const os = new CapsuleOS(game);

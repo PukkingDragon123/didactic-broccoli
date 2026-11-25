@@ -14,6 +14,7 @@
 //   Batch      the static batcher (vertex-coloured boxes merged into one mesh per material)
 //   pixTex(w, h, draw) / canvasMat(w, h, draw, opts)   pixel-art canvas textures (nearest filtering)
 import * as THREE from 'three';
+import { tagBlock, tagBuilt } from '../dev/blockTag.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox } from '../gfx/geo.js';
 import { propMesh } from '../world/props.js';
@@ -72,12 +73,14 @@ const _c = new THREE.Color();
 export class Batch {
   constructor() { this.lists = new Map(); this.off = V(); }
   add(mat, g, tint = 0xffffff, k = 1) {
+    const type = g.type;
     if (g.index) g = g.toNonIndexed();
     const n = g.attributes.position.count, col = new Float32Array(n * 3);
     _c.set(tint);
     for (let i = 0; i < n; i++) { col[i * 3] = _c.r * k; col[i * 3 + 1] = _c.g * k; col[i * 3 + 2] = _c.b * k; }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     g.translate(this.off.x, this.off.y, this.off.z);
+    tagBlock(g, mat, type);
     if (!this.lists.has(mat)) this.lists.set(mat, []);
     this.lists.get(mat).push(g);
     return g;
@@ -120,6 +123,7 @@ export class Batch {
       if (!g) continue;
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, mat);
+      tagBuilt(list, m);
       m.matrixAutoUpdate = false; m.updateMatrix();
       m.receiveShadow = true;
       m.name = name;

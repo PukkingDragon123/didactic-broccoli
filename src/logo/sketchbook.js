@@ -4,6 +4,7 @@
 // logo once you have drawn one (repaint()).
 //   const sb = buildSketchbook()  -> { group, repaint() }   (local: the pad's centre on its underside, spiral at -z)
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { Pix, FONT_EN } from '../gfx/pix.js';
 import { activeLogo, paintLogo } from './logo.js';
@@ -78,17 +79,8 @@ export function buildSketchbook() {
   const wire = new THREE.Mesh(mergeGeometries(loops), new THREE.MeshStandardMaterial({ color: 0x9aa2a8, roughness: 0.3, metalness: 1 }));
   // an HB pencil lying across the cover: the six-sided body, the shaved wood and the lead, the ferrule and eraser
   const pen = new THREE.Group();
-  const L = 0.15, R = 0.0036;
-  const body = new THREE.CylinderGeometry(R, R, L, 6, 1); body.rotateZ(Math.PI / 2);
-  const wood = new THREE.CylinderGeometry(R * 0.96, 0.0009, 0.019, 12, 1, true); wood.rotateZ(-Math.PI / 2); wood.translate(L / 2 + 0.0095, 0, 0);
-  const lead = new THREE.ConeGeometry(0.0009, 0.004, 10); lead.rotateZ(-Math.PI / 2); lead.translate(L / 2 + 0.019 + 0.002, 0, 0);
-  const ferrule = new THREE.CylinderGeometry(R * 1.02, R * 1.02, 0.009, 16); ferrule.rotateZ(Math.PI / 2); ferrule.translate(-L / 2 - 0.0045, 0, 0);
-  const rub = new THREE.CylinderGeometry(R * 0.95, R * 0.95, 0.008, 16); rub.rotateZ(Math.PI / 2); rub.translate(-L / 2 - 0.013, 0, 0);
-  pen.add(new THREE.Mesh(body, mat({ color: 0x2f6a52, roughness: 0.45 })));
-  pen.add(new THREE.Mesh(wood, mat({ color: 0xe0b888, roughness: 0.85 })));
-  pen.add(new THREE.Mesh(lead, mat({ color: 0x3a3a40, roughness: 0.5, metalness: 0.3 })));
-  pen.add(new THREE.Mesh(ferrule, new THREE.MeshStandardMaterial({ color: 0xc8b070, roughness: 0.32, metalness: 1 })));
-  pen.add(new THREE.Mesh(rub, mat({ color: 0xe88a8a, roughness: 0.9 })));
+  const R = 0.0036;
+  pen.add(lpModel('pencil', 0, -R, 0)); // a real pencil (r6: lacquered hex body, cedar tip, lead, ferrule, eraser)
   pen.position.set(0.012, 0.0108 + R * 0.87, 0.03);
   pen.rotation.set(Math.PI / 6, 0.36, 0);
   for (const m of [paper, board, cover, wire]) { m.castShadow = true; m.receiveShadow = true; group.add(m); }

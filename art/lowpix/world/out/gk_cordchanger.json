@@ -1,0 +1,33 @@
+{
+ "id": "gk_cordchanger",
+ "src": "art/lowpix/world/made/garage_kit/gk_cordchanger.glb",
+ "credit": {
+  "title": "Coin changer lead (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_cordchanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 172,
+ "tex": 512,
+ "size": [
+  0.249,
+  0.457,
+  0.56
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#151112",
+   "#1b1618",
+   "#201d1d",
+   "#252323",
+   "#2a2a2a",
+   "#474747",
+   "#656565",
+   "#828282",
+   "#9f9f9f"
+  ]
+ },
+ "warnings": []
+}

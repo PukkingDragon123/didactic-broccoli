@@ -1,0 +1,44 @@
+{
+ "id": "notice_board",
+ "src": "art/lowpix/world/made/notice_board.glb",
+ "credit": {
+  "title": "Notice board (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/notice_board.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 364,
+ "tex": 1024,
+ "size": [
+  1.16,
+  1.95,
+  0.28
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#18372f",
+   "#21463a",
+   "#2b5543",
+   "#35634c",
+   "#407054",
+   "#548a66",
+   "#6ca079",
+   "#8baf91",
+   "#a8bfaa"
+  ],
+  "m1": [
+   "#3b140f",
+   "#4c2015",
+   "#5c2d1c",
+   "#6b3d24",
+   "#7a4e2c",
+   "#9a6c3c",
+   "#b58d4f",
+   "#c0a874",
+   "#cdc097"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "griddle_cab",
+ "src": "art/lowpix/world/made/griddle_cab.glb",
+ "credit": {
+  "title": "Gyoza griddle cabinet (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/griddle_cab.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 668,
+ "tex": 284,
+ "size": [
+  0.7,
+  0.81,
+  0.588
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m1": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ]
+ },
+ "warnings": []
+}

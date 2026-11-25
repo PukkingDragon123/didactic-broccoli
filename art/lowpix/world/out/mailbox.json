@@ -1,0 +1,66 @@
+{
+ "id": "mailbox",
+ "src": "art/lowpix/world/made/mailbox.glb",
+ "credit": {
+  "title": "House mailbox (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mailbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 220,
+ "tex": 368,
+ "size": [
+  0.32,
+  0.36,
+  0.142
+ ],
+ "colours": 25,
+ "palette": {
+  "m0": [
+   "#540b21",
+   "#6c1024",
+   "#831625",
+   "#9a1c23",
+   "#af2824",
+   "#cd412f",
+   "#d46b52",
+   "#d99175",
+   "#e0b297"
+  ],
+  "m1": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m2": [
+   "#43485f",
+   "#5b6279",
+   "#747e91",
+   "#939aa4",
+   "#b0b4b8",
+   "#bdbfc0",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m3": [
+   "#36101b",
+   "#451720",
+   "#531e24",
+   "#612628",
+   "#6e312e",
+   "#8d4a3f",
+   "#ab6552",
+   "#b88976",
+   "#c6aa98"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "gk_curtain",
+ "src": "art/lowpix/world/made/garage_kit/gk_curtain.glb",
+ "credit": {
+  "title": "Cafe curtain on its rod (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_curtain.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1664,
+ "tex": 512,
+ "size": [
+  1.792,
+  0.836,
+  0.152
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#8f4924",
+   "#b86c33",
+   "#cc9255",
+   "#d6b482",
+   "#e2d1ad",
+   "#e5daba",
+   "#e8e2c6",
+   "#ebe9d2",
+   "#efefdd"
+  ],
+  "m1": [
+   "#444d5e",
+   "#5c6777",
+   "#76838f",
+   "#949ca2",
+   "#b1b5b7",
+   "#bebfbf",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ]
+ },
+ "warnings": []
+}

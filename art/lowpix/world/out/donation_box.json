@@ -1,0 +1,44 @@
+{
+ "id": "donation_box",
+ "src": "art/lowpix/world/made/donation_box.glb",
+ "credit": {
+  "title": "Donation box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/donation_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 308,
+ "tex": 256,
+ "size": [
+  0.22,
+  0.211,
+  0.18
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#32100c",
+   "#401a11",
+   "#4e2617",
+   "#5b331d",
+   "#674124",
+   "#8a6034",
+   "#ab8346",
+   "#bda267",
+   "#cabc8d"
+  ],
+  "m1": [
+   "#5f3218",
+   "#7a4a22",
+   "#94642d",
+   "#ad8039",
+   "#bf9c4b",
+   "#c5b067",
+   "#cbc182",
+   "#d3d09c",
+   "#dcdcb5"
+  ]
+ },
+ "warnings": []
+}

@@ -49,34 +49,32 @@ function lp(t, id, x, y, z, ry = 0, o = {}) { const w = t.B.world(x, y, z); retu
 function pillarKit(t, x, s, { name, y = 0.95, plate = null, lamp = false, mail = null, top = 1.55, z = null, intercom = true } = {}) {
   const B = t.B, m = t.m, zl = z ?? ((s > 0 ? ZB : ZF) + s * 0.076), ry = s > 0 ? 0 : Math.PI;
   if (name !== undefined) {
-    B.box(m.pv, 0.14, 0.27, 0.02, x, y + 0.24, zl + s * 0.01, { tint: 0x5a4030 });
+    B.box(m.pv, 0.14, 0.27, 0.02, x, y + 0.24, zl + s * 0.01, { tint: 0x5a4030 }); // arch: the name plate's board, set in the gate pillar
     t.sign('namesL', 0.1, 0.2, x, y + 0.275, zl + s * 0.021, { ry }, [name * 12, 0, 12, 24]);
   }
   if (intercom) {
+    // arch-begin: the intercom set in the gate pillar (a fitting)
     B.box(m.pv, 0.1, 0.16, 0.035, x, y, zl + s * 0.017, { tint: 0xd8d4cc });
     B.box(m.pv, 0.07, 0.04, 0.01, x, y + 0.095, zl + s * 0.036, { tint: 0x4a4a48 });
     B.box(m.pv, 0.035, 0.035, 0.012, x, y + 0.03, zl + s * 0.036, { tint: 0xe8e4dc });
     B.box(t.G, 0.012, 0.012, 0.006, x + 0.03, y + 0.13, zl + s * 0.038, { tint: 0x60ff80 });
+    // arch-end
   }
   if (plate) t.sign(plate.key, plate.w, plate.h, x, plate.y, zl + s * 0.008, { ry });
-  if (lamp) {
-    B.box(m.pv, 0.22, 0.04, 0.22, x, top, zl - s * 0.15, { tint: 0x2a2a2a });
-    B.box(t.G, 0.15, 0.2, 0.15, x, top + 0.04, zl - s * 0.15, { tint: 0xffe0a0 });
-    B.box(m.pv, 0.24, 0.05, 0.24, x, top + 0.24, zl - s * 0.15, { tint: 0x2a2a2a });
-  }
-  if (mail) {
-    B.box(m.pv, 0.3, 0.3, 0.12, x, y - 0.5, zl + s * 0.06, { tint: mail });
-    B.box(m.pv, 0.2, 0.025, 0.01, x, y - 0.27, zl + s * 0.125, { tint: 0x1a1a1a });
-  }
+  // the pillar lamp and the mailbox: real models (a lantern, r6 mailbox), instanced lane-wide
+  if (lamp) t.lpi.add('lantern', x, top, zl - s * 0.15, { ry });
+  if (mail) t.lpi.add('mailbox', x, y - 0.5, zl + s * 0.071, { ry, s: 0.85 });
 }
 
 /** A free-standing gate pillar (門柱): block or render with a cap. */
+// arch-begin: gate pillars
 function pillar(t, x, z, { h = 1.45, mat = null, tint = 0xffffff, w = 0.32 } = {}) {
   const B = t.B, m = t.m;
   B.box(mat || m.block, w, h, w, x, 0, z, { uv: [x, 0.3], ao: 0.15, tint });
   B.box(m.found, w + 0.06, 0.07, w + 0.06, x, h, z, {});
   t.game.player.addObstacle(x - w / 2, x + w / 2, z - w / 2, z + w / 2);
 }
+// arch-end
 
 /** A potted plant (local frame): a lathe pot and a bush of sprig cards (+ flowers). */
 const FLOWER = { 0xff8fb2: 'azalea', 0xe5383b: 'pelargonium', 0xffd23f: 'pansy', 0xfbf8f0: 'pansy' };
@@ -87,9 +85,8 @@ function pot(t, x, y, z, s = 1, leaf = 0x4a8a3a, flower = null) {
 /** 朝顔のグリーンカーテン: morning glory on strings from a planter up to the eave (local frame, on the wall plane z). */
 function morningGlory(t, x0, x1, y1, z, seed = 1) {
   const B = t.B, m = t.m;
-  B.box(m.pv, x1 - x0, 0.22, 0.22, (x0 + x1) / 2, 0, z + 0.2, { tint: 0x5a8ab0 });
-  B.box(m.pv, x1 - x0 - 0.04, 0.04, 0.18, (x0 + x1) / 2, 0.2, z + 0.2, { tint: 0x5a4030 });
-  B.box(m.metal, x1 - x0 + 0.1, 0.03, 0.03, (x0 + x1) / 2, y1, z + 0.24, { tint: 0x7a7a78 });
+  t.lpi.add('window_box', (x0 + x1) / 2, 0, z + 0.2, { frame: B.top, s: [(x1 - x0) / 0.9, 0.22 / 0.16, 1.1] }); // the planter trough (r6)
+  B.box(m.metal, x1 - x0 + 0.1, 0.03, 0.03, (x0 + x1) / 2, y1, z + 0.24, { tint: 0x7a7a78 }); // arch: the string rail fixed under the eave
   const n = Math.round((x1 - x0) / 0.16);
   for (let i = 0; i <= n; i++) {
     const x = x0 + i * (x1 - x0) / n;
@@ -105,40 +102,31 @@ function morningGlory(t, x0, x1, y1, z, seed = 1) {
 /** 給湯器: a gas water heater on the wall (local frame), with its pipes running down. */
 function heater(t, x, y, z) {
   const B = t.B, m = t.m;
-  B.box(m.pv, 0.36, 0.5, 0.16, x, y, z + 0.08, { tint: 0xe8e6de });
-  t.sign('heaterFace', 0.34, 0.28, x, y + 0.18, z + 0.161);
-  for (const [dx, c] of [[-0.1, 0xc8b848], [0, 0xd8d8d0], [0.1, 0xd8d8d0]]) B.box(m.metal, 0.03, y, 0.03, x + dx, 0, z + 0.05, { tint: c });
+  t.lpi.add('waterheater', x, y - 0.12, z + 0.2, { frame: B.top, s: 0.85 }); // a real gas water heater (its own face)
+  for (const [dx, c] of [[-0.1, 0xc8b848], [0, 0xd8d8d0], [0.1, 0xd8d8d0]]) B.box(m.metal, 0.03, y - 0.12, 0.03, x + dx, 0, z + 0.05, { tint: c }); // arch: its gas and water pipes
 }
 
 /** A baby stroller (local frame). */
 function stroller(t, x, z, ry = 0) {
   const B = t.B, m = t.m;
-  B.push(x, 0, z, ry);
-  for (const [dx, dz] of [[-0.2, -0.25], [0.2, -0.25], [-0.2, 0.25], [0.2, 0.25]]) B.box(m.pv, 0.04, 0.14, 0.14, dx, 0, dz, { tint: 0x2a2a2a });
-  B.box(m.metal, 0.44, 0.04, 0.6, 0, 0.14, 0, { tint: 0xc8ccd0 });
-  B.box(m.pv, 0.4, 0.3, 0.5, 0, 0.2, 0.02, { tint: 0xe8a8b8 });
-  B.box(m.pv, 0.42, 0.28, 0.3, 0, 0.5, -0.12, { tint: 0xd890a8, rx: -0.3 });
-  for (const s of [-1, 1]) B.box(m.metal, 0.025, 0.6, 0.025, s * 0.2, 0.4, 0.3, { rx: -0.45, tint: 0xc8ccd0 });
-  B.box(m.pv, 0.44, 0.04, 0.04, 0, 0.95, 0.52, { tint: 0x2a2a2a });
-  B.pop();
+  void m;
+  t.lpi.add('stroller', 0, 0, 0, { frame: B.top.clone().multiply(new THREE.Matrix4().makeRotationY(ry).setPosition(x, 0, z)) }); // (r6 stroller)
 }
 
 /** 盆栽棚: a two-tier bonsai bench with little trees (local frame). */
 function bonsaiShelf(t, x, z, len = 1.6) {
   const B = t.B, m = t.m;
-  for (const dx of [-len / 2 + 0.06, len / 2 - 0.06]) for (const dz of [-0.15, 0.15]) B.box(m.wood, 0.06, 0.62, 0.06, x + dx, 0, z + dz, { tint: 0x6a5038 });
-  for (const [y, dz] of [[0.36, 0.1], [0.62, -0.08]]) B.box(m.wood, len, 0.04, 0.24, x, y, z + dz, { tint: 0x8a6a48 });
+  void m;
+  // the bench (r6 plant_bench) and the little trees on it (lowpix bonsai, small), instanced
+  t.lpi.add('plant_bench', x, 0, z, { frame: B.top, s: [len / 1.5, 1, 1] });
   for (let i = 0; i < 5; i++) {
-    const tier = i % 2, px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, py = tier ? 0.66 : 0.4, pz = z + (tier ? -0.08 : 0.1), k = hash2(i, 31);
-    B.box(m.pv, 0.2, 0.06, 0.13, px, py, pz, { tint: [0x4a3a5a, 0x8a3a2a, 0x2a4a5a][i % 3] });
-    B.box(m.wood, 0.03, 0.12 + k * 0.08, 0.03, px + 0.02, py + 0.06, pz, { tint: 0x5a4030, rz: (k - 0.5) * 0.6 });
-    // the trained foliage pads (pine and juniper sprigs, pruned flat)
-    t.leaves.bush(B.top, null, null, { clumps: [[px + (k - 0.5) * 0.1, py + 0.2 + k * 0.08, pz, 0.12 + k * 0.04, 0.045, 0.08], [px - (k - 0.5) * 0.06, py + 0.27 + k * 0.08, pz, 0.08, 0.04, 0.06]],
-      kind: i % 2 ? 'pine' : 'pineTop', mix: ['moss', 0.1], size: 0.13, density: 2.2, flat: true, seed: i * 7 + 3 });
+    const px = x - len / 2 + 0.2 + i * (len - 0.4) / 4, k = hash2(i, 31);
+    t.lpi.add('bonsai', px, 0.655, z + (i % 2 ? -0.06 : 0.06), { frame: B.top, ry: k * 6.28, s: 0.3 + k * 0.08 });
   }
 }
 
 /** 鳩舎: the pigeon loft astride a roof (local frame): frame, mesh front, tin roof, landing board, a name board. */
+// arch-begin: the pigeon loft (a shed built on the roof), the engawa veranda and its stone step, boarded windows
 function pigeonLoft(t, x, y, z) {
   const B = t.B, m = t.m, W = 1.5, H = 0.95, D = 1.0;
   B.box(m.wood, W + 0.1, 0.06, D + 0.1, x, y, z, { tint: 0x7a6048 });
@@ -160,7 +148,7 @@ function engawa(t, x0, x1, base) {
   B.box(m.wood, x1 - x0, 0.08, 0.06, (x0 + x1) / 2, base - 0.14, d - 0.03, { tint: 0x5a4430 });
   const sx = (x0 + x1) / 2;
   B.box(m.found, 0.6, base * 0.55, 0.4, sx, 0, d + 0.22, { tint: 0xa8a49a, ry: 0.06 });
-  for (const s of [-1, 1]) { B.box(m.wood, 0.1, 0.04, 0.24, sx + s * 0.09, base * 0.55, d + 0.22, { tint: 0x8a6a48 }); B.box(m.pv, 0.012, 0.03, 0.12, sx + s * 0.09, base * 0.55 + 0.04, d + 0.26, { tint: 0xd83a2a }); }
+  for (const s of [-1, 1]) t.lpi.add('geta', sx + s * 0.09, base * 0.55, d + 0.22, { frame: B.top, ry: Math.PI / 2 + s * 0.1, s: 1.1 }); // a pair of real geta on the step
 }
 
 /** Wooden planks nailed across a window (the Nijimuras' boarded-up room), local frame on the wall. */
@@ -171,6 +159,7 @@ function boards(t, x, y, w, h, z = 0.08) {
     B.box(m.woodL, w + 0.2, 0.14, 0.03, x, y + 0.1 + i * (h - 0.2) / 3, z + i * 0.004, { rz: (k - 0.5) * 0.18, tint: k < 0.5 ? 0x8a7a62 : 0x9a8a70 });
   }
 }
+// arch-end
 
 // ------------------------------------------------------------------ the near side
 function nearSide(t) {
@@ -220,7 +209,7 @@ function nearSide(t) {
     door: { x: 0.3, kind: 'genkan', w: 1.3, name: N('太田'), porch: 'stone', milk: false }, ac: [[1, 0.12]] });
   t.yard(11.3, 16.6, 3.9, ZB - 0.15, m.ground);
   // stepping stones from the gate, the bonsai bench, a stone lantern
-  for (const [x, z, r] of [[14.15, 4.95, 0.1], [14.3, 4.45, -0.2]]) B.box(m.found, 0.5, 0.05, 0.36, x, 0, z, { ry: r, tint: 0xb8b4ac });
+  for (const [x, z, r] of [[14.15, 4.95, 0.1], [14.3, 4.45, -0.2]]) B.box(m.found, 0.5, 0.05, 0.36, x, 0, z, { ry: r, tint: 0xb8b4ac }); // arch: stepping stones in the ground
   B.push(0, 0, 0); bonsaiShelf(t, 12.4, 4.55, 1.5); B.pop();
   t.prop('stone_lantern', 15.2, 0, 4.35, -0.3, { scale: 0.65 });
   t.blockWall(11.3, 16.6, ZB, s, { gaps: [[13.6, 14.6]], mat: m.oya, h: 1.35 });
@@ -243,14 +232,16 @@ function nearSide(t) {
     extra: (Bq, f) => {
       engawa(t, -0.1, 1.42, f.base);
       // specimen jars and seedling trays on the engawa, pots along the front
-      for (let i = 0; i < 4; i++) { Bq.box(m.gloss, 0.1, 0.16, 0.1, 0.05 + i * 0.16, f.base, 0.25, { tint: [0xb8d8c8, 0xc8d8b0, 0xd8e8e0, 0xa8c8b8][i] }); Bq.box(m.pv, 0.11, 0.03, 0.11, 0.05 + i * 0.16, f.base + 0.16, 0.25, { tint: 0x8a6a48 }); }
-      Bq.box(m.pv, 0.5, 0.06, 0.32, 1.0, f.base, 0.3, { tint: 0x2a2a2a });
+      for (let i = 0; i < 4; i++) t.lpi.add('pickle_jar', 0.05 + i * 0.16, f.base, 0.25, { frame: Bq.top, ry: i * 1.3, s: 0.85 }); // specimen jars (real jars)
+      t.lpi.add('basket', 1.0, f.base, 0.3, { frame: Bq.top, s: [1.2, 0.6, 1.0] }); // the seedling tray: a shallow wicker basket
       t.leaves.bush(Bq.top, [1.0, f.base + 0.1, 0.3], [0.22, 0.04, 0.13], { kind: 'sprout', size: 0.12, density: 2.4, seed: 5 });
       pot(t, -0.3, 0, 0.9, 1.1, 0x3e7a34);
       pot(t, 1.25, 0, 1.15, 0.8, 0x4f8a3a, 0xffd23f);
       // a loofah trellis (へちま棚) along the west side
+      // arch-begin: the loofah trellis (a garden structure)
       for (const dz of [0.2, 1.5]) Bq.box(m.wood, 0.05, 2.0, 0.05, -1.75, 0, dz, { tint: 0x8a7a5a });
       Bq.box(m.wood, 0.05, 0.05, 1.4, -1.75, 2.0, 0.85, { tint: 0x8a7a5a });
+      // arch-end
       // the loofah vines up both posts and over the top bar, leaves and tendrils hanging down the sides
       const lo = new THREE.Matrix4().makeRotationY(-Math.PI / 2).setPosition(-1.75, 0, 0.85).premultiply(Bq.top);
       for (const dz of [-0.65, 0.65]) t.leaves.climber(lo, dz, 0.1, 2.0, 0.03, { kind: 'broad', mix: ['pothos', 0.3], size: 0.38, density: 1.2, reach: 0.18, seed: 77 + dz * 10 });
@@ -261,9 +252,11 @@ function nearSide(t) {
   // a bamboo garden gate (枝折戸) beside the little post, bamboo fences
   for (const x of [24.15, 25.2]) t.prop('bamboo_fence', x, 0, ZB - 0.1, 0);
   t.blockWall(22.6, 22.8, ZB, s, { pillars: false });
+  // arch-begin: the bamboo garden gate and its posts
   for (const x of [22.85, 23.55]) B.box(m.wood, 0.07, 1.2, 0.07, x, 0, ZB - 0.08, { tint: 0x8a7a5a });
   for (let i = 0; i < 8; i++) B.box(m.pv, 0.04, 0.95, 0.03, 23.0 + i * 0.07, 0.1, ZB - 0.3 - i * 0.05, { tint: 0xc8b070, ry: -0.6 });
   for (const y of [0.3, 0.85]) B.box(m.pv, 0.62, 0.035, 0.035, 23.25, y, ZB - 0.45, { tint: 0xa88a50, ry: -0.6 });
+  // arch-end
   pillarKit(t, 22.7, s, { name: N('日下'), y: 0.75, z: ZB + 0.005 });
   t.tree('pine', 25.1, 3.9, 0.6, 0.75);
   t.prop('stone_lantern', 24.95, 0, 4.75, -0.4, { scale: 0.7 });
@@ -288,9 +281,7 @@ function nearSide(t) {
     door: { x: 0.1, kind: 'wood', w: 1.2, name: N('田中'), porch: 'stone' },
     extra: (Bq, f) => {
       // a wind chime (風鈴) under the balcony eave, a long-wire radio antenna to the ridge
-      Bq.box(m.pv, 0.008, 0.18, 0.008, 2.1, f.top - 0.3, 0.6, { tint: 0x8a8a88 });
-      Bq.box(m.gloss, 0.1, 0.09, 0.1, 2.1, f.top - 0.4, 0.6, { tint: 0xa8d8f0 });
-      Bq.box(m.pv, 0.05, 0.16, 0.008, 2.1, f.top - 0.58, 0.6, { tint: 0xe86a7a });
+      t.lpi.add('furin', 2.1, f.top - 0.12 - 0.27, 0.6, { frame: Bq.top }); // a real wind chime hung from the eave
       pot(t, -0.85, 0, 0.45, 0.8, 0x4a8a3a, 0xe5383b);
       pot(t, 0.95, 0, 0.42, 0.7, 0x3e7a34);
     } });
@@ -309,18 +300,22 @@ function nearSide(t) {
       // the shop's been shut for years: ivy up the east end of the front and over the tobacco sign's bracket
       t.leaves.ivy(Bq.top, 1.95, 2.58, 0, f.fy[1] + 1.2, { kind: 'ivy', size: 0.38, density: 1.4, seed: 31 });
       // a drying pole (物干し竿) sticking out of the upstairs window with a towel on it
-      Bq.box(m.metal, 0.04, 0.04, 1.4, 1.3, f.fy[1] + 1.2, 0.6, { tint: 0x7ab0d8 });
-      Bq.box(m.pv, 0.4, 0.5, 0.02, 1.3, f.fy[1] + 0.72, 0.95, { tint: 0xf4f0e6, ry: 0.1 });
+      Bq.box(m.metal, 0.04, 0.04, 1.4, 1.3, f.fy[1] + 1.2, 0.6, { tint: 0x7ab0d8 }); // arch: the drying pole fixed in the window
+      t.lpi.add('laundry_tee', 1.3, f.fy[1] + 1.22 - 0.683, 0.95, { frame: Bq.top, ry: 0.1, color: 0xf4f0e6 });
     } });
   B.box(m.shutterM, 2.53, 2.1, 0.06, -18.715, 0.4, ZB + 0.01, { uv: [0, 0.3] });
-  B.box(m.metal, 2.75, 0.3, 0.32, -18.715, 2.5, ZB + 0.1, { tint: 0x7a7e7a });
-  B.box(t.T('oldSign', 1024, 144, { rough: 0.9 }), 3.9, 0.55, 0.06, -18.2, 2.85, ZB + 0.04, { unit: true });
+  B.box(m.metal, 2.75, 0.3, 0.32, -18.715, 2.5, ZB + 0.1, { tint: 0x7a7e7a }); // arch: the shutter's box
+  // the old signboard: a real board (r6 signboard) with the faded print in its frame
+  t.lpi.add('signboard', -18.2, 2.84, ZB + 0.06, { s: [3.9 / 2.3, 0.6 / 0.521, 1] });
+  B.quad(t.T('oldSign', 1024, 144, { rough: 0.9 }), 3.78, 0.46, -18.2, 2.9, ZB + 0.105, {});
   t.sign('closedNotice', 0.32, 0.42, -18.4, 1.25, ZB + 0.045);
   // the tobacco window: red plate, sliding glass, a tiled counter ledge
+  // arch-begin: the tobacco window (glass, ledge, counter)
   B.box(t.T('tobaccoWin', 24, 36, { glow: 0.25, rough: 0.4 }), 0.7, 1.05, 0.06, -16.9, 0.85, ZB + 0.01, { unit: true });
   B.box(m.tile, 0.84, 0.08, 0.3, -16.9, 0.82, ZB + 0.15, { tint: 0xc84a3a });
   B.box(m.pv, 0.84, 0.42, 0.06, -16.9, 0.4, ZB + 0.04, { tint: 0x8a3a2a });
   B.box(m.pv, 0.6, 0.1, 0.25, -16.9, 0.9, ZB + 0.14, { tint: 0x2a2a2a });
+  // arch-end
   t.prop('vending', -16.05, 0, 5.68, 0, { dim: true, block: true });
   t.weeds(-19.6, 0, 5.45, 0.2);
   addDoor(t, 'tobacco', 'NW3', 'the old tobacco shop', null, [-18.7, ZB], [-16.9, ZB + 0.2, 1.1], s);
@@ -360,35 +355,35 @@ function apartment(t, x, z) {
   for (const [i, fl] of [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]]) {
     const dx = -1.15 + i * 1.75, y = fy[fl], no = fl * 3 + i;
     units.push([dx, fl]);
-    B.box(t.doorMats.apt, 0.85, 1.95, 0.1, dx, y, 0, { unit: true });
-    for (const sd of [-1, 1]) B.box(m.metal, 0.05, 2.0, 0.08, dx + sd * 0.45, y, 0.02, { tint: 0x8a8478 });
+    B.box(t.doorMats.apt, 0.85, 1.95, 0.1, dx, y, 0, { unit: true }); // arch: the flat's door
+    for (const sd of [-1, 1]) B.box(m.metal, 0.05, 2.0, 0.08, dx + sd * 0.45, y, 0.02, { tint: 0x8a8478 }); // arch: its frame
     // ceiling light over each door, room number and name slot, the meters and a water heater beside it
-    B.box(t.G, 0.12, 0.06, 0.12, dx + 0.6, y + 2.15, 0.25, { tint: hash2(i, fl) < 0.6 ? 0xfff0c0 : 0x9a9a8a });
+    t.lpi.add('lamp_pipe', dx + 0.6, y + 1.95, 0.09, { frame: B.top, s: 0.6 }); // the light over the door (a real wall lamp)
     t.sign('aptNos', 0.16, 0.08, dx, y + 2.03, 0.056, {}, [(no % 3) * 16, Math.floor(no / 3) * 8, 16, 8]);
     if (no !== 1) t.sign('namesL', 0.06, 0.12, dx + 0.32, y + 1.5, 0.056, {}, [(12 + no) % 17 * 12, 0, 12, 24]);
-    B.box(m.pv, 0.3, 0.4, 0.1, dx - 0.65, y + 0.2, 0.08, { tint: 0x9aa4a8 });
-    B.box(m.pv, 0.22, 0.3, 0.12, dx - 0.65, y + 1.75, 0.07, { tint: 0xd8d4c8 });
-    B.box(m.gloss, 0.12, 0.08, 0.02, dx - 0.65, y + 1.9, 0.135, { tint: 0x2a2c2e });
+    t.lpi.add('elec_meter', dx - 0.65, y + 0.2, 0.04, { frame: B.top, s: 0.5 }); // the meter board, the water heater (real models)
+    t.lpi.add('waterheater', dx - 0.65, y + 1.5, 0.12, { frame: B.top, s: 0.6 });
     if (fl === 1) {
       // upstairs: washing machines on the corridor, an umbrella or two
-      if (i !== 1) { B.box(m.pv, 0.55, 0.85, 0.55, dx - 0.62, y, 0.62, { tint: 0xf0eee6 }); B.box(m.pv, 0.5, 0.05, 0.5, dx - 0.62, y + 0.85, 0.62, { tint: 0x9ab0c0 }); B.box(m.pv, 0.12, 0.03, 0.02, dx - 0.62, y + 0.7, 0.9, { tint: 0x3a3a3a }); }
+      if (i !== 1) t.lpi.add('twin_tub_own', dx - 0.62, y, 0.62, { frame: B.top, s: 0.62 }); // a twin-tub washer (real model)
       t.umbrellaStand(dx + 0.62, y, 0.3, no);
     } else if (i !== 1) t.umbrellaStand(dx + 0.6, y - 0.4, 0.35, no);
   }
   // 2F corridor: slab with a drip edge, a see-through steel railing, columns, a lamp under the slab
+  // arch-begin: the 2F corridor (slab, drip edge, railing, columns)
   B.box(m.conc, W + 0.9, 0.18, 1.2, 0.45, fy[1] - 0.18, 0.6, { k: 0.95 });
   B.box(m.pv, W + 0.92, 0.06, 0.06, 0.45, fy[1] - 0.24, 1.18, { tint: 0x8a8680 });
   B.box(m.pv, W + 0.9, 0.2, 0.08, 0.45, fy[1], 1.16, { tint: 0xd8dce0 });
   B.box(m.metal, W + 0.9, 0.05, 0.07, 0.45, fy[1] + 1.05, 1.16, { tint: 0x8a9096 });
   for (let u = -W / 2; u <= W / 2 + 0.9; u += 0.12) B.box(m.metal, 0.022, 0.85, 0.022, u, fy[1] + 0.2, 1.16, { tint: 0x9aa0a6 });
   for (const cx of [-W / 2 + 0.05, 0, W / 2 + 0.85]) B.box(m.metal, 0.1, fy[1], 0.1, cx, 0, 1.15, { tint: 0x8a9096 });
-  B.box(t.T('aptName', 384, 154), 0.9, 0.36, 0.04, -1.4, fy[1] + 0.35, 1.21, { unit: true });
+  // arch-end
+  B.quad(t.T('aptName', 384, 154), 0.9, 0.36, -1.4, fy[1] + 0.35, 1.235, {}); // the name board (print on the railing)
   t.sign('aptRecruit', 0.4, 0.26, 1.2, fy[1] + 0.4, 1.205);
   // futons and towels hung over the corridor railing
-  B.box(m.pv, 1.1, 0.5, 0.06, 2.35, fy[1] + 0.6, 1.23, { tint: 0xd8e8f0 });
-  B.box(m.pv, 1.1, 0.06, 0.16, 2.35, fy[1] + 1.06, 1.16, { tint: 0xd8e8f0 });
-  B.box(m.pv, 0.35, 0.45, 0.03, -1.8, fy[1] + 0.65, 1.21, { tint: 0xf2a0b8 });
+  // (the futon and towel over the railing were blocks: gone)
   // steel stairs on the east end rising along -z: treads, stringers, a landing, a handrail
+  // arch-begin: the steel stairs (treads, stringers, landing, handrail, its footing)
   const sx = W / 2 + 0.45, n = 14;
   const rx = -Math.atan2(fy[1] - 0.2, 3.3);
   for (let i = 0; i < n; i++) { B.box(m.metal, 0.75, 0.04, 0.26, sx, 0.2 + (i + 1) * (fy[1] - 0.2) / n - 0.04, -2.95 + i * 0.24, { tint: 0x7a8288 }); B.box(m.metal, 0.75, 0.14, 0.02, sx, 0.2 + (i + 1) * (fy[1] - 0.2) / n - 0.14, -2.95 + i * 0.24 - 0.12, { tint: 0x6a7278 }); }
@@ -397,15 +392,13 @@ function apartment(t, x, z) {
   for (let k = 0; k < 6; k++) { const zz = -2.8 + k * 0.6, yy = 0.2 + (k * 0.6 + 0.15) / 3.3 * (fy[1] - 0.2); B.box(m.metal, 0.025, 0.9, 0.025, sx + 0.42, yy, zz, { tint: 0xc8ccd0 }); }
   B.box(m.metal, 0.06, 0.9, 0.06, sx + 0.42, 0.2, -2.95, { tint: 0xc8ccd0 });
   B.box(m.found, 0.9, 0.2, 0.5, sx, 0, -3.2, {});
+  // arch-end
   // under the stairs: a bicycle and a tricycle, rust on the stringers
   lp(t, 'mamachari', sx + 0.05, 0, -0.2, Math.PI / 2 + 0.1);
-  B.box(m.pv, 0.3, 0.3, 0.45, sx, 0.15, 0.85, { tint: 0xd8282a });
-  for (const dz of [0.68, 1.02]) B.box(m.pv, 0.04, 0.2, 0.2, sx + 0.17, 0, 0.85 + (dz - 0.85) * 1.6, { tint: 0x2a2a2a });
+  t.lpi.add('bicycle_old', sx, 0, 0.85, { frame: B.top, ry: Math.PI / 2, s: 0.55 }); // a kid's bike (a real one, small)
   // mailboxes on a post with the six slots, the corridor's gas pipe
-  B.box(m.metal, 0.9, 0.55, 0.32, -2.0, 0.9, 1.0, { tint: 0xb8bcc0 });
-  for (let i = 0; i < 6; i++) B.box(m.pv, 0.13, 0.12, 0.02, -2.38 + (i % 3) * 0.29 + 0.07, 1.0 + Math.floor(i / 3) * 0.24, 1.17, { tint: 0x9aa0a6 });
-  B.box(m.metal, 0.08, 0.9, 0.08, -2.0, 0, 1.0, { tint: 0x8a8e92 });
-  B.box(m.metal, W - 0.3, 0.04, 0.04, 0, fy[1] - 0.32, 0.05, { tint: 0xc8b848 });
+  t.lpi.add('mailbox_bank', -2.0, 0, 1.0, { frame: B.top }); // the six mailboxes on their post (r6 mailbox_bank)
+  B.box(m.metal, W - 0.3, 0.04, 0.04, 0, fy[1] - 0.32, 0.05, { tint: 0xc8b848 }); // arch: the corridor's gas pipe
   B.pop();
   t.yard(16.8, 22.65, z, ZB - 0.15, m.strip);
   t.blockWall(16.8, 22.65, ZB, 1, { h: 0.9, gaps: [[18.6, 20.2]], pillars: false });
@@ -522,9 +515,9 @@ function farSide(t) {
   t.prop('mamachari', 14.4, 0, 16.0, -Math.PI / 2 - 0.15, { block: true });
   t.prop('mirror_pole', 10.6, 0, 14.6, Math.PI, { block: true });
   // a modern "function post" (機能門柱): name, intercom, mailbox and a light on one slim post
-  B.box(m.metal, 0.22, 1.35, 0.14, 10.45, 0, ZF + 0.35, { tint: 0x3a3a3c });
-  B.box(m.pv, 0.26, 0.3, 0.2, 10.45, 0.55, ZF + 0.33, { tint: 0x5a5a5c });
-  B.box(t.G, 0.16, 0.05, 0.06, 10.45, 1.3, ZF + 0.29, { tint: 0xfff0d0 });
+  B.box(m.metal, 0.22, 1.35, 0.14, 10.45, 0, ZF + 0.35, { tint: 0x3a3a3c }); // arch: the fixed gate post
+  t.lpi.add('mailbox', 10.45, 0.52, ZF + 0.35 - 0.07 - 0.071, { ry: Math.PI, s: 0.85 }); // its mailbox (r6)
+  B.box(t.G, 0.16, 0.05, 0.06, 10.45, 1.3, ZF + 0.29, { tint: 0xfff0d0 }); // arch: the post's built-in light
   t.game.player.addObstacle(10.3, 10.6, ZF + 0.23, ZF + 0.47);
   pillarKit(t, 10.45, s, { name: N('山田'), y: 0.95, z: ZF + 0.28 });
   addDoor(t, 'yamada', 'FE4', 'Yamada', [11.5, 18.1], [11.2, ZF], [10.45, ZF + 0.2, 0.95], s);
@@ -548,16 +541,15 @@ function farSide(t) {
   B.box(m.tin, 4.6, 2.7, 5.0, 0, 0.1, -2.6, { uv: [0, 0], ao: 0.2 });
   for (const dx of [-1.15, 1.15]) {
     B.box(m.shutterM, 2.0, 2.2, 0.05, dx, 0.1, 0.02);
-    B.box(m.metal, 2.2, 0.26, 0.3, dx, 2.3, 0.12, { tint: 0x7a7e7a });
-    B.box(m.pv, 0.3, 0.12, 0.02, dx + 0.6, 1.9, 0.06, { tint: 0xf4f0e6 });
-    B.box(m.pv, 0.14, 0.18, 0.012, dx - 0.75, 1.75, 0.055, { tint: 0xf4f0e6 });
+    B.box(m.metal, 2.2, 0.26, 0.3, dx, 2.3, 0.12, { tint: 0x7a7e7a }); // arch: the shutter box
+    B.box(m.pv, 0.3, 0.12, 0.02, dx + 0.6, 1.9, 0.06, { tint: 0xf4f0e6 }); // arch: number plates on the shutter
+    B.box(m.pv, 0.14, 0.18, 0.012, dx - 0.75, 1.75, 0.055, { tint: 0xf4f0e6 }); // arch: number plates on the shutter
     B.quad(t.decal('stainDrip', 48, 144), 1.8, 1.2, dx, 0.95, 0.05, { tint: 0x9a7a5a, flipU: dx > 0 });
   }
   B.box(m.tinRed, 5.0, 0.08, 5.5, 0, 2.8, -2.6, { rx: 0.06 });
-  B.box(m.metal, 0.04, 1.6, 0.04, 1.9, 2.85, -0.8, { tint: 0x8a8a88 });
-  B.box(m.pv, 0.6, 0.4, 0.015, 2.2, 3.95, -0.8, { tint: 0x1a1a1a });
-  B.box(m.pv, 0.16, 0.12, 0.02, 2.2, 4.1, -0.8, { tint: 0xf4f0e6 });
-  B.box(m.pv, 0.26, 0.04, 0.025, 2.2, 4.2, -0.8, { tint: 0xe8c860 });
+  // the pirate's flag on a real pole (r6 nobori_pole, crossbar out to +x), the cloth hanging from it
+  t.lpi.add('nobori_pole', 1.9 + 0.115, 2.81, -0.8, { frame: B.top, ry: Math.PI, s: [1, 0.72, 1] });
+  B.quad(m.pv, 0.6, 0.4, 2.2, 3.98, -0.8, { tint: 0x1a1a1a });
   B.pop();
   t.yard(21.05, 25.7, ZF, 15.2, m.strip);
   // a neighbour's blue-and-white 1980s kei van pulled up by the rental garages

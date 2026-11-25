@@ -1,0 +1,33 @@
+{
+ "id": "sat_dish",
+ "src": "art/lowpix/world/made/sat_dish.glb",
+ "credit": {
+  "title": "Satellite dish (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/sat_dish.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 308,
+ "tex": 512,
+ "size": [
+  0.46,
+  0.731,
+  0.63
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#874f2e",
+   "#ac7140",
+   "#c19563",
+   "#ceb58d",
+   "#ddd1b5",
+   "#e0d9c1",
+   "#e4e1cc",
+   "#e8e7d6",
+   "#edede1"
+  ]
+ },
+ "warnings": []
+}

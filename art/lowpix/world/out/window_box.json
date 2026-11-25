@@ -1,0 +1,44 @@
+{
+ "id": "window_box",
+ "src": "art/lowpix/world/made/window_box.glb",
+ "credit": {
+  "title": "Window flower box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/window_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 144,
+ "tex": 512,
+ "size": [
+  0.9,
+  0.16,
+  0.2
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#54261d",
+   "#6c3928",
+   "#824e35",
+   "#986642",
+   "#ac7e50",
+   "#b5966a",
+   "#beab85",
+   "#c8be9e",
+   "#d3ceb7"
+  ],
+  "m1": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "drawing_board",
+ "src": "art/lowpix/world/made/drawing_board.glb",
+ "credit": {
+  "title": "Drawing board (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/drawing_board.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 220,
+ "tex": 512,
+ "size": [
+  0.58,
+  0.357,
+  0.793
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#52241c",
+   "#693626",
+   "#7e4b32",
+   "#93613e",
+   "#a7794c",
+   "#b49264",
+   "#bda880",
+   "#c7bb9a",
+   "#d2cdb4"
+  ],
+  "m1": [
+   "#8b4f2d",
+   "#b2723e",
+   "#c49763",
+   "#d1b88f",
+   "#e0d4b8",
+   "#e3dcc3",
+   "#e6e3ce",
+   "#eae9d8",
+   "#eeeee2"
+  ]
+ },
+ "warnings": []
+}

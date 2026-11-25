@@ -1,0 +1,44 @@
+{
+ "id": "concrete_pipe",
+ "src": "art/lowpix/world/made/concrete_pipe.glb",
+ "credit": {
+  "title": "Concrete Hume pipe (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/concrete_pipe.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 240,
+ "tex": 512,
+ "size": [
+  2,
+  1.024,
+  1.024
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ],
+  "m1": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ]
+ },
+ "warnings": []
+}

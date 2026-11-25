@@ -1,0 +1,44 @@
+{
+ "id": "glass_showcase",
+ "src": "art/lowpix/world/made/glass_showcase.glb",
+ "credit": {
+  "title": "Glass showcase (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/glass_showcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 548,
+ "tex": 624,
+ "size": [
+  0.47,
+  1.84,
+  1.32
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#2d0f0d",
+   "#391712",
+   "#452217",
+   "#512d1d",
+   "#5c3a24",
+   "#7f5935",
+   "#a17a49",
+   "#b69a68",
+   "#c4b58e"
+  ],
+  "m1": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ]
+ },
+ "warnings": []
+}

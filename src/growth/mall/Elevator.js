@@ -26,6 +26,7 @@ export class Elevator {
   }
 
   // ------------------------------------------------------------------ geometry (per floor zone)
+  // arch-begin: the lift shaft, its doors, frame and car (building equipment)
   build(zone, n) {
     const Z = zone, B = Z.B, L = LIFT;
     const steel = Z.mat(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.7 }));
@@ -84,6 +85,7 @@ export class Elevator {
     this.parts[n] = { zone: Z, leaves, door, callMat };
   }
 
+  // arch-end
   drawOut(x) {
     x.fillStyle = '#1a1a1e'; x.fillRect(0, 0, 24, 12);
     const c = this.car;

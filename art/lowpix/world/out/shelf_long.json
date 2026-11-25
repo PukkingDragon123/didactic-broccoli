@@ -1,0 +1,44 @@
+{
+ "id": "shelf_long",
+ "src": "art/lowpix/world/made/shelf_long.glb",
+ "credit": {
+  "title": "Long wall shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_long.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 476,
+ "tex": 512,
+ "size": [
+  2.2,
+  0.15,
+  0.26
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#55261d",
+   "#6c3928",
+   "#834e34",
+   "#986541",
+   "#ad7e4f",
+   "#b6966a",
+   "#bfab84",
+   "#c9be9e",
+   "#d4cfb6"
+  ],
+  "m1": [
+   "#1d1715",
+   "#251f1d",
+   "#2c2725",
+   "#33302d",
+   "#3a3836",
+   "#545353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

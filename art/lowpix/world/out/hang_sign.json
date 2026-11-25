@@ -1,0 +1,55 @@
+{
+ "id": "hang_sign",
+ "src": "art/lowpix/world/made/hang_sign.glb",
+ "credit": {
+  "title": "Hanging shop plaque (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hang_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 232,
+ "tex": 288,
+ "size": [
+  0.42,
+  0.385,
+  0.03
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#3a130f",
+   "#4a1f16",
+   "#5a2c1c",
+   "#693b24",
+   "#774c2c",
+   "#976a3c",
+   "#b48b4f",
+   "#bfa673",
+   "#cbbf96"
+  ],
+  "m1": [
+   "#150f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#292626",
+   "#464545",
+   "#636363",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m2": [
+   "#5d3119",
+   "#774823",
+   "#90622e",
+   "#a87d3a",
+   "#bc994a",
+   "#c2ad66",
+   "#c9bf81",
+   "#d1ce9b",
+   "#dadab4"
+  ]
+ },
+ "warnings": []
+}

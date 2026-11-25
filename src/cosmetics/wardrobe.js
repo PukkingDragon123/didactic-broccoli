@@ -4,6 +4,7 @@
 //   installWardrobe(game) -> { open(), close(), active }      (game.wardrobe)
 import * as THREE from 'three';
 import { ROOM } from '../room/build.js';
+import { lpModel } from '../kit/place.js';
 
 const MIRROR = { x: -0.89, z: ROOM.zPart - 0.12 }; // room-local, facing -z into the tatami room
 
@@ -18,8 +19,8 @@ function mirrorMesh() {
   f.rotation.x = -0.08;
   g.add(f);
   const add = (b) => { g.remove(b); f.add(b); return b; };
-  add(box(W, T, T, 0, H, 0)); add(box(W, T, T, 0, 0.06, 0));
-  add(box(T, H, T, -W / 2, H / 2 + 0.03, 0)); add(box(T, H, T, W / 2, H / 2 + 0.03, 0));
+  void add;
+  f.add(lpModel('standing_mirror', 0, 0, 0.015)); // the frame, its foot and back board (r6 standing_mirror)
   // the glass: a cool grey-blue with stepped pixel streaks (no smooth reflections)
   // (drawn at 256 px/m: 104 x 312 for the 0.4 x 1.2 m glass, docs/ART.md)
   const c = document.createElement('canvas'); c.width = 104; c.height = 312;
@@ -36,9 +37,7 @@ function mirrorMesh() {
   glass.position.set(0, H / 2 + 0.04, T / 2 + 0.002);
   f.add(glass);
   // a little foot to stand on, and a tie hanging off the corner
-  box(W + 0.06, 0.04, 0.16, 0, 0.02, 0.02);
-  const tie = box(0.035, 0.32, 0.01, W / 2 + 0.01, H - 0.2, 0.03, new THREE.MeshStandardMaterial({ color: 0x8a2a2a, roughness: 0.8 }));
-  g.remove(tie); f.add(tie); tie.rotation.z = 0.1;
+  void box;
   return g;
 }
 

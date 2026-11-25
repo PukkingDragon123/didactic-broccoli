@@ -4,6 +4,8 @@
 // a painted lane at dusk beyond it, plus all the furniture and clutter (src/data/props/room.js).
 //   buildRoom(game, group) -> { lamp, deskLamp, view, calendar, figSlots, targets, obstacles, colliders, pc, ... }
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
+import { tagBlock, tagBuilt } from '../dev/blockTag.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
 import { hasHD, hdMap } from '../gfx/hdtex.js';
@@ -31,11 +33,13 @@ const _c = new THREE.Color();
 class Batch {
   constructor() { this.lists = new Map(); }
   add(mat, g, tint = 0xffffff, k = 1) {
+    const type = g.type;
     const n = g.attributes.position.count, col = new Float32Array(n * 3);
     _c.set(tint);
     for (let i = 0; i < n; i++) { col[i * 3] = _c.r * k; col[i * 3 + 1] = _c.g * k; col[i * 3 + 2] = _c.b * k; }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     if (g.index) g = g.toNonIndexed();
+    tagBlock(g, mat, type);
     if (!this.lists.has(mat)) this.lists.set(mat, []);
     this.lists.get(mat).push(g);
     return g;
@@ -74,6 +78,7 @@ class Batch {
       if (!g) continue;
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, mat);
+      tagBuilt(list, m);
       m.matrixAutoUpdate = false;
       m.updateMatrix();
       m.receiveShadow = true;
@@ -145,6 +150,7 @@ export function buildRoom(game, group) {
   B.plane(M.floor, x1 - gk.x1, z1 - zPart, (gk.x1 + x1) / 2, 0, (zPart + z1) / 2);
   B.plane(M.floor, gk.x1 - x0, gk.z0 - zPart, (x0 + gk.x1) / 2, 0, (zPart + gk.z0) / 2);
   B.plane(M.genkan, gk.x1 - x0, z1 - gk.z0, (x0 + gk.x1) / 2, R.door.y, (gk.z0 + z1) / 2);
+  // arch-begin: the flat's shell: the genkan step, walls, door frames, ranma, mouldings, window sashes, sill and curtain rail
   B.box(M.woodL, gk.x1 - x0, 0.14, 0.09, (x0 + gk.x1) / 2, R.door.y, gk.z0 + 0.03, { tint: 0xc8a070 }); // agari-kamachi step
   B.box(M.genkan, 0.02, 0.12, z1 - gk.z0, gk.x1 + 0.01, R.door.y, (gk.z0 + z1) / 2);
   // ---------------------------------------------------------------- walls (shell boxes outside the interior)
@@ -239,19 +245,21 @@ export function buildRoom(game, group) {
   out.curtMat = curtMat;
 
   // ---------------------------------------------------------------- outside: balcony + the painted lane at dusk
+  // arch-end
   const bz0 = z0 - t, bz1 = bz0 - 1.05, by = 0.42 - 0.4; // balcony floor ~ same level (ground floor raised 0.4 m)
   O.plane(M.out, 3.8, 1.05, wx, by - 0.02, (bz0 + bz1) / 2, { tint: 0x9a8a7a });
+  // arch-begin: the balcony (partitions, railing, the slab above)
   for (const x of [wx - 1.85, wx + 1.85]) O.box(M.out, 0.04, 1.9, 1.05, x, by, (bz0 + bz1) / 2, { tint: 0xd8ccbc }); // partition panels
   O.quad(M.out, 3.7, 0.95, wx, by, bz1, { tint: 0x7a7a80 }); // railing panel (frosted)
   O.box(M.out, 3.75, 0.04, 0.07, wx, by + 0.95, bz1, { tint: 0xd8dce2 });
   for (let i = 0; i <= 18; i++) O.box(M.out, 0.025, 0.9, 0.025, wx - 1.85 + i * (3.7 / 18), by + 0.05, bz1 + 0.04, { tint: 0xa8acb2 });
-  O.box(M.out, 3.6, 0.025, 0.025, wx, by + 1.95, (bz0 + bz1) / 2 + 0.1, { tint: 0x7ab0d8 }); // laundry pole
-  O.box(M.out, 0.36, 0.5, 0.01, wx - 0.6, by + 1.45, (bz0 + bz1) / 2 + 0.1, { tint: 0xf4f0e6, ry: 0.15 });
-  O.box(M.out, 0.3, 0.42, 0.01, wx + 0.3, by + 1.52, (bz0 + bz1) / 2 + 0.1, { tint: 0xffa0b8, ry: -0.1 });
-  O.box(M.out, 0.08, 0.2, 0.01, wx + 0.75, by + 1.73, (bz0 + bz1) / 2 + 0.1, { tint: 0xf4f0e6 });
-  O.box(M.out, 0.08, 0.2, 0.01, wx + 0.86, by + 1.73, (bz0 + bz1) / 2 + 0.1, { tint: 0xf4f0e6 });
-  O.box(M.out, 3.8, 0.12, 1.1, wx, by + 2.45, (bz0 + bz1) / 2, { tint: 0x8a8278 }); // 2F balcony slab above
-  O.box(M.out, 0.4, 0.3, 0.3, wx + 1.5, by, bz0 - 0.25, { tint: 0xb8b4aa }); // AC outdoor unit
+  // arch-end
+  // the laundry pole on its stands, a shirt and a tee drying on hangers (real models)
+  group.add(lpModel('laundry_pole_own', wx, by, (bz0 + bz1) / 2 + 0.1));
+  group.add(lpModel('hanger_shirt', wx - 0.6, by + 1.82 - 0.8, (bz0 + bz1) / 2 + 0.1, { ry: 0.15 }));
+  group.add(lpModel('hanger_tee', wx + 0.4, by + 1.82 - 0.7, (bz0 + bz1) / 2 + 0.1, { ry: -0.1 }));
+  O.box(M.out, 3.8, 0.12, 1.1, wx, by + 2.45, (bz0 + bz1) / 2, { tint: 0x8a8278 }); // arch: the 2F balcony slab above
+  group.add(lpModel('ac_unit', wx + 1.4, by, bz0 - 0.22)); // the AC's outdoor unit (a real model)
   // three painted layers (lane + houses, skyline + sky) with parallax
   const lay = (pix, wM, hM, x, y, z, alpha) => {
     const map = T.texOf(pix);
@@ -268,6 +276,7 @@ export function buildRoom(game, group) {
   out.view = { sky, lane, mats: [sky.material, lane.material] };
 
   // ---------------------------------------------------------------- the oshiire closet in the west wall
+  // arch-begin: the built-in oshiire closet (its floor, shelf, walls, frame and sliding fusuma)
   const cz0 = -2.05, cz1 = -0.45, cx0 = x0 - 0.85;
   B.box(M.paper, 0.85, 0.02, cz1 - cz0, x0 - 0.42, 0.0, (cz0 + cz1) / 2, { tint: 0xe8dcc0 });
   B.box(M.woodL, 0.85, 0.03, cz1 - cz0, x0 - 0.42, 0.82, (cz0 + cz1) / 2, { tint: 0xd8b888 }); // nakadana shelf
@@ -286,9 +295,11 @@ export function buildRoom(game, group) {
   const leaf = (m, z, dx) => { const g = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.74, fw), [m, m, M.edge, M.edge, M.edge, M.edge]); g.position.set(x0 + dx, 0.87, z); group.add(g); return g; };
   leaf(fus[0], cz0 + fw / 2, -0.015);
   leaf(fus[1], cz0 + fw / 2 + 0.12, -0.05);
+  // arch-end
   // (what's inside, the folded spare futon, a toy box, old books and boxes: real models, src/room/dressing.js)
 
   // ---------------------------------------------------------------- the front door (inside face) + genkan bits
+  // arch-begin: the front door, its frame, the light switch and intercom (fittings)
   const doorMat = unitMat(() => T.doorInside(40, 88), { roughness: 0.5, metalness: 0.2, hd: 'doorInside', vertexColors: false });
   const doorLeaf = new THREE.Mesh(new THREE.BoxGeometry(d.w, d.h, 0.05), [M.edge, M.edge, M.edge, M.edge, M.edge, doorMat]);
   doorLeaf.geometry.translate(d.w / 2, 0, 0); // hinge on the left edge
@@ -304,11 +315,13 @@ export function buildRoom(game, group) {
   B.box(M.paint, 0.03, 0.05, 0.01, -0.62, 1.18, z1 - 0.018, { tint: 0xe0dcd0 });
   B.box(M.paint, 0.12, 0.17, 0.03, -0.62, 1.38, z1 - 0.015, { tint: 0xe8e4da });
   B.box(M.glow, 0.02, 0.01, 0.005, -0.6, 1.5, z1 - 0.032, { tint: 0x60ff80 });
-  B.box(M.metal, 0.02, 0.02, 0.08, -0.35, 1.62, z1 - 0.04, { tint: 0xc8ccd2 });
-  B.box(M.paint, 0.3, 0.38, 0.06, -0.35, 1.2, z1 - 0.06, { tint: 0xe8d8b0 });
-  B.box(M.paint, 0.26, 0.1, 0.005, -0.35, 1.36, z1 - 0.092, { tint: 0x2f6fd6 });
+  // arch-end
+  // the coat hook and the tote bag hanging from it: real models (src/kit/place.js)
+  group.add(lpModel('hook_m', -0.35, 1.6, z1 - 0.025, { ry: Math.PI, size: 0.06, fit: 'y' }));
+  group.add(lpModel('shopbag_own', -0.35, 1.22, z1 - 0.08, { ry: Math.PI, size: 0.4, fit: 'y' }));
 
   // ---------------------------------------------------------------- kitchen: upper cupboard, frosted window, bath door
+  // arch-begin: the kitchen's fitted wall cupboard, frosted window and the bath door with its rail
   B.box(M.paint, 1.2, 0.55, 0.34, 0.6, 1.62, z1 - 0.17, { tint: 0xf0e6cc });
   for (const x of [0.3, 0.9]) { B.box(M.paint, 0.56, 0.5, 0.01, x, 1.645, z1 - 0.345, { tint: 0xf6eedc }); B.box(M.metal, 0.08, 0.015, 0.02, x + (x < 0.5 ? 0.2 : -0.2), 1.69, z1 - 0.355, { tint: 0xc8ccd2 }); }
   const kw = new Pix(16, 12, 3); kw.gradient(0, 0, 16, 12, 0xffd0a0, 0xff9a60); for (let x = 0; x < 16; x += 3) for (let y = 0; y < 12; y++) if ((x + y) % 2) kw.px(x, y, 0xffe0b8);
@@ -318,6 +331,7 @@ export function buildRoom(game, group) {
   const bd = new Pix(24, 64, 5); bd.fill(0xe8e8ec); bd.frame(0, 0, 24, 64, 0x9a9ea4); bd.rect(3, 6, 18, 30, 0xc8d8e0); for (let y = 6; y < 36; y += 2) bd.rect(3, y, 18, 1, 0xd8e4ea); bd.rect(11, 0, 1, 64, 0xb8bcc2); bd.rect(17, 38, 3, 6, 0x8a8e94);
   B.quad(unitMat(bd, { roughness: 0.4, hd: 'bathDoor' }), 0.68, 1.85, x1 - 0.005, 0, 0.95, { ry: -Math.PI / 2 });
   B.box(M.paint, 0.03, 0.06, 0.74, x1 - 0.015, 1.85, 0.95, { tint: 0xb8bcc2 });
+  // arch-end
 
   // ---------------------------------------------------------------- lamp
   const lampSize = propSize('room_lamp');

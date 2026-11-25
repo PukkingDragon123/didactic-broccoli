@@ -1,0 +1,55 @@
+{
+ "id": "counter_ramen",
+ "src": "art/lowpix/world/made/counter_ramen.glb",
+ "credit": {
+  "title": "Ramen counter (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/counter_ramen.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 2496,
+ "tex": 1024,
+ "size": [
+  4.091,
+  1.12,
+  0.659
+ ],
+ "colours": 24,
+ "palette": {
+  "m0": [
+   "#3b140f",
+   "#4c2015",
+   "#5c2d1c",
+   "#6b3d24",
+   "#7a4e2c",
+   "#9a6c3c",
+   "#b58d4f",
+   "#c0a874",
+   "#cdc097"
+  ],
+  "m1": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ],
+  "m2": [
+   "#363a4a",
+   "#494f5f",
+   "#5e6472",
+   "#737a83",
+   "#8b8f93",
+   "#9e9e9f",
+   "#aeaeae",
+   "#bdbdbd",
+   "#cdcdcd"
+  ]
+ },
+ "warnings": []
+}

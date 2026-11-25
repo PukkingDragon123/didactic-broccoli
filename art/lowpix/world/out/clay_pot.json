@@ -1,0 +1,33 @@
+{
+ "id": "clay_pot",
+ "src": "art/lowpix/world/made/clay_pot.glb",
+ "credit": {
+  "title": "Terracotta flower pot (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/clay_pot.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 196,
+ "tex": 256,
+ "size": [
+  0.26,
+  0.22,
+  0.253
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#561415",
+   "#6e221c",
+   "#853425",
+   "#9b492f",
+   "#b0603a",
+   "#c07d50",
+   "#c79a6f",
+   "#d0b38c",
+   "#d9c8a9"
+  ]
+ },
+ "warnings": []
+}

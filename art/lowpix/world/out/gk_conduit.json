@@ -1,0 +1,33 @@
+{
+ "id": "gk_conduit",
+ "src": "art/lowpix/world/made/garage_kit/gk_conduit.glb",
+ "credit": {
+  "title": "PVC conduit with saddles (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_conduit.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 334,
+ "tex": 512,
+ "size": [
+  1,
+  0.06,
+  0.029
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#615744",
+   "#7b735c",
+   "#938e77",
+   "#a6a596",
+   "#bbbbb3",
+   "#c2c2bf",
+   "#cbcbcb",
+   "#d5d5d5",
+   "#dfdfdf"
+  ]
+ },
+ "warnings": []
+}

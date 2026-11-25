@@ -64,6 +64,7 @@ export function pixMat(key, opts = {}) {
       map, bumpMap: opts.bump === 0 ? null : map, bumpScale: (opts.bump ?? 1.2) * HD_BUMP,
       roughness: opts.roughness ?? 0.85, metalness: opts.metalness ?? 0, color: opts.color ?? 0xffffff, envMapIntensity: opts.env ?? 1,
     });
+    m.userData.key = key; // (the block audit's material name)
     matCache.set(ck, m);
     return m;
   }
@@ -94,6 +95,7 @@ export function pixMat(key, opts = {}) {
     m.onBeforeCompile = (sh) => patchTextureDetail(sh, m.userData.texDetail);
     m.customProgramCacheKey = () => 'texdetail';
   }
+  m.userData.key = key;
   matCache.set(ck, m);
   return m;
 }

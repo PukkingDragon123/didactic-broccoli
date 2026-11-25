@@ -1,0 +1,44 @@
+{
+ "id": "gk_fluoro",
+ "src": "art/lowpix/world/made/garage_kit/gk_fluoro.glb",
+ "credit": {
+  "title": "Inverted-Fuji fluorescent fixture (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_fluoro.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 468,
+ "tex": 1024,
+ "size": [
+  1.312,
+  0.198,
+  0.24
+ ],
+ "colours": 14,
+ "palette": {
+  "m0": [
+   "#8c6840",
+   "#af8e5c",
+   "#c1af89",
+   "#d4cdb3",
+   "#eae8dc",
+   "#ecece2",
+   "#efefe7",
+   "#f1f1ec",
+   "#f4f4f1"
+  ],
+  "m1": [
+   "#1c1d27",
+   "#252832",
+   "#30343c",
+   "#3a3f45",
+   "#464a4e",
+   "#616365",
+   "#7c7c7c",
+   "#959595",
+   "#aeaeae"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,66 @@
+{
+ "id": "display_case",
+ "src": "art/lowpix/world/made/display_case.glb",
+ "credit": {
+  "title": "Museum display case (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/display_case.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 836,
+ "tex": 356,
+ "size": [
+  1,
+  1.066,
+  0.516
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#2c0f0c",
+   "#381811",
+   "#442217",
+   "#4f2e1d",
+   "#5a3a23",
+   "#7d5934",
+   "#9f7b48",
+   "#b59b66",
+   "#c4b68d"
+  ],
+  "m1": [
+   "#434860",
+   "#5b637a",
+   "#757f91",
+   "#949ba4",
+   "#b1b5b9",
+   "#bebfc1",
+   "#c9c9c9",
+   "#d4d4d4",
+   "#dedede"
+  ],
+  "m2": [
+   "#3e0920",
+   "#4f0d25",
+   "#601227",
+   "#701828",
+   "#801e28",
+   "#a42a2d",
+   "#c74138",
+   "#ce7161",
+   "#d79b88"
+  ],
+  "m3": [
+   "#633317",
+   "#7f4b20",
+   "#9a662b",
+   "#b48437",
+   "#c4a04c",
+   "#c9b468",
+   "#cfc582",
+   "#d6d39c",
+   "#dedeb5"
+  ]
+ },
+ "warnings": []
+}

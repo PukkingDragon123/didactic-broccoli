@@ -31,16 +31,17 @@ function own(group, id, x, y, z, ry = 0) {
 function slotRow(slots, n, y, z, width, rotY = 0) {
   for (let i = 0; i < n; i++) slots.push({ pos: new THREE.Vector3(-width / 2 + (width / n) * (i + 0.5), y, z), rotY, size: [width / n, 0.13, 0.12], plaqueZ: 0.05 });
 }
-function glassBox(group, w, h, d, x, y, z) {
+function glassBox(group, w, h, d, x, y, z, edges = true) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), glassMat());
   m.position.set(x, y + h / 2, z);
   m.renderOrder = 3;
   m.userData.noRim = true;
-  group.add(m);
+  group.add(m); // arch: the case's glass box (glazing)
   // thin metal edges
+  if (!edges) return m;
   const em = chrome();
-  for (const [ex, ez] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) add(group, new THREE.Mesh(new THREE.BoxGeometry(0.012, h, 0.012), em), x + ex * w / 2, y + h / 2, z + ez * d / 2);
-  for (const ey of [0, h]) for (const ez of [-1, 1]) add(group, new THREE.Mesh(new THREE.BoxGeometry(w, 0.012, 0.012), em), x, y + ey, z + ez * d / 2);
+  for (const [ex, ez] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) add(group, new THREE.Mesh(new THREE.BoxGeometry(0.012, h, 0.012), em), x + ex * w / 2, y + h / 2, z + ez * d / 2); // arch: the glass box's metal glazing bars
+  for (const ey of [0, h]) for (const ez of [-1, 1]) add(group, new THREE.Mesh(new THREE.BoxGeometry(w, 0.012, 0.012), em), x, y + ey, z + ez * d / 2); // arch: the glass box's metal glazing bars
   return m;
 }
 /** A heap of wrapped fruit candies (our candy_own model, instanced) in a disc of radius r on y. */
@@ -84,20 +85,17 @@ export const BUILDERS = {
   case_glass() {
     const g = new THREE.Group(), slots = [];
     const wood = pixMat('woodDark', { roughness: 0.5 });
-    add(g, boxMesh(1.0, 0.82, 0.5, wood), 0, 0.41, 0);
-    add(g, boxMesh(0.96, 0.02, 0.46, pixMat('velvet', { roughness: 0.9 })), 0, 0.83, 0);
-    glassBox(g, 0.96, 0.22, 0.46, 0, 0.84, 0);
-    add(g, boxMesh(0.9, 0.06, 0.02, brass()), 0, 0.7, 0.252);
+    void wood;
+    own(g, 'display_case', 0, 0, 0); // the case, its velvet top, brass plate and the glass box's metal edges (r6)
+    glassBox(g, 0.96, 0.22, 0.46, 0, 0.84, 0, false);
     slotRow(slots, 4, 0.84, 0.02, 0.92);
     return { group: g, slots, mats: [{ y: 0.8408, w: 0.94, d: 0.44 }] };
   },
   shelf_open() {
     const g = new THREE.Group(), slots = [];
     const wood = pixMat('woodLight', { roughness: 0.6 });
-    for (const sx of [-1, 1]) add(g, boxMesh(0.03, 1.55, 0.36, wood), sx * 0.485, 0.775, 0);
-    add(g, boxMesh(1.0, 1.55, 0.02, pixMat('woodDark')), 0, 0.775, -0.17);
-    for (const y of [0.05, 0.45, 0.85, 1.25]) add(g, boxMesh(0.97, 0.025, 0.36, wood), 0, y, 0);
-    add(g, boxMesh(1.0, 0.03, 0.36, wood), 0, 1.55, 0);
+    void wood;
+    own(g, 'shelf_open', 0, 0, 0); // (r6 shelf_open: shelf tops at 0.0625 / 0.4625 / 0.8625 / 1.2625)
     for (const y of [0.4625, 0.8625, 1.2625]) slotRow(slots, 5, y, 0.02, 0.94);
     return { group: g, slots, mats: [0.4633, 0.8633, 1.2633].map((y) => ({ y, w: 0.95, d: 0.34 })) };
   },

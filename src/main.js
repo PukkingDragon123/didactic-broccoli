@@ -1,4 +1,5 @@
 // Entry point: fonts, title screen, pause menu, main loop.
+import './dev/blockTag.js'; // (first: the block audit's add hook, a no-op without ?blockaudit)
 import '@fontsource/dotgothic16/400.css';
 import '@fontsource/pixelify-sans/400.css';
 import './ui/fonts.css';

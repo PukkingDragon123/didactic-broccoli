@@ -1,0 +1,77 @@
+{
+ "id": "pencil",
+ "src": "art/lowpix/world/made/pencil.glb",
+ "credit": {
+  "title": "Pencil (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pencil.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 168,
+ "tex": 256,
+ "size": [
+  0.183,
+  0.007,
+  0.007
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#18372f",
+   "#214639",
+   "#2b5442",
+   "#35624b",
+   "#406f53",
+   "#548965",
+   "#6c9f78",
+   "#8bae90",
+   "#a8bfaa"
+  ],
+  "m1": [
+   "#5c3119",
+   "#754823",
+   "#8e612e",
+   "#a57c3a",
+   "#ba9849",
+   "#c0ac65",
+   "#c8be81",
+   "#d0cd9b",
+   "#d9d9b4"
+  ],
+  "m2": [
+   "#510b20",
+   "#681023",
+   "#7e1624",
+   "#941c23",
+   "#a82824",
+   "#c7402f",
+   "#d1694f",
+   "#d78f73",
+   "#deb096"
+  ],
+  "m3": [
+   "#54261d",
+   "#6b3928",
+   "#814e34",
+   "#976541",
+   "#ab7d4f",
+   "#b59569",
+   "#beaa84",
+   "#c8bd9d",
+   "#d3ceb6"
+  ],
+  "m4": [
+   "#150f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#292626",
+   "#464545",
+   "#636363",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

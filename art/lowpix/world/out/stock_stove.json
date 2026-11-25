@@ -1,0 +1,55 @@
+{
+ "id": "stock_stove",
+ "src": "art/lowpix/world/made/stock_stove.glb",
+ "credit": {
+  "title": "Stock-pot range (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/stock_stove.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1456,
+ "tex": 512,
+ "size": [
+  1.1,
+  0.715,
+  0.621
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#1d1715",
+   "#251f1d",
+   "#2c2725",
+   "#33302d",
+   "#3a3836",
+   "#545353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ],
+  "m1": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ],
+  "m2": [
+   "#550a21",
+   "#6d1024",
+   "#841525",
+   "#9b1c23",
+   "#b02824",
+   "#ce412f",
+   "#d46b52",
+   "#d99176",
+   "#e0b298"
+  ]
+ },
+ "warnings": []
+}

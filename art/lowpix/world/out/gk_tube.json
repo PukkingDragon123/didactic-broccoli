@@ -1,0 +1,44 @@
+{
+ "id": "gk_tube",
+ "src": "art/lowpix/world/made/garage_kit/gk_tube.glb",
+ "credit": {
+  "title": "Fluorescent tube (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_tube.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 120,
+ "tex": 512,
+ "size": [
+  1.236,
+  0.028,
+  0.027
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#4d588f",
+   "#7180ae",
+   "#9eabc4",
+   "#c9d1dc",
+   "#f2f4f6",
+   "#f4f6f7",
+   "#f6f7f8",
+   "#f8f9f9",
+   "#fafafa"
+  ],
+  "m1": [
+   "#66331a",
+   "#834c24",
+   "#9e6730",
+   "#b9853c",
+   "#c4a058",
+   "#c9b372",
+   "#cfc48b",
+   "#d6d2a3",
+   "#dedeba"
+  ]
+ },
+ "warnings": []
+}

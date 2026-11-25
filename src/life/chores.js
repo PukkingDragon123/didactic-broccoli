@@ -142,7 +142,7 @@ export class Chores {
     // the crescent latch in the middle
     const latch = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.03, 0.05), new THREE.MeshStandardMaterial({ color: 0xd8c070, metalness: 0.7, roughness: 0.3 }));
     latch.position.set(0.03, 0, half / 2 - 0.02);
-    sash.add(latch);
+    sash.add(latch); // arch: the window's crescent latch (window hardware)
     this.latch = latch;
     sash.position.set(W.x + 0.06, (W.y0 + W.y1) / 2, W.z0 + 0.01 + half / 2);
     g.scene.add(sash);

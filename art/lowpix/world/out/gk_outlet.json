@@ -1,0 +1,55 @@
+{
+ "id": "gk_outlet",
+ "src": "art/lowpix/world/made/garage_kit/gk_outlet.glb",
+ "credit": {
+  "title": "Bakelite double outlet (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_outlet.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 152,
+ "tex": 256,
+ "size": [
+  0.075,
+  0.11,
+  0.039
+ ],
+ "colours": 17,
+ "palette": {
+  "m0": [
+   "#915129",
+   "#ba7639",
+   "#cb9b61",
+   "#d6bc8e",
+   "#e4d8b9",
+   "#e6e0c4",
+   "#e9e6ce",
+   "#edecd8",
+   "#f0f0e2"
+  ],
+  "m1": [
+   "#160e0e",
+   "#1b1414",
+   "#211a19",
+   "#26211f",
+   "#2b2725",
+   "#494542",
+   "#656362",
+   "#818181",
+   "#9e9e9e"
+  ],
+  "m2": [
+   "#464f61",
+   "#5f6b7c",
+   "#7a8793",
+   "#99a2a7",
+   "#b7bbbd",
+   "#c3c4c4",
+   "#cdcdcd",
+   "#d6d6d6",
+   "#e0e0e0"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "shelf_wall",
+ "src": "art/lowpix/world/made/shelf_wall.glb",
+ "credit": {
+  "title": "Wall shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_wall.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 368,
+ "tex": 304,
+ "size": [
+  1.2,
+  0.15,
+  0.24
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#55251d",
+   "#6c3828",
+   "#834d34",
+   "#986441",
+   "#ad7d4f",
+   "#b6956a",
+   "#bfab84",
+   "#c9bd9e",
+   "#d4ceb6"
+  ],
+  "m1": [
+   "#1d1715",
+   "#251f1d",
+   "#2c2725",
+   "#33302d",
+   "#3a3836",
+   "#545353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

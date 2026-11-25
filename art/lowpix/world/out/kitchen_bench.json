@@ -1,0 +1,66 @@
+{
+ "id": "kitchen_bench",
+ "src": "art/lowpix/world/made/kitchen_bench.glb",
+ "credit": {
+  "title": "Stainless worktable (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kitchen_bench.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 580,
+ "tex": 512,
+ "size": [
+  1.95,
+  0.96,
+  0.608
+ ],
+ "colours": 29,
+ "palette": {
+  "m0": [
+   "#43485f",
+   "#5b6279",
+   "#747e91",
+   "#939aa4",
+   "#b0b4b8",
+   "#bdbfc0",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m1": [
+   "#432727",
+   "#563735",
+   "#674a44",
+   "#775d54",
+   "#877065",
+   "#96867b",
+   "#a49c93",
+   "#b3afaa",
+   "#c3c2c0"
+  ],
+  "m2": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ],
+  "m3": [
+   "#120d0d",
+   "#161111",
+   "#1b1716",
+   "#1f1c1b",
+   "#232120",
+   "#41403f",
+   "#5e5e5e",
+   "#7d7d7d",
+   "#9b9b9b"
+  ]
+ },
+ "warnings": []
+}

@@ -99,7 +99,7 @@ export class MachineSpots {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.006, d), t); m.position.set(x, 0.004, zz); g.add(m);
     }
     const plug = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.03), z.mat(new THREE.MeshStandardMaterial({ color: 0xf4f0e6, roughness: 0.6 })));
-    plug.position.set(0, 0.35, -D / 2 - 0.2); g.add(plug);
+    plug.position.set(0, 0.35, -D / 2 - 0.2); g.add(plug); // arch: the spot's power socket (a wall fitting)
     g.position.copy(z.L(s[0], 0, s[1]));
     g.rotation.y = s[2]; // like the machine: its front is local +z, the power point behind it
     z.group.add(g);

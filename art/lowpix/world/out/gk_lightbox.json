@@ -1,0 +1,33 @@
+{
+ "id": "gk_lightbox",
+ "src": "art/lowpix/world/made/garage_kit/gk_lightbox.glb",
+ "credit": {
+  "title": "Light box sign housing (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_lightbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 348,
+ "tex": 512,
+ "size": [
+  1.65,
+  0.703,
+  0.241
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#160d0e",
+   "#1c1212",
+   "#221717",
+   "#271e1c",
+   "#2c2422",
+   "#4b423e",
+   "#69615c",
+   "#85807b",
+   "#9f9e9d"
+  ]
+ },
+ "warnings": []
+}

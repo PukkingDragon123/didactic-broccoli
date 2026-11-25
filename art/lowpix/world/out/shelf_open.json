@@ -1,0 +1,33 @@
+{
+ "id": "shelf_open",
+ "src": "art/lowpix/world/made/shelf_open.glb",
+ "credit": {
+  "title": "Open display shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_open.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 352,
+ "tex": 512,
+ "size": [
+  1,
+  1.565,
+  0.36
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#4c2119",
+   "#623223",
+   "#76452d",
+   "#895a39",
+   "#9c7045",
+   "#b08b58",
+   "#b9a376",
+   "#c4b792",
+   "#d0caae"
+  ]
+ },
+ "warnings": []
+}

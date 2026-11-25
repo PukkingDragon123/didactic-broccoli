@@ -1,0 +1,44 @@
+{
+ "id": "gk_hbeam",
+ "src": "art/lowpix/world/made/garage_kit/gk_hbeam.glb",
+ "credit": {
+  "title": "Steel H-beam with bolted end plates (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_hbeam.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 396,
+ "tex": 1024,
+ "size": [
+  4,
+  0.26,
+  0.2
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#2c353e",
+   "#3b464e",
+   "#4b585e",
+   "#5d696d",
+   "#6f797b",
+   "#858a8b",
+   "#9b9b9b",
+   "#aeaeae",
+   "#c1c1c1"
+  ],
+  "m1": [
+   "#400f0f",
+   "#521b15",
+   "#64291c",
+   "#743824",
+   "#844a2c",
+   "#a3673b",
+   "#bb8751",
+   "#c5a475",
+   "#d0be97"
+  ]
+ },
+ "warnings": []
+}

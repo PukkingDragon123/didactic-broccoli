@@ -220,6 +220,24 @@
   ],
   "bytes": 47928
  },
+ "barricade": {
+  "id": "barricade",
+  "name": "Road barricade (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/barricade.glb",
+  "title": "Road barricade (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/barricade.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 344,
+  "tex": 512,
+  "size": [
+   1.3,
+   0.955,
+   0.5
+  ],
+  "bytes": 99456
+ },
  "basket": {
   "id": "basket",
   "name": "Wicker Basket 01",
@@ -499,6 +517,24 @@
    0.156
   ],
   "bytes": 29744
+ },
+ "blade_sign": {
+  "id": "blade_sign",
+  "name": "Projecting sign frame (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/blade_sign.glb",
+  "title": "Projecting sign frame (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/blade_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 392,
+  "tex": 344,
+  "size": [
+   0.071,
+   1.06,
+   0.574
+  ],
+  "bytes": 39688
  },
  "blanket_pillows": {
   "id": "blanket_pillows",
@@ -941,6 +977,24 @@
    0.286
   ],
   "bytes": 37008
+ },
+ "caddy": {
+  "id": "caddy",
+  "name": "Condiment caddy (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/caddy.glb",
+  "title": "Condiment caddy (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/caddy.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 356,
+  "tex": 256,
+  "size": [
+   0.262,
+   0.124,
+   0.134
+  ],
+  "bytes": 15532
  },
  "call_bell_p": {
   "id": "call_bell_p",
@@ -1551,6 +1605,24 @@
   ],
   "bytes": 6024
  },
+ "clay_pot": {
+  "id": "clay_pot",
+  "name": "Terracotta flower pot (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/clay_pot.glb",
+  "title": "Terracotta flower pot (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/clay_pot.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 196,
+  "tex": 256,
+  "size": [
+   0.26,
+   0.22,
+   0.253
+  ],
+  "bytes": 22984
+ },
  "clock_alarm": {
   "id": "clock_alarm",
   "name": "Alarm Clock 01",
@@ -1715,6 +1787,42 @@
   ],
   "bytes": 6980
  },
+ "collection_cabinet": {
+  "id": "collection_cabinet",
+  "name": "Collection cabinet (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/collection_cabinet.glb",
+  "title": "Collection cabinet (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/collection_cabinet.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 724,
+  "tex": 880,
+  "size": [
+   4.46,
+   2.3,
+   0.45
+  ],
+  "bytes": 197408
+ },
+ "concrete_pipe": {
+  "id": "concrete_pipe",
+  "name": "Concrete Hume pipe (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/concrete_pipe.glb",
+  "title": "Concrete Hume pipe (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/concrete_pipe.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 240,
+  "tex": 512,
+  "size": [
+   2,
+   1.024,
+   1.024
+  ],
+  "bytes": 69380
+ },
  "condiments": {
   "id": "condiments",
   "name": "Condiment Bottles Set | Crafted by jerov",
@@ -1752,6 +1860,42 @@
    0.384
   ],
   "bytes": 27584
+ },
+ "console_table": {
+  "id": "console_table",
+  "name": "Narrow console table (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/console_table.glb",
+  "title": "Narrow console table (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/console_table.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 416,
+  "tex": 512,
+  "size": [
+   1,
+   0.78,
+   0.32
+  ],
+  "bytes": 58604
+ },
+ "counter_ramen": {
+  "id": "counter_ramen",
+  "name": "Ramen counter (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/counter_ramen.glb",
+  "title": "Ramen counter (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/counter_ramen.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 2496,
+  "tex": 1024,
+  "size": [
+   4.091,
+   1.12,
+   0.659
+  ],
+  "bytes": 307156
  },
  "crate_plastic": {
   "id": "crate_plastic",
@@ -2102,6 +2246,24 @@
   ],
   "bytes": 101764
  },
+ "display_case": {
+  "id": "display_case",
+  "name": "Museum display case (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/display_case.glb",
+  "title": "Museum display case (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/display_case.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 836,
+  "tex": 356,
+  "size": [
+   1,
+   1.066,
+   0.516
+  ],
+  "bytes": 82012
+ },
  "dog_leash": {
   "id": "dog_leash",
   "name": "Dog leash",
@@ -2121,6 +2283,24 @@
   ],
   "bytes": 41104
  },
+ "donation_box": {
+  "id": "donation_box",
+  "name": "Donation box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/donation_box.glb",
+  "title": "Donation box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/donation_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 308,
+  "tex": 256,
+  "size": [
+   0.22,
+   0.211,
+   0.18
+  ],
+  "bytes": 16868
+ },
  "donut_seat_own": {
   "id": "donut_seat_own",
   "name": "Giant donut seat (our own model, hand-painted)",
@@ -2138,6 +2318,24 @@
    0.915
   ],
   "bytes": 75160
+ },
+ "drawing_board": {
+  "id": "drawing_board",
+  "name": "Drawing board (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/drawing_board.glb",
+  "title": "Drawing board (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/drawing_board.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 220,
+  "tex": 512,
+  "size": [
+   0.58,
+   0.357,
+   0.793
+  ],
+  "bytes": 65020
  },
  "drink_cans_own": {
   "id": "drink_cans_own",
@@ -2794,6 +2992,438 @@
   ],
   "bytes": 17816
  },
+ "gk_bin": {
+  "id": "gk_bin",
+  "name": "Storage bin with lid (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_bin.glb",
+  "title": "Storage bin with lid (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_bin.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 744,
+  "tex": 312,
+  "size": [
+   0.53,
+   0.427,
+   0.53
+  ],
+  "bytes": 50088
+ },
+ "gk_channel": {
+  "id": "gk_channel",
+  "name": "Steel C-channel girt (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_channel.glb",
+  "title": "Steel C-channel girt (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_channel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 200,
+  "tex": 1024,
+  "size": [
+   5,
+   0.1,
+   0.06
+  ],
+  "bytes": 48428
+ },
+ "gk_column": {
+  "id": "gk_column",
+  "name": "Steel H-column with base plate (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_column.glb",
+  "title": "Steel H-column with base plate (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_column.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 300,
+  "tex": 1024,
+  "size": [
+   0.205,
+   3.1,
+   0.22
+  ],
+  "bytes": 28144
+ },
+ "gk_conduit": {
+  "id": "gk_conduit",
+  "name": "PVC conduit with saddles (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_conduit.glb",
+  "title": "PVC conduit with saddles (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_conduit.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 334,
+  "tex": 512,
+  "size": [
+   1,
+   0.06,
+   0.029
+  ],
+  "bytes": 19596
+ },
+ "gk_cordchanger": {
+  "id": "gk_cordchanger",
+  "name": "Coin changer lead (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_cordchanger.glb",
+  "title": "Coin changer lead (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_cordchanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 172,
+  "tex": 512,
+  "size": [
+   0.249,
+   0.457,
+   0.56
+  ],
+  "bytes": 13308
+ },
+ "gk_cordlamp": {
+  "id": "gk_cordlamp",
+  "name": "Desk lamp flex and power strip (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_cordlamp.glb",
+  "title": "Desk lamp flex and power strip (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_cordlamp.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 668,
+  "tex": 1024,
+  "size": [
+   0.473,
+   0.794,
+   4.707
+  ],
+  "bytes": 70720
+ },
+ "gk_curtain": {
+  "id": "gk_curtain",
+  "name": "Cafe curtain on its rod (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_curtain.glb",
+  "title": "Cafe curtain on its rod (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_curtain.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1664,
+  "tex": 512,
+  "size": [
+   1.792,
+   0.836,
+   0.152
+  ],
+  "bytes": 47860
+ },
+ "gk_door": {
+  "id": "gk_door",
+  "name": "Green steel back door (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_door.glb",
+  "title": "Green steel back door (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_door.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 944,
+  "tex": 528,
+  "size": [
+   1.211,
+   2.1,
+   0.166
+  ],
+  "bytes": 76092
+ },
+ "gk_doorframe": {
+  "id": "gk_doorframe",
+  "name": "Steel door frame (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_doorframe.glb",
+  "title": "Steel door frame (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_doorframe.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 156,
+  "tex": 288,
+  "size": [
+   1.32,
+   2.16,
+   0.12
+  ],
+  "bytes": 37064
+ },
+ "gk_fluoro": {
+  "id": "gk_fluoro",
+  "name": "Inverted-Fuji fluorescent fixture (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_fluoro.glb",
+  "title": "Inverted-Fuji fluorescent fixture (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_fluoro.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 468,
+  "tex": 1024,
+  "size": [
+   1.312,
+   0.198,
+   0.24
+  ],
+  "bytes": 39432
+ },
+ "gk_hbeam": {
+  "id": "gk_hbeam",
+  "name": "Steel H-beam with bolted end plates (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_hbeam.glb",
+  "title": "Steel H-beam with bolted end plates (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_hbeam.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 396,
+  "tex": 1024,
+  "size": [
+   4,
+   0.26,
+   0.2
+  ],
+  "bytes": 29392
+ },
+ "gk_hookpole": {
+  "id": "gk_hookpole",
+  "name": "Shutter hook pole (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_hookpole.glb",
+  "title": "Shutter hook pole (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_hookpole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 272,
+  "tex": 400,
+  "size": [
+   0.091,
+   2.156,
+   0.027
+  ],
+  "bytes": 11364
+ },
+ "gk_jbox": {
+  "id": "gk_jbox",
+  "name": "Porcelain junction box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_jbox.glb",
+  "title": "Porcelain junction box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_jbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 244,
+  "tex": 256,
+  "size": [
+   0.12,
+   0.032,
+   0.088
+  ],
+  "bytes": 9864
+ },
+ "gk_joist": {
+  "id": "gk_joist",
+  "name": "Sawn timber joist (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_joist.glb",
+  "title": "Sawn timber joist (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_joist.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 168,
+  "tex": 1024,
+  "size": [
+   5,
+   0.102,
+   0.05
+  ],
+  "bytes": 35980
+ },
+ "gk_knob": {
+  "id": "gk_knob",
+  "name": "Knob-and-tube wiring span (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_knob.glb",
+  "title": "Knob-and-tube wiring span (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_knob.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 300,
+  "tex": 256,
+  "size": [
+   0.511,
+   0.028,
+   0.025
+  ],
+  "bytes": 12800
+ },
+ "gk_lanterns": {
+  "id": "gk_lanterns",
+  "name": "Lantern cord with wire hangers (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_lanterns.glb",
+  "title": "Lantern cord with wire hangers (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_lanterns.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1096,
+  "tex": 1024,
+  "size": [
+   0.016,
+   0.206,
+   5.622
+  ],
+  "bytes": 42468
+ },
+ "gk_lightbox": {
+  "id": "gk_lightbox",
+  "name": "Light box sign housing (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_lightbox.glb",
+  "title": "Light box sign housing (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_lightbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 348,
+  "tex": 512,
+  "size": [
+   1.65,
+   0.703,
+   0.241
+  ],
+  "bytes": 43768
+ },
+ "gk_outlet": {
+  "id": "gk_outlet",
+  "name": "Bakelite double outlet (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_outlet.glb",
+  "title": "Bakelite double outlet (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_outlet.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 152,
+  "tex": 256,
+  "size": [
+   0.075,
+   0.11,
+   0.039
+  ],
+  "bytes": 9500
+ },
+ "gk_plank": {
+  "id": "gk_plank",
+  "name": "Plank wall shelf on steel brackets (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_plank.glb",
+  "title": "Plank wall shelf on steel brackets (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_plank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 368,
+  "tex": 688,
+  "size": [
+   1.2,
+   0.205,
+   0.27
+  ],
+  "bytes": 28480
+ },
+ "gk_switch": {
+  "id": "gk_switch",
+  "name": "Light switch plate (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_switch.glb",
+  "title": "Light switch plate (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_switch.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 128,
+  "tex": 256,
+  "size": [
+   0.08,
+   0.12,
+   0.016
+  ],
+  "bytes": 8416
+ },
+ "gk_toggle": {
+  "id": "gk_toggle",
+  "name": "Light switch toggle (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_toggle.glb",
+  "title": "Light switch toggle (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_toggle.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 44,
+  "tex": 48,
+  "size": [
+   0.022,
+   0.036,
+   0.018
+  ],
+  "bytes": 5080
+ },
+ "gk_tube": {
+  "id": "gk_tube",
+  "name": "Fluorescent tube (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_tube.glb",
+  "title": "Fluorescent tube (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_tube.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 120,
+  "tex": 512,
+  "size": [
+   1.236,
+   0.028,
+   0.027
+  ],
+  "bytes": 19176
+ },
+ "gk_window": {
+  "id": "gk_window",
+  "name": "Steel sash window with wooden sill (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/garage_kit/gk_window.glb",
+  "title": "Steel sash window with wooden sill (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_window.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 628,
+  "tex": 1024,
+  "size": [
+   1.72,
+   0.94,
+   0.21
+  ],
+  "bytes": 58864
+ },
+ "glass_showcase": {
+  "id": "glass_showcase",
+  "name": "Glass showcase (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/glass_showcase.glb",
+  "title": "Glass showcase (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/glass_showcase.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 548,
+  "tex": 624,
+  "size": [
+   0.47,
+   1.84,
+   1.32
+  ],
+  "bytes": 164392
+ },
  "goods_shelf": {
   "id": "goods_shelf",
   "name": "Grocery store Shelf",
@@ -2904,6 +3534,24 @@
   ],
   "bytes": 116952
  },
+ "griddle_cab": {
+  "id": "griddle_cab",
+  "name": "Gyoza griddle cabinet (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/griddle_cab.glb",
+  "title": "Gyoza griddle cabinet (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/griddle_cab.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 668,
+  "tex": 284,
+  "size": [
+   0.7,
+   0.81,
+   0.588
+  ],
+  "bytes": 34148
+ },
  "gumball_m": {
   "id": "gumball_m",
   "name": "Gumball (our own model, hand-painted)",
@@ -2994,6 +3642,42 @@
    0.692
   ],
   "bytes": 63936
+ },
+ "hang_bar": {
+  "id": "hang_bar",
+  "name": "Ceiling hanging bar (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hang_bar.glb",
+  "title": "Ceiling hanging bar (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hang_bar.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 360,
+  "tex": 512,
+  "size": [
+   1.5,
+   0.43,
+   0.06
+  ],
+  "bytes": 13068
+ },
+ "hang_sign": {
+  "id": "hang_sign",
+  "name": "Hanging shop plaque (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hang_sign.glb",
+  "title": "Hanging shop plaque (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hang_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 232,
+  "tex": 288,
+  "size": [
+   0.42,
+   0.385,
+   0.03
+  ],
+  "bytes": 14884
  },
  "hanger_shirt": {
   "id": "hanger_shirt",
@@ -3162,6 +3846,24 @@
    0.045
   ],
   "bytes": 8940
+ },
+ "hose_reel": {
+  "id": "hose_reel",
+  "name": "Garden hose reel (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/hose_reel.glb",
+  "title": "Garden hose reel (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hose_reel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 492,
+  "tex": 512,
+  "size": [
+   0.34,
+   0.4,
+   0.23
+  ],
+  "bytes": 18384
  },
  "house_jp": {
   "id": "house_jp",
@@ -3460,6 +4162,42 @@
    0.044
   ],
   "bytes": 51320
+ },
+ "kitchen_bench": {
+  "id": "kitchen_bench",
+  "name": "Stainless worktable (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/kitchen_bench.glb",
+  "title": "Stainless worktable (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kitchen_bench.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 580,
+  "tex": 512,
+  "size": [
+   1.95,
+   0.96,
+   0.608
+  ],
+  "bytes": 67428
+ },
+ "kitchen_unit": {
+  "id": "kitchen_unit",
+  "name": "Kitchen sink unit (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/kitchen_unit.glb",
+  "title": "Kitchen sink unit (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/kitchen_unit.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 964,
+  "tex": 936,
+  "size": [
+   1.9,
+   1.17,
+   0.642
+  ],
+  "bytes": 138208
  },
  "kokeshi": {
   "id": "kokeshi",
@@ -3832,6 +4570,42 @@
   ],
   "bytes": 23596
  },
+ "laundry_shirt": {
+  "id": "laundry_shirt",
+  "name": "Shirt on a hanger (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/laundry_shirt.glb",
+  "title": "Shirt on a hanger (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/laundry_shirt.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 148,
+  "tex": 256,
+  "size": [
+   0.62,
+   0.783,
+   0.035
+  ],
+  "bytes": 33836
+ },
+ "laundry_tee": {
+  "id": "laundry_tee",
+  "name": "T-shirt on a hanger (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/laundry_tee.glb",
+  "title": "T-shirt on a hanger (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/laundry_tee.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 96,
+  "tex": 256,
+  "size": [
+   0.52,
+   0.683,
+   0.03
+  ],
+  "bytes": 21064
+ },
  "litter_can": {
   "id": "litter_can",
   "name": "Crushed can (our own model, hand-painted)",
@@ -3963,6 +4737,42 @@
   ],
   "bytes": 77320
  },
+ "mailbox": {
+  "id": "mailbox",
+  "name": "House mailbox (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/mailbox.glb",
+  "title": "House mailbox (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mailbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 220,
+  "tex": 368,
+  "size": [
+   0.32,
+   0.36,
+   0.142
+  ],
+  "bytes": 13652
+ },
+ "mailbox_bank": {
+  "id": "mailbox_bank",
+  "name": "Apartment mailboxes on a post (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/mailbox_bank.glb",
+  "title": "Apartment mailboxes on a post (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mailbox_bank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 652,
+  "tex": 512,
+  "size": [
+   0.9,
+   1.45,
+   0.337
+  ],
+  "bytes": 60480
+ },
  "mamachari": {
   "id": "mamachari",
   "name": "City bike low poly",
@@ -4037,6 +4847,24 @@
   ],
   "bytes": 7856
  },
+ "menu_easel": {
+  "id": "menu_easel",
+  "name": "Menu easel (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/menu_easel.glb",
+  "title": "Menu easel (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/menu_easel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 332,
+  "tex": 504,
+  "size": [
+   0.58,
+   1.045,
+   0.555
+  ],
+  "bytes": 86456
+ },
  "microwave": {
   "id": "microwave",
   "name": "Vintage Microwave",
@@ -4054,6 +4882,24 @@
    0.743
   ],
   "bytes": 120072
+ },
+ "milk_box": {
+  "id": "milk_box",
+  "name": "Milk delivery box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/milk_box.glb",
+  "title": "Milk delivery box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/milk_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 220,
+  "tex": 256,
+  "size": [
+   0.22,
+   0.27,
+   0.184
+  ],
+  "bytes": 12656
  },
  "milk_carton2": {
   "id": "milk_carton2",
@@ -4260,6 +5106,24 @@
   ],
   "bytes": 20608
  },
+ "mk_island": {
+  "id": "mk_island",
+  "name": "Dagashi island table (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/mk_island.glb",
+  "title": "Dagashi island table (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mk_island.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1384,
+  "tex": 512,
+  "size": [
+   1.34,
+   0.85,
+   0.64
+  ],
+  "bytes": 123328
+ },
  "mk_jar_pickle": {
   "id": "mk_jar_pickle",
   "name": "Voxel Breakable Pickle Jar",
@@ -4431,6 +5295,24 @@
   ],
   "bytes": 130204
  },
+ "mk_shelf": {
+  "id": "mk_shelf",
+  "name": "Shop shelving bay (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/mk_shelf.glb",
+  "title": "Shop shelving bay (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mk_shelf.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 704,
+  "tex": 1024,
+  "size": [
+   1.36,
+   2.12,
+   0.473
+  ],
+  "bytes": 338000
+ },
  "mk_snack_carton": {
   "id": "mk_snack_carton",
   "name": "Carton Box_03_Open",
@@ -4580,6 +5462,24 @@
   ],
   "bytes": 56860
  },
+ "nobori_pole": {
+  "id": "nobori_pole",
+  "name": "Nobori flag pole (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/nobori_pole.glb",
+  "title": "Nobori flag pole (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/nobori_pole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 360,
+  "tex": 408,
+  "size": [
+   0.53,
+   2.43,
+   0.3
+  ],
+  "bytes": 20320
+ },
  "noodle_box": {
   "id": "noodle_box",
   "name": "Cardboard Box",
@@ -4617,6 +5517,24 @@
   ],
   "bytes": 29568
  },
+ "notice_board": {
+  "id": "notice_board",
+  "name": "Notice board (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/notice_board.glb",
+  "title": "Notice board (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/notice_board.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 364,
+  "tex": 1024,
+  "size": [
+   1.16,
+   1.95,
+   0.28
+  ],
+  "bytes": 45628
+ },
  "ofuro_own": {
   "id": "ofuro_own",
   "name": "Tiled ofuro with a hinoki rim (our own model, hand-painted)",
@@ -4634,6 +5552,24 @@
    0.76
   ],
   "bytes": 259192
+ },
+ "open_shelf5": {
+  "id": "open_shelf5",
+  "name": "Open shelf unit (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/open_shelf5.glb",
+  "title": "Open shelf unit (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/open_shelf5.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 440,
+  "tex": 512,
+  "size": [
+   2.6,
+   2.04,
+   0.33
+  ],
+  "bytes": 121312
  },
  "ottoman": {
   "id": "ottoman",
@@ -4783,6 +5719,24 @@
    0.246
   ],
   "bytes": 81112
+ },
+ "pencil": {
+  "id": "pencil",
+  "name": "Pencil (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/pencil.glb",
+  "title": "Pencil (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pencil.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 168,
+  "tex": 256,
+  "size": [
+   0.183,
+   0.007,
+   0.007
+  ],
+  "bytes": 7700
  },
  "pencil_case": {
   "id": "pencil_case",
@@ -4934,6 +5888,24 @@
   ],
   "bytes": 43104
  },
+ "pinch_hanger": {
+  "id": "pinch_hanger",
+  "name": "Pinch hanger with socks (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/pinch_hanger.glb",
+  "title": "Pinch hanger with socks (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pinch_hanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 684,
+  "tex": 416,
+  "size": [
+   0.439,
+   0.53,
+   0.3
+  ],
+  "bytes": 29496
+ },
  "pinkphone": {
   "id": "pinkphone",
   "name": "Pink phone (ピンク電話)",
@@ -4970,6 +5942,24 @@
    0.811
   ],
   "bytes": 50368
+ },
+ "plant_bench": {
+  "id": "plant_bench",
+  "name": "Plant bench (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/plant_bench.glb",
+  "title": "Plant bench (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/plant_bench.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 484,
+  "tex": 360,
+  "size": [
+   1.5,
+   0.655,
+   0.28
+  ],
+  "bytes": 63696
  },
  "plant_monstera": {
   "id": "plant_monstera",
@@ -5434,6 +6424,42 @@
    0.736
   ],
   "bytes": 72184
+ },
+ "range_fan": {
+  "id": "range_fan",
+  "name": "Kitchen extractor hood (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/range_fan.glb",
+  "title": "Kitchen extractor hood (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/range_fan.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 144,
+  "tex": 344,
+  "size": [
+   0.62,
+   0.445,
+   0.412
+  ],
+  "bytes": 33304
+ },
+ "range_hood": {
+  "id": "range_hood",
+  "name": "Exhaust hood (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/range_hood.glb",
+  "title": "Exhaust hood (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/range_hood.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 488,
+  "tex": 1024,
+  "size": [
+   3.408,
+   0.42,
+   0.733
+  ],
+  "bytes": 234712
  },
  "recycle_cage_own": {
   "id": "recycle_cage_own",
@@ -6032,6 +7058,24 @@
   ],
   "bytes": 34172
  },
+ "sat_dish": {
+  "id": "sat_dish",
+  "name": "Satellite dish (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/sat_dish.glb",
+  "title": "Satellite dish (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/sat_dish.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 308,
+  "tex": 512,
+  "size": [
+   0.46,
+   0.731,
+   0.63
+  ],
+  "bytes": 17900
+ },
  "screen_folding": {
   "id": "screen_folding",
   "name": "Chinese Screen Panels",
@@ -6163,6 +7207,42 @@
   ],
   "bytes": 97964
  },
+ "shelf_long": {
+  "id": "shelf_long",
+  "name": "Long wall shelf (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shelf_long.glb",
+  "title": "Long wall shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_long.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 476,
+  "tex": 512,
+  "size": [
+   2.2,
+   0.15,
+   0.26
+  ],
+  "bytes": 74292
+ },
+ "shelf_open": {
+  "id": "shelf_open",
+  "name": "Open display shelf (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shelf_open.glb",
+  "title": "Open display shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_open.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 352,
+  "tex": 512,
+  "size": [
+   1,
+   1.565,
+   0.36
+  ],
+  "bytes": 97812
+ },
  "shelf_painted": {
   "id": "shelf_painted",
   "name": "Painted Wooden Shelves",
@@ -6216,6 +7296,24 @@
    0.502
   ],
   "bytes": 64416
+ },
+ "shelf_wall": {
+  "id": "shelf_wall",
+  "name": "Wall shelf (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/shelf_wall.glb",
+  "title": "Wall shelf (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/shelf_wall.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 368,
+  "tex": 304,
+  "size": [
+   1.2,
+   0.15,
+   0.24
+  ],
+  "bytes": 44536
  },
  "shelf_wall4": {
   "id": "shelf_wall4",
@@ -6382,6 +7480,42 @@
    0.661
   ],
   "bytes": 56328
+ },
+ "sign_posts": {
+  "id": "sign_posts",
+  "name": "Sign board posts (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/sign_posts.glb",
+  "title": "Sign board posts (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/sign_posts.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 460,
+  "tex": 512,
+  "size": [
+   1.31,
+   1.8,
+   0.08
+  ],
+  "bytes": 60560
+ },
+ "signboard": {
+  "id": "signboard",
+  "name": "Shop signboard (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/signboard.glb",
+  "title": "Shop signboard (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/signboard.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 740,
+  "tex": 1024,
+  "size": [
+   2.3,
+   0.521,
+   0.166
+  ],
+  "bytes": 77148
  },
  "sink_round": {
   "id": "sink_round",
@@ -6645,6 +7779,42 @@
   ],
   "bytes": 15532
  },
+ "standing_mirror": {
+  "id": "standing_mirror",
+  "name": "Standing mirror (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/standing_mirror.glb",
+  "title": "Standing mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/standing_mirror.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 264,
+  "tex": 448,
+  "size": [
+   0.44,
+   1.35,
+   0.16
+  ],
+  "bytes": 69696
+ },
+ "standpipe_tap": {
+  "id": "standpipe_tap",
+  "name": "Garden standpipe tap (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/standpipe_tap.glb",
+  "title": "Garden standpipe tap (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/standpipe_tap.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 200,
+  "tex": 256,
+  "size": [
+   0.09,
+   0.818,
+   0.191
+  ],
+  "bytes": 9776
+ },
  "star_lamp": {
   "id": "star_lamp",
   "name": "Star Lamp",
@@ -6664,6 +7834,24 @@
   ],
   "bytes": 57856
  },
+ "steel_table": {
+  "id": "steel_table",
+  "name": "Small stainless table (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/steel_table.glb",
+  "title": "Small stainless table (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/steel_table.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 580,
+  "tex": 400,
+  "size": [
+   0.5,
+   0.92,
+   0.428
+  ],
+  "bytes": 57168
+ },
  "stock_pot": {
   "id": "stock_pot",
   "name": "Indonesian Style Meatball Pot / Stock Po",
@@ -6682,6 +7870,24 @@
    0.264
   ],
   "bytes": 107504
+ },
+ "stock_stove": {
+  "id": "stock_stove",
+  "name": "Stock-pot range (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/stock_stove.glb",
+  "title": "Stock-pot range (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/stock_stove.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 1456,
+  "tex": 512,
+  "size": [
+   1.1,
+   0.715,
+   0.621
+  ],
+  "bytes": 76056
  },
  "stone_lantern": {
   "id": "stone_lantern",
@@ -6794,6 +8000,42 @@
    0.168
   ],
   "bytes": 7368
+ },
+ "stroller": {
+  "id": "stroller",
+  "name": "Baby stroller (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/stroller.glb",
+  "title": "Baby stroller (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/stroller.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 612,
+  "tex": 512,
+  "size": [
+   0.446,
+   0.97,
+   0.649
+  ],
+  "bytes": 66008
+ },
+ "styro_box": {
+  "id": "styro_box",
+  "name": "Styrofoam vegetable box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/styro_box.glb",
+  "title": "Styrofoam vegetable box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/styro_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 220,
+  "tex": 512,
+  "size": [
+   0.62,
+   0.9,
+   0.42
+  ],
+  "bytes": 42828
  },
  "sushi_pack": {
   "id": "sushi_pack",
@@ -7127,6 +8369,24 @@
    0.109
   ],
   "bytes": 17308
+ },
+ "ticket_machine": {
+  "id": "ticket_machine",
+  "name": "Meal-ticket machine (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/ticket_machine.glb",
+  "title": "Meal-ticket machine (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/ticket_machine.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 812,
+  "tex": 448,
+  "size": [
+   0.64,
+   1.565,
+   0.53
+  ],
+  "bytes": 78692
  },
  "tires": {
   "id": "tires",
@@ -7631,6 +8891,24 @@
   ],
   "bytes": 31316
  },
+ "umbrella_closed": {
+  "id": "umbrella_closed",
+  "name": "Closed umbrella (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/umbrella_closed.glb",
+  "title": "Closed umbrella (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/umbrella_closed.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 164,
+  "tex": 304,
+  "size": [
+   0.09,
+   0.86,
+   0.09
+  ],
+  "bytes": 9056
+ },
  "umbrella_stand": {
   "id": "umbrella_stand",
   "name": "Umbrellas holder with umbrellas",
@@ -7795,6 +9073,24 @@
    0.611
   ],
   "bytes": 119704
+ },
+ "wall_cupboard": {
+  "id": "wall_cupboard",
+  "name": "Kitchen wall cupboard (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/wall_cupboard.glb",
+  "title": "Kitchen wall cupboard (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/wall_cupboard.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 520,
+  "tex": 444,
+  "size": [
+   1.9,
+   0.55,
+   0.372
+  ],
+  "bytes": 59528
  },
  "wall_shelf_jars": {
   "id": "wall_shelf_jars",
@@ -9312,6 +10608,24 @@
    0.039
   ],
   "bytes": 50896
+ },
+ "window_box": {
+  "id": "window_box",
+  "name": "Window flower box (our own model, hand-painted)",
+  "src": "art/lowpix/world/made/window_box.glb",
+  "title": "Window flower box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/window_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original",
+  "tris": 144,
+  "tex": 512,
+  "size": [
+   0.9,
+   0.16,
+   0.2
+  ],
+  "bytes": 33432
  },
  "yokai_kappa": {
   "id": "yokai_kappa",

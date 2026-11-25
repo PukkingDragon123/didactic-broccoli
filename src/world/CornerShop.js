@@ -13,6 +13,55 @@
 //     { id: supply id, prop, units: [{ p: Vector3, q: Quaternion, s }], restock: seconds, jar?: true (an endless
 //       source: units are the jars themselves), label }
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
+import { loadAsset } from '../kit/assets.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+// ------------------------------------------------------------------ the goods' packaging shapes
+// Modelled packets (art/lowpix/world/made/r6_goods.py -> public/models/made/pk_*.glb): pillow snack bags, cartons with
+// their flaps, display boxes, kit boxes, cans with rims, a folded newspaper. Each has a 'label' part (UVs over the
+// printed face) and an 'edge' part; prod() / can() size them and map the label onto the shop's label atlas.
+const PK = ['pk_bagrow', 'pk_bag', 'pk_boxrow', 'pk_display', 'pk_kit', 'pk_carton', 'pk_can', 'pk_news'];
+const PACKS = new Map();
+await Promise.all(PK.map((k) => loadAsset('made/' + k).then((t) => {
+  const parts = {};
+  for (const m of t.children) parts[m.name.split(':')[1]] = m.geometry;
+  PACKS.set(k, parts);
+}).catch(() => {})));
+/** Packaging shape `kind` sized w x h x d (bottom centre at the origin): its label faces over atlas rect F, the rest over E. */
+function packGeo(kind, w, h, d, F, E) {
+  const p = PACKS.get(kind);
+  if (!p?.label) return null;
+  const parts = [];
+  for (const [k, r] of [['label', F], ['edge', E]]) {
+    const src = p[k];
+    if (!src) continue;
+    const g = new THREE.BufferGeometry(), n = src.attributes.position.count, uv = new Float32Array(n * 2);
+    g.setAttribute('position', src.attributes.position.clone());
+    g.setAttribute('normal', src.attributes.normal.clone());
+    for (let i = 0; i < n; i++) {
+      const u = src.attributes.uv ? src.attributes.uv.getX(i) : 0.5, v = src.attributes.uv ? 1 - src.attributes.uv.getY(i) : 0.5; // (glTF v runs down)
+      uv[i * 2] = r[0] + u * (r[2] - r[0]); uv[i * 2 + 1] = r[1] + v * (r[3] - r[1]);
+    }
+    g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    if (src.index) g.setIndex(src.index.clone());
+    parts.push(g);
+  }
+  const g = parts.length > 1 ? mergeGeometries(parts, false) : parts[0];
+  if (!g) return null;
+  g.scale(w, h, d);
+  g.userData.model = 'made/' + kind;
+  return g;
+}
+/** Which packet a label key gets. */
+function packKind(key, w, h, d) {
+  if (key.startsWith('snack')) return d > 0.2 ? 'pk_bagrow' : 'pk_bag';
+  if (key.startsWith('tall')) return d > 0.2 ? 'pk_boxrow' : 'pk_carton';
+  if (key.startsWith('kit')) return 'pk_kit';
+  if (key === 'news') return 'pk_news';
+  if (key.startsWith('card')) return h > 0.25 && w >= 0.4 ? 'pk_carton' : 'pk_display';
+  return 'pk_carton';
+}
 import { archPlace } from './archModels.js';
 import { propGeometry, propMesh, propAsset } from './props.js';
 import { mikawayaAtlas, tatamiTexture, tvScreen } from './mikawayaArt.js';
@@ -123,8 +172,9 @@ export function buildCornerShop(t) {
   };
   /** A product box with its label on the front (+z local) and the label's edge colour elsewhere. */
   const prod = (key, w, h, d, x, y, z, ry = 0, o = {}) => {
-    const g = new THREE.BoxGeometry(w, h, d);
-    uvBox(g, A.uv(key), A.edge(key), o.top ? A.uv(o.top) : null);
+    let g = packGeo(packKind(key, w, h, d), w, h, d, A.uv(key), A.edge(key));
+    if (g) g.translate(0, -h / 2, 0); // (centred like the box below, for the turns)
+    else { g = new THREE.BoxGeometry(w, h, d); uvBox(g, A.uv(key), A.edge(key), o.top ? A.uv(o.top) : null); }
     if (o.rz) g.rotateZ(o.rz);
     if (ry) g.rotateY(ry);
     g.translate(x, y + h / 2, z);
@@ -132,9 +182,13 @@ export function buildCornerShop(t) {
   };
   /** A can / cup / jar: the label wraps around, the caps take its edge colour. */
   const can = (key, r, h, x, y, z, o = {}) => {
-    const g = new THREE.CylinderGeometry(r * (o.top ?? 1), r, h, 10, 1);
-    const uv = g.attributes.uv, F = A.uv(key), E = A.edge(key);
-    for (let i = 0; i < uv.count; i++) { const rr = i < 22 ? F : E; uv.setXY(i, rr[0] + uv.getX(i) * (rr[2] - rr[0]), rr[1] + uv.getY(i) * (rr[3] - rr[1])); }
+    let g = packGeo('pk_can', r * 2 * (o.top ?? 1), h, r * 2 * (o.top ?? 1), A.uv(key), A.edge(key));
+    if (g) g.translate(0, -h / 2, 0);
+    else {
+      g = new THREE.CylinderGeometry(r * (o.top ?? 1), r, h, 10, 1);
+      const uv = g.attributes.uv, F = A.uv(key), E = A.edge(key);
+      for (let i = 0; i < uv.count; i++) { const rr = i < 22 ? F : E; uv.setXY(i, rr[0] + uv.getX(i) * (rr[2] - rr[0]), rr[1] + uv.getY(i) * (rr[3] - rr[1])); }
+    }
     g.translate(x, y + h / 2, z);
     Bi.geo(prodMat, g, { k: o.k ?? 1 });
   };
@@ -180,10 +234,11 @@ export function buildCornerShop(t) {
 
   // ---- floor: concrete doma, a door mat
   box(I(t.M('domaFloor', { roughness: 0.9, bump: 0.6 })), x1 - x0 - 0.5, 0.06, MK.ZP - MK.ZI0 + 0.1, cx, -0.052, (MK.ZI0 + MK.ZP) / 2, { k: 0.85 }); // the doma: HD worn concrete (src/gfx/hdtex.js)
-  box(pv, 1.2, 0.012, 0.55, (dx0 + dx1) / 2, 0, MK.ZI0 + 0.32, { tint: 0x6a4a3a });
+  box(pv, 1.2, 0.012, 0.55, (dx0 + dx1) / 2, 0, MK.ZI0 + 0.32, { tint: 0x6a4a3a }); // arch: the door mat (a flat floor covering)
 
   // ---- the back room: agari-kamachi edge, tatami, kamoi beam, fusuma, the old man's things
   const { ZP, YP, XI0, XI1, ZI1 } = MK;
+  // arch-begin: the back room's raised floor, its kamoi, posts and the fusuma on the back wall
   box(wd, XI1 - XI0, YP, 0.12, (XI0 + XI1) / 2, 0, ZP + 0.06, { tint: 0x7a5038 }); // the polished edge (上がり框)
   box(wd, XI1 - XI0, YP - 0.04, ZI1 - ZP - 0.12, (XI0 + XI1) / 2, 0, (ZP + 0.12 + ZI1) / 2, { tint: 0x5a3a28 });
   Bi.plane(tatamiMat, XI1 - XI0, ZI1 - ZP - 0.12, (XI0 + XI1) / 2, YP - 0.002, (ZP + 0.12 + ZI1) / 2, { uv: [0.35, 0.1] });
@@ -198,6 +253,7 @@ export function buildCornerShop(t) {
     box(mt, 0.05, 0.05, 0.01, fx + (i % 2 ? -0.33 : 0.33), YP + 0.82, ZI1 - 0.04, { tint: 0x2a2420 });
   }
   box(wd, XI1 - XI0, 0.05, 0.05, (XI0 + XI1) / 2, YP + 1.64, ZI1 - 0.04, { tint: 0x3a2418 });
+  // arch-end
   // the old man's spot: his ashtray full of cigar stubs, the cigar box, the fan pointed at him
   vox('mk_ashtray', -11.32, YP, 18.42, 0.4, { big: false });
   vox('mk_tv_cabinet', -14.55, YP, 18.78, 2.2, { big: true });
@@ -258,12 +314,10 @@ export function buildCornerShop(t) {
   // ---- west wall: tall shelving to the ceiling, daily goods, tool kits, model kits stacked on top
   Bi.push(XI0, 0, 16.68, Math.PI / 2); // local x runs along the wall (toward the door), +z into the room
   for (const [a, b] of [[-1.38, -0.02], [0.02, 1.38]]) {
-    for (const x of [a, b]) box(wdL, 0.035, 2.1, 0.47, x, 0, 0.235, { tint: 0xc89a6a });
-    box(wdL, b - a, 2.1, 0.015, (a + b) / 2, 0, 0.01, { tint: 0xa87a4a, k: 0.8 }); // back board
+    // the shelving bay: a real model (r6 mk_shelf: posts, back board, six shelves with their red price rails)
+    { const p = Bi.world((a + b) / 2, 0, 0.235); shop.add(lpModel('mk_shelf', p.x, p.y, p.z, { ry: Bi.yaw(0), mat: I })); }
     const ys = [0.06, 0.46, 0.84, 1.22, 1.6, 2.0];
     ys.forEach((y, i) => {
-      box(wdL, b - a, 0.025, 0.47, (a + b) / 2, y - 0.025, 0.235, { tint: 0xd0a070 });
-      box(pv, b - a, 0.022, 0.006, (a + b) / 2, y - 0.03, 0.472, { tint: 0xe8463a }); // price rail
       if (i === ys.length - 1) return;
       const hMax = ys[i + 1] - y - 0.04;
       Bi.push(0, 0, 0.465);
@@ -294,10 +348,7 @@ export function buildCornerShop(t) {
   // ---- the island: a low stepped table of dagashi, candy jars on top, strips of toys hanging over it
   const isl = { x: -13.88, z: 16.6 };
   Bi.push(isl.x, 0, isl.z, Math.PI / 2); // local +z = +x world (faces the main aisle), local x = -z world
-  box(wd, 1.3, 0.6, 0.6, 0, 0, 0, { tint: 0x8a5a38 });
-  box(wd, 1.34, 0.03, 0.64, 0, 0.6, 0, { tint: 0x6a4028 });
-  box(wd, 1.3, 0.2, 0.26, 0, 0.63, -0.17, { tint: 0x7a4a30 }); // the riser tier
-  box(wd, 1.32, 0.02, 0.28, 0, 0.83, -0.17, { tint: 0x6a4028 });
+  { const p = Bi.world(0, 0, 0); shop.add(lpModel('mk_island', p.x, p.y, p.z, { ry: Bi.yaw(0), mat: I })); } // the table, its riser tier and striped skirt (r6 mk_island)
   // open trays of sweets on the lower tier, packets on the riser, a striped skirt round the base
   for (let i = 0; i < 7; i++) {
     const x = -0.58 + i * 0.165;
@@ -306,19 +357,17 @@ export function buildCornerShop(t) {
     for (let k = 0; k < 4; k++) prod('snack' + ((i * 5 + k * 3) % 24), 0.045, 0.03, 0.045, x - 0.04 + (k % 2) * 0.07, 0.68, 0.18 + Math.floor(k / 2) * 0.06, R() * 3, { k: 1.05 });
   }
   for (let i = 0; i < 9; i++) prod('snack' + ((i * 7 + 2) % 24), 0.1, 0.07 + R() * 0.05, 0.06, -0.55 + i * 0.135, 0.85, -0.06, (R() - 0.5) * 0.2);
-  for (let i = 0; i < 12; i++) box(pv, 0.11, 0.56, 0.005, -0.6 + i * 0.11, 0.02, 0.302, { tint: i % 2 ? 0xe8463a : 0xf4ead2 });
   vox('mk_puff_box', -0.32, 0.63, 0.2, 0, { big: false });
   for (const [i, id] of ['mk_candy_jar_a', 'mk_candy_jar_b', 'mk_candy_jar_c'].entries()) vox(id, 0.15 + i * 0.19, 0.85, -0.17, (i - 1) * 0.3);
   stock.push({ id: 'puffstick', prop: 'puff_stick', restock: 25, units: [-0.38, -0.34, -0.3, -0.26].flatMap((x, i) => [unit(x, 0.645, 0.18 + (i % 2) * 0.03, 0.3 * i, { rx: (i % 2 ? 0.08 : -0.06) })]) });
   stock.push({ id: 'candy', prop: 'candy_piece', restock: 0, jar: true, hit: [0.17, 0.25, 0.17], units: [0, 1, 2].map((i) => unit(0.15 + i * 0.19, 0.85, -0.17, 0)) });
   // the bar overhead, strips of bagged toys, menko and bromide sheets clipped on
-  box(mt, 1.5, 0.02, 0.02, 0, 2.52, 0.0, { tint: 0x9aa0a6 });
-  for (const x of [-0.72, 0.72]) box(mt, 0.015, H1 - 2.52, 0.015, x, 2.52, 0, { tint: 0x9aa0a6 });
+  { const p = Bi.world(0, 2.5, 0); shop.add(lpModel('hang_bar', p.x, p.y, p.z, { ry: Bi.yaw(0), size: [1.5, H1 - 2.5, 0.06], fit: 'stretch', mat: I })); }
   for (let i = 0; i < 6; i++) decal('strip' + (i % 4), 0.2, 0.9, -0.62 + i * 0.25, 1.6, 0.0, (R() - 0.5) * 0.3);
   Bi.pop();
   // a second bar over the east wall goods: menko + bromide sheets
   for (const [i, key] of ['menko', 'bromide', 'strip2'].entries()) decal(key, key === 'strip2' ? 0.2 : 0.34, key === 'strip2' ? 0.9 : 0.42, -10.5, key === 'strip2' ? 1.85 : 2.1, 15.95 + i * 0.45, -Math.PI / 2 + 0.25, { rz: (i - 1) * 0.04 });
-  box(mt, 0.02, 0.02, 1.4, -10.5, 2.52, 16.4, { tint: 0x9aa0a6 });
+  shop.add(lpModel('hang_bar', -10.5, 2.5, 16.4, { ry: Math.PI / 2, size: [1.4, H1 - 2.5, 0.06], fit: 'stretch', mat: I }));
 
   // ---- east wall: the stepped dagashi rack, jars above, the open milk case
   vox('dagashi_rack', XI1 - 0.25, 0, 16.55, -Math.PI / 2, { big: true });
@@ -360,9 +409,9 @@ export function buildCornerShop(t) {
 
   // ---- fluorescent fixtures + the shop's one warm light
   for (const x of [-13.95, -11.0]) {
-    box(pv, 0.2, 0.06, 1.5, x, H1 - 0.13, 16.5, { tint: 0xe8e8e2 });
-    Bi.box(t.G, 0.05, 0.04, 1.4, x - 0.05, H1 - 0.17, 16.5, { tint: 0xfff6e8 });
-    Bi.box(t.G, 0.05, 0.04, 1.4, x + 0.05, H1 - 0.17, 16.5, { tint: 0xfff6e8 });
+    shop.add(lpModel('lamp_fluoro', x, H1 - 0.14 - 0.035, 16.5, { ry: Math.PI / 2, size: 1.5, fit: 'z', mat: I })); // the fitting (a real model), screwed under the joists
+    Bi.box(t.G, 0.05, 0.04, 1.4, x - 0.05, H1 - 0.215, 16.5, { tint: 0xfff6e8 }); // arch: the lit tubes (emissive strips) under the fitting
+    Bi.box(t.G, 0.05, 0.04, 1.4, x + 0.05, H1 - 0.215, 16.5, { tint: 0xfff6e8 }); // arch: the lit tubes (emissive strips) under the fitting
   }
   // (exposure: it used to be 8.5 at 0.55 m under the ceiling, which blew the ceiling out to white and bloomed into a
   // haze over the counter; lower and softer it lights the stock and the counter the same, the ceiling 2.5x less.
@@ -461,7 +510,7 @@ function buildShell(t, B, m, I, cx) {
   // interior finishes: wainscot + plaster on the inner faces
   for (const sx of [-1, 1]) {
     const wx = sx < 0 ? x0 + 0.26 : x1 - 0.26;
-    B.box(I(m.koshi), 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { k: 0.9 });
+    B.box(I(m.koshi), 0.02, 0.9, z1 - z0 - 0.3, wx, 0, (z0 + z1) / 2, { k: 0.9 }); // arch: the wainscot
     B.box(I(m.shikkui), 0.02, H1 - 0.9, z1 - z0 - 0.3, wx, 0.9, (z0 + z1) / 2, { k: 0.9 });
   }
   B.box(I(m.shikkui), x1 - x0 - 0.5, H1, 0.02, cx, 0, z1 - 0.26, { k: 0.85 });
@@ -498,8 +547,10 @@ function buildShell(t, B, m, I, cx) {
   const poster = (key, w, h, x, y) => B.quad(t.T2(key), w, h, x, y, z0 + 0.13, { ry: Math.PI });
   poster('matsuri', 0.42, 0.64, -14.6, 1.0); poster('idol', 0.42, 0.64, -10.4, 1.0);
   // signboard, awning and the dwelling upstairs
-  const sign = t.vmesh(new THREE.BoxGeometry(x1 - x0 + 0.1, 0.78, 0.12), [t.P(0.5), t.P(0.5), t.P(0.5), t.P(0.5), t.T('mikawaya', 1280, 162, { glow: 0.55, rough: 0.4 }), t.P(0.5)]);
-  sign.position.set(cx, H1 + 0.6, z0 - 0.16); sign.rotation.y = Math.PI;
+  // the signboard: a real moulded board (r6 signboard, stretched to the shop's width), the lit print set in its frame
+  t.add(lpModel('signboard', cx, H1 + 0.18, z0 - 0.1, { ry: Math.PI, size: [x1 - x0 + 0.1, 0.8, 0.2], fit: 'stretch' }));
+  const sign = t.vmesh(new THREE.PlaneGeometry(x1 - x0 - 0.15, 0.6), t.T('mikawaya', 1280, 162, { glow: 0.55, rough: 0.4 }));
+  sign.position.set(cx, H1 + 0.57, z0 - 0.16); sign.rotation.y = Math.PI; // (in the frame, in front of its recessed back)
   t.add(sign);
   if (!lp) {
     B.box(m.metal, x1 - x0 + 0.2, 0.06, 0.16, cx, H1 + 0.98, z0 - 0.16, { tint: 0x3a3c40 });
@@ -510,7 +561,7 @@ function buildShell(t, B, m, I, cx) {
   t.house({ x: cx, z: z0, w: x1 - x0, d: z1 - z0, side: -1, y0: H1 + 0.22, floors: 1, h1: 2.5, wallA: m.wallCream, roofM: m.roofGrey, antenna: 1.6,
     win: [[0, -1.4, 1.6, 1.1, 'lit', { tobukuro: -1, sill: 0.8 }], [0, 1.5, 1.4, 1.0, 'lit2', { sill: 0.8 }], [0, 2.5, 1.2, 1.0, 'lit3', { face: 'l', sill: 0.8, clean: true }], [0, 2.5, 1.0, 1.0, 'dark', { face: 'r', sill: 0.8 }]] });
   // side (alley) wall details: a frosted window, an AC unit, the back door lamp
-  B.box(t.win.frost, 0.8, 0.6, 0.1, x1, 1.6, 18.4, { unit: true, ry: Math.PI / 2 });
+  B.box(t.win.frost, 0.8, 0.6, 0.1, x1, 1.6, 18.4, { unit: true, ry: Math.PI / 2 }); // arch: a frosted window
   t.prop('propane', x1 + 0.22, 0, 17.4, Math.PI / 2);
   t.prop('beercrate', -9.95, 0, 14.4, 0.15);
   t.prop('beercrate', -9.95, 0.28, 14.4, -0.1);

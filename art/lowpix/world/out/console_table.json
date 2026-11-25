@@ -1,0 +1,33 @@
+{
+ "id": "console_table",
+ "src": "art/lowpix/world/made/console_table.glb",
+ "credit": {
+  "title": "Narrow console table (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/console_table.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 416,
+ "tex": 512,
+ "size": [
+  1,
+  0.78,
+  0.32
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#3a1612",
+   "#4a2118",
+   "#592f20",
+   "#683f28",
+   "#764f31",
+   "#946d42",
+   "#af8c57",
+   "#bba67a",
+   "#c8be9b"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,66 @@
+{
+ "id": "gk_door",
+ "src": "art/lowpix/world/made/garage_kit/gk_door.glb",
+ "credit": {
+  "title": "Green steel back door (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_door.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 944,
+ "tex": 528,
+ "size": [
+  1.211,
+  2.1,
+  0.166
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#284336",
+   "#365644",
+   "#456751",
+   "#56785f",
+   "#67876d",
+   "#7d9680",
+   "#95a495",
+   "#acb3ac",
+   "#c1c3c1"
+  ],
+  "m1": [
+   "#66331a",
+   "#834c24",
+   "#9e6730",
+   "#b9853c",
+   "#c4a058",
+   "#c9b372",
+   "#cfc48b",
+   "#d6d2a3",
+   "#dedeba"
+  ],
+  "m2": [
+   "#454e5f",
+   "#5d6979",
+   "#788490",
+   "#969ea4",
+   "#b3b7b9",
+   "#bfc0c1",
+   "#cacaca",
+   "#d4d4d4",
+   "#dedede"
+  ],
+  "m3": [
+   "#3f1613",
+   "#50221b",
+   "#613123",
+   "#71412c",
+   "#805336",
+   "#9c6f47",
+   "#b18d5f",
+   "#bda780",
+   "#cabfa0"
+  ]
+ },
+ "warnings": []
+}

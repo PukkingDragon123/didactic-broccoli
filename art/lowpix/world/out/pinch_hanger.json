@@ -1,0 +1,99 @@
+{
+ "id": "pinch_hanger",
+ "src": "art/lowpix/world/made/pinch_hanger.glb",
+ "credit": {
+  "title": "Pinch hanger with socks (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/pinch_hanger.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 684,
+ "tex": 416,
+ "size": [
+  0.439,
+  0.53,
+  0.3
+ ],
+ "colours": 50,
+ "palette": {
+  "m0": [
+   "#0f0f2b",
+   "#141737",
+   "#1a2143",
+   "#212c4e",
+   "#283858",
+   "#3b5579",
+   "#507599",
+   "#6f94af",
+   "#93b0bf"
+  ],
+  "m1": [
+   "#18372f",
+   "#21463a",
+   "#2b5543",
+   "#35634c",
+   "#407054",
+   "#548a66",
+   "#6ca079",
+   "#8baf91",
+   "#a8bfaa"
+  ],
+  "m2": [
+   "#550a21",
+   "#6d1024",
+   "#841525",
+   "#9b1c23",
+   "#b02824",
+   "#ce412f",
+   "#d46b52",
+   "#d99176",
+   "#e0b298"
+  ],
+  "m3": [
+   "#43485f",
+   "#5b6279",
+   "#747e91",
+   "#939aa4",
+   "#b0b4b8",
+   "#bdbfc0",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m4": [
+   "#8e502c",
+   "#b5733d",
+   "#c79964",
+   "#d4ba90",
+   "#e2d6ba",
+   "#e5dec5",
+   "#e8e5cf",
+   "#ebead9",
+   "#efefe3"
+  ],
+  "m5": [
+   "#51241b",
+   "#683626",
+   "#7e4a31",
+   "#92603e",
+   "#a6784b",
+   "#b39163",
+   "#bca77f",
+   "#c7bb99",
+   "#d2cdb3"
+  ],
+  "m6": [
+   "#172017",
+   "#20291f",
+   "#293127",
+   "#333930",
+   "#3c403a",
+   "#575956",
+   "#727272",
+   "#8d8d8d",
+   "#a8a8a8"
+  ]
+ },
+ "warnings": []
+}

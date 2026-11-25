@@ -1,0 +1,66 @@
+{
+ "id": "gk_hookpole",
+ "src": "art/lowpix/world/made/garage_kit/gk_hookpole.glb",
+ "credit": {
+  "title": "Shutter hook pole (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_hookpole.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 272,
+ "tex": 400,
+ "size": [
+  0.091,
+  2.156,
+  0.027
+ ],
+ "colours": 28,
+ "palette": {
+  "m0": [
+   "#3e5454",
+   "#546b69",
+   "#6b807d",
+   "#85938f",
+   "#9fa5a3",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m1": [
+   "#4f0c20",
+   "#651123",
+   "#7b1725",
+   "#8f1e24",
+   "#a32a26",
+   "#c24232",
+   "#ce6950",
+   "#d58f74",
+   "#dcb097"
+  ],
+  "m2": [
+   "#491512",
+   "#5d2319",
+   "#713321",
+   "#84462a",
+   "#965a34",
+   "#b27743",
+   "#bf9560",
+   "#c8ae81",
+   "#d3c5a0"
+  ],
+  "m3": [
+   "#161113",
+   "#1c1718",
+   "#211d1e",
+   "#262424",
+   "#2b2b2b",
+   "#484848",
+   "#656565",
+   "#828282",
+   "#a0a0a0"
+  ]
+ },
+ "warnings": []
+}

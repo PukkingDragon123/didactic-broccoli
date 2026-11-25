@@ -4,6 +4,7 @@
 // sketchbook's cover and the day's receipt. Friends who visit see it too (it travels in the save like every state key).
 // Debug: dbg.logo.open(), .demo(name), .draw([[x, y, ink], ...]), .reset(), .state(), .receipt()
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
 import { detailize } from '../world/surfaces.js';
 import { readLogo, setActiveLogo, writeLogo, logoURL, crestPixels, INKS, DEFAULT_NAME } from '../logo/logo.js';
 import { openLogoEditor, logoEditorOpen } from '../logo/editor.js';
@@ -50,13 +51,12 @@ function projectingSign(game) {
   const steel = detailize(new THREE.MeshStandardMaterial({ color: 0x2a2624, roughness: 0.55, metalness: 0.6 }), 'metal');
   const W = SIGN.w / 100, Ht = SIGN.h / 100, T = 0.035;
   // the board: printed both sides, a steel edge round it
-  const board = new THREE.Mesh(new THREE.BoxGeometry(T, Ht, W), [face, face, steel, steel, steel, steel]); // (±x: up and down the lane)
-  g.add(board);
-  // two flat-bar brackets into the pier, with a bolt plate
-  for (const y of [Ht / 2 - 0.08, -Ht / 2 + 0.08]) {
-    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.03, 0.12), steel); bar.position.set(0, y, -W / 2 - 0.06); g.add(bar);
-    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.09, 0.008), steel); plate.position.set(0, y, -W / 2 - 0.12); g.add(plate);
-  }
+  void steel;
+  // the frame: a real steel channel with its brackets and bolt plates (r6 blade_sign), the print on both faces
+  g.add(lpModel('blade_sign', 0, -0.53, -0.057));
+  const board = new THREE.Group();
+  for (const s of [-1, 1]) { const f = new THREE.Mesh(new THREE.PlaneGeometry(W, Ht), face); f.position.x = s * (T / 2 - 0.002); f.rotation.y = s * Math.PI / 2; board.add(f); }
+  g.add(board); // (±x: up and down the lane)
   for (const o of g.children) { o.castShadow = true; o.receiveShadow = true; }
   g.position.set(3.93, H - 1.2, 5.28 + 0.12 + W / 2);
   (openG?.parent || game.scene).add(g);

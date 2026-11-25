@@ -1,0 +1,55 @@
+{
+ "id": "milk_box",
+ "src": "art/lowpix/world/made/milk_box.glb",
+ "credit": {
+  "title": "Milk delivery box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/milk_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 220,
+ "tex": 256,
+ "size": [
+  0.22,
+  0.27,
+  0.184
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#894f2e",
+   "#b07140",
+   "#c39664",
+   "#d0b78f",
+   "#dfd3b8",
+   "#e2dbc3",
+   "#e6e2ce",
+   "#e9e8d8",
+   "#eeeee2"
+  ],
+  "m1": [
+   "#2c0f0d",
+   "#391812",
+   "#452217",
+   "#502d1d",
+   "#5b3a24",
+   "#7e5936",
+   "#9f7a49",
+   "#b59a68",
+   "#c4b58e"
+  ],
+  "m2": [
+   "#5f3218",
+   "#794922",
+   "#93632d",
+   "#ab7f39",
+   "#be9b4a",
+   "#c4af66",
+   "#cbc181",
+   "#d2cf9b",
+   "#dbdbb4"
+  ]
+ },
+ "warnings": []
+}

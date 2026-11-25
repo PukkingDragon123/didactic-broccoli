@@ -1,0 +1,44 @@
+{
+ "id": "mailbox_bank",
+ "src": "art/lowpix/world/made/mailbox_bank.glb",
+ "credit": {
+  "title": "Apartment mailboxes on a post (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/mailbox_bank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 652,
+ "tex": 512,
+ "size": [
+  0.9,
+  1.45,
+  0.337
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#8c4f2c",
+   "#b3733d",
+   "#c69864",
+   "#d2b98f",
+   "#e1d5b9",
+   "#e4ddc4",
+   "#e7e4ce",
+   "#ebead9",
+   "#efefe2"
+  ],
+  "m1": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ]
+ },
+ "warnings": []
+}

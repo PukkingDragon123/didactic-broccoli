@@ -1,0 +1,55 @@
+{
+ "id": "hose_reel",
+ "src": "art/lowpix/world/made/hose_reel.glb",
+ "credit": {
+  "title": "Garden hose reel (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hose_reel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 492,
+ "tex": 512,
+ "size": [
+  0.34,
+  0.4,
+  0.23
+ ],
+ "colours": 23,
+ "palette": {
+  "m0": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m1": [
+   "#18362e",
+   "#214538",
+   "#2b5341",
+   "#35604a",
+   "#406d52",
+   "#548764",
+   "#6c9d78",
+   "#8bad90",
+   "#a9beaa"
+  ],
+  "m2": [
+   "#520b20",
+   "#691023",
+   "#801624",
+   "#951c23",
+   "#aa2824",
+   "#c9402f",
+   "#d26950",
+   "#d89074",
+   "#dfb196"
+  ]
+ },
+ "warnings": []
+}

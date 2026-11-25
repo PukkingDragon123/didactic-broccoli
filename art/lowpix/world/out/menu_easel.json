@@ -1,0 +1,55 @@
+{
+ "id": "menu_easel",
+ "src": "art/lowpix/world/made/menu_easel.glb",
+ "credit": {
+  "title": "Menu easel (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/menu_easel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 332,
+ "tex": 504,
+ "size": [
+  0.58,
+  1.045,
+  0.555
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#55261d",
+   "#6d3928",
+   "#844f34",
+   "#996642",
+   "#ae7f50",
+   "#b6976b",
+   "#bfac85",
+   "#c9be9f",
+   "#d4cfb7"
+  ],
+  "m1": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m2": [
+   "#1d1715",
+   "#251f1d",
+   "#2c2725",
+   "#33302d",
+   "#3a3836",
+   "#545353",
+   "#6f6f6f",
+   "#8a8a8a",
+   "#a5a5a5"
+  ]
+ },
+ "warnings": []
+}

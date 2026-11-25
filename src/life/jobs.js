@@ -5,6 +5,7 @@
 // isn't open yet, again after a little while, so money for the first machine is always within reach).
 //   jobs.active (the running job)   jobs.take(id)   jobs.goal() -> objective for the card   jobs.cancel()
 import * as THREE from 'three';
+import { lpModel } from '../kit/place.js';
 import { detailize } from '../world/surfaces.js';
 import { audio } from '../core/audio.js';
 import { formatYen } from '../core/util.js';
@@ -57,14 +58,13 @@ export class Jobs {
     // weathered wood and a painted tin roof, with real surface detail (src/world/surfaces.js)
     const wood = detailize(new THREE.MeshStandardMaterial({ color: 0x5a3a1e, roughness: 0.85 }), 'wood');
     const roof = detailize(new THREE.MeshStandardMaterial({ color: 0x3a4a3a, roughness: 0.6, metalness: 0.2 }), 'metal');
-    for (const x of [-0.48, 0.48]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.07, 1.95, 0.07), wood); p.position.set(x, 0.975, 0); p.castShadow = true; grp.add(p); }
-    const cork = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.66, 0.04), [wood, wood, wood, wood, new THREE.MeshStandardMaterial({ map: boardPix().texture(), roughness: 0.95 }), wood]);
-    cork.position.set(0, 1.42, 0.02);
-    cork.castShadow = true; cork.receiveShadow = true;
+    void wood; void roof;
+    // the board: a real one (r6 notice_board: posts, a framed cork board, a tin roof), the notices pinned on its cork
+    grp.add(lpModel('notice_board', 0, 0, 0.03));
+    const cork = new THREE.Mesh(new THREE.PlaneGeometry(0.98, 0.64), new THREE.MeshStandardMaterial({ map: boardPix().texture(), roughness: 0.95 }));
+    cork.position.set(0, 1.42, 0.035);
+    cork.receiveShadow = true;
     grp.add(cork);
-    const r = new THREE.Mesh(new THREE.BoxGeometry(1.16, 0.04, 0.26), roof);
-    r.position.set(0, 1.8, 0.06); r.rotation.x = -0.18; r.castShadow = true;
-    grp.add(r);
     g.scene.add(grp);
     this.board = grp;
     g.player.addObstacle(BOARD.x - 0.55, BOARD.x + 0.55, BOARD.z - 0.08, BOARD.z + 0.08);

@@ -1,0 +1,33 @@
+{
+ "id": "gk_column",
+ "src": "art/lowpix/world/made/garage_kit/gk_column.glb",
+ "credit": {
+  "title": "Steel H-column with base plate (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_column.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 300,
+ "tex": 1024,
+ "size": [
+  0.205,
+  3.1,
+  0.22
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2c353e",
+   "#3b464e",
+   "#4b585e",
+   "#5d696d",
+   "#6f797b",
+   "#858a8b",
+   "#9b9b9b",
+   "#aeaeae",
+   "#c1c1c1"
+  ]
+ },
+ "warnings": []
+}

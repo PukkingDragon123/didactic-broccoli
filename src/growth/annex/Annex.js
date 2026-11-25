@@ -8,6 +8,7 @@
 // Town.js / Neighbours.js are untouched. The inside is only built once the shop is yours.
 //   game.growth.annex = { zone, spots, crowd, step, open, build(), apply(), simulate(min) }   save: game.state.growth.annex
 import * as THREE from 'three';
+import { lpModel } from '../../kit/place.js';
 import { audio } from '../../core/audio.js';
 import { bgm } from '../../core/bgm.js';
 import { pixMat } from '../../gfx/geo.js';
@@ -148,8 +149,9 @@ export class Annex {
     B.box(M.plaster, X1 - o1 + t, 0.8, t, (o1 + X1 + t) / 2, 0, Z1 + t / 2, { tint: 0x8a7a64 });
     B.box(M.plaster, X1 - 1.45 + t, H - 0.8, t, (1.45 + X1 + t) / 2, 0.8, Z1 + t / 2, { tint: 0x8a7a64 });
     B.box(M.plaster, 0.2, H - 0.8, t, 0.65, 0.8, Z1 + t / 2, { tint: 0x8a7a64 });
-    B.box(M.plaster, 0.7, H - 1.85, t, 1.1, 1.85, Z1 + t / 2, { tint: 0x8a7a64 });
+    B.box(M.plaster, 0.7, H - 1.85, t, 1.1, 1.85, Z1 + t / 2, { tint: 0x8a7a64 }); // arch: the wall over the door
     B.box(M.plaster, o1 - o0, H - 2.1, t, (o0 + o1) / 2, 2.1, Z1 + t / 2, { tint: 0x8a7a64 });
+    // arch-begin: the shop front's shutter rail and posts, the tobacco window, the back door
     B.box(M.metal, o1 - o0 + 0.1, 0.06, 0.1, (o0 + o1) / 2, 2.08, Z1, { tint: 0x7a7e7a }); // shutter rail
     for (const x of [o0, o1]) B.box(M.metal, 0.06, 2.1, 0.1, x, 0, Z1, { tint: 0x7a7e7a });
     // the tobacco window from inside: sliding glass with the red plate above
@@ -159,6 +161,7 @@ export class Annex {
     // the back door to Mr. Sugimoto's old rooms (locked storage)
     B.box(M.wood, 0.85, 1.95, 0.05, 1.6, 0, Z0 + 0.03, { tint: 0x6a4a30 });
     B.box(M.metal, 0.05, 0.05, 0.06, 1.3, 0.95, Z0 + 0.07, { tint: 0xc8b048 });
+    // arch-end
     Z.hit(0.85, 1.95, 0.1, 1.6, 0.98, Z0 + 0.06, { reach: 2.2, hint: () => ({ key: '', text: 'Back rooms', sub: 'Mr. Sugimoto\'s old living rooms. Locked: his family\'s things are still in there' }), use: () => false });
     // the painted view out of the open shutter (the lane, the houses across it)
     // the lane through the shutter: a real photo as HD pixel art (src/gfx/hdtex.js 'view_lane'), else the drawn one
@@ -175,7 +178,7 @@ export class Annex {
     // leave by the door
     Z.hit(o1 - o0, 2.1, 0.3, (o0 + o1) / 2, 1.05, Z1 + 0.2, { reach: 2.6, hint: () => ({ key: 'LMB', text: 'Go outside', sub: 'Back to the lane' }), use: () => { this.game.places.exit({ sound: 'slideDoor' }); return false; } });
     // lamps: two twin-tube fixtures (their tubes are in tubes())
-    for (const [x, z] of TUBES) { B.box(M.metal, 1.3, 0.06, 0.26, x, H - 0.07, z, { tint: 0xd8dcd8 }); }
+    for (const [x, z] of TUBES) { const p = Z.L(x, H - 0.035, z); Z.group.add(lpModel('lamp_fluoro', p.x, p.y, p.z, { size: [1.3, 0.035, 0.26], fit: 'stretch', mat: (mm) => Z.mat(mm) })); } // real fittings
   }
   drawView(x, w, h) {
     const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };
@@ -193,14 +196,11 @@ export class Annex {
   counter() {
     const Z = this.zone, B = Z.B, M = this.M, z1 = this.dims.Z1;
     // the old tobacco counter under the window, tiled front, and the cigarette shelves on the right wall
-    B.box(M.tile, 1.4, 0.85, 0.6, 1.75, 0, z1 - 0.4, { tint: 0xc84a3a });
-    B.box(M.woodL, 1.5, 0.05, 0.66, 1.75, 0.85, z1 - 0.4, { tint: 0xc8a070 });
+    { const p = Z.L(1.75, 0, z1 - 0.4); Z.group.add(lpModel('showcase', p.x, p.y, p.z, { ry: Math.PI, size: [1.5, 0.9, 0.66], fit: 'stretch', mat: (mm) => Z.mat(mm) })); } // the counter (a real shop counter)
     Z.prop('cash_register', 2.1, 0.9, z1 - 0.45, Math.PI + 0.3, 0.9);
     Z.block(1.05, 2.45, z1 - 0.72, z1);
     // an open shelf unit: back board, two sides, five shelves
-    B.box(M.wood, 0.03, 2.0, 2.6, 2.43, 0, 0.1, { tint: 0x7a5230 });
-    for (const z of [-1.2, 1.4]) B.box(M.wood, 0.32, 2.0, 0.04, 2.29, 0, z, { tint: 0x6a4428 });
-    for (let i = 0; i < 5; i++) B.box(M.woodL, 0.3, 0.025, 2.56, 2.28, 0.35 + i * 0.38, 0.1, { tint: 0xb89068 });
+    { const p = Z.L(2.285, 0, 0.1); Z.group.add(lpModel('open_shelf5', p.x, p.y, p.z, { ry: -Math.PI / 2, mat: (mm) => Z.mat(mm) })); } // (r6 open_shelf5: shelf tops at 0.375 + 0.38 i)
     Z.block(2.12, 2.45, -1.2, 1.4);
     // after the renovation: figures on the counter and the shelves (the old stock's place)
     const disp = this.display = new THREE.Group();
@@ -280,7 +280,7 @@ export class Annex {
         const m = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1.2, 6), this.tubeOff);
         m.rotation.z = Math.PI / 2;
         m.position.copy(Z.L(x, H - 0.1, z + dz));
-        Z.group.add(m);
+        Z.group.add(m); // arch: the fitting's lit tube (switched on and off)
         this.tubeM.push(m);
       }
       Z.hit(1.3, 0.25, 0.4, x, H - 0.12, z, {

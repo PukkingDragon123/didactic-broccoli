@@ -275,7 +275,7 @@ export class GhostAlley {
     this.bulbM = new THREE.MeshBasicMaterial({ color: 0xffd890 });
     const bulb = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.12), this.bulbM);
     bulb.position.set(LAMP.x - 0.56, 2.52, LAMP.z);
-    G.add(bulb);
+    G.add(bulb); // arch: the lamp's lit, flickering bulb (an emissive) under its shade
     this.poolM = new THREE.MeshBasicMaterial({ map: poolTexture(), alphaTest: 0.5, transparent: true, opacity: 0.32, depthWrite: false, color: 0xffc880 });
     const pool = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.0), this.poolM);
     pool.rotation.x = -Math.PI / 2; pool.position.set(LAMP.x - 0.65, 0.014, LAMP.z); pool.renderOrder = 2;

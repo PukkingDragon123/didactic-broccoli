@@ -1,0 +1,55 @@
+{
+ "id": "gk_plank",
+ "src": "art/lowpix/world/made/garage_kit/gk_plank.glb",
+ "credit": {
+  "title": "Plank wall shelf on steel brackets (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_plank.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 368,
+ "tex": 688,
+ "size": [
+  1.2,
+  0.205,
+  0.27
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#753b23",
+   "#965631",
+   "#b57540",
+   "#c39662",
+   "#cdb286",
+   "#d2c199",
+   "#d7ceab",
+   "#ddd9bc",
+   "#e4e3cd"
+  ],
+  "m1": [
+   "#1b1d27",
+   "#252831",
+   "#2f333b",
+   "#3a3e44",
+   "#45494d",
+   "#606264",
+   "#7b7b7b",
+   "#949494",
+   "#adadad"
+  ],
+  "m2": [
+   "#434c5d",
+   "#5b6676",
+   "#75818e",
+   "#939ba1",
+   "#afb3b5",
+   "#bcbdbd",
+   "#c7c7c7",
+   "#d2d2d2",
+   "#dcdcdc"
+  ]
+ },
+ "warnings": []
+}

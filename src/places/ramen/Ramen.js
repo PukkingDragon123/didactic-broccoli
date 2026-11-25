@@ -30,6 +30,7 @@ import { kanji } from '../vending/canArt.js';
 import { PanelMode } from '../vending/panel.js';
 import { pixCanvas, hitBox, prop, sitDown, standUp, paperFill } from '../util.js';
 import { pixMat } from '../../gfx/geo.js';
+import { lpModel } from '../../kit/place.js';
 import { payCash, earnCash, yen } from '../money.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -90,6 +91,7 @@ export class Ramen {
     const B = new t.B.constructor();
     const dx = FRONT.door.x, z = FRONT.door.z;
     // a wooden sliding door with glass panes over the house door (the lattice, the frosted lower panel)
+    // arch-begin: the shop's sliding door and its eave (part of the facade)
     B.box(m.wood, 1.16, 0.08, 0.1, dx, 2.08, z - 0.08, { tint: 0x6a4428 });
     B.box(m.wood, 1.2, 0.04, 0.12, dx, 0, z - 0.08, { tint: 0x5a3a20 });
     for (const sx of [-0.56, 0.56]) B.box(m.wood, 0.06, 2.1, 0.1, dx + sx, 0, z - 0.08, { tint: 0x6a4428 });
@@ -102,17 +104,21 @@ export class Ramen {
     // the eave and the signboard above
     B.box(m.wood, 2.6, 0.06, 0.55, dx - 0.3, 2.32, z - 0.27, { tint: 0x4a3020, rx: 0.08 });
     B.box(m.metal, 0.03, 0.03, 0.36, dx - 0.78, 2.11, z - 0.16); // the lantern's wall bracket (it hangs from it)
+    // arch-end
     B.build(grp);
     this.frontGlass = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.28), new THREE.MeshBasicMaterial({ color: 0x6a5238 }));
     this.frontGlass.position.set(dx, 0.74 + 0.64, z - 0.1);
     this.frontGlass.rotation.y = Math.PI;
-    grp.add(this.frontGlass);
+    grp.add(this.frontGlass); // arch: the door's glazing
     // signboard, noren, lantern, the standing menu, a nobori flag
     this.sign = pixCanvas(800, 160);
     this.sign.tex.minFilter = THREE.LinearMipmapLinearFilter; this.sign.tex.generateMipmaps = true; this.sign.tex.anisotropy = 4;
     const signWood = pixMat('woodDark', { roughness: 0.6, bump: 0.3 }); // (the board's edges and back: textured wood, not flat paint)
-    const sign = new THREE.Mesh(new THREE.BoxGeometry(2.3, 0.46, 0.06), [signWood, signWood, signWood, signWood, new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }), signWood]);
-    sign.position.set(dx - 0.3, 2.68, z - 0.06); sign.rotation.y = Math.PI;
+    void signWood;
+    // the signboard: a real moulded cedar board (r6 signboard), its printed face set in the frame
+    grp.add(lpModel('signboard', dx - 0.3, 2.43, z - 0.047, { ry: Math.PI })); // (battens on the wall, brackets into it)
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.4), new THREE.MeshStandardMaterial({ map: this.sign.tex, roughness: 0.6 }));
+    sign.position.set(dx - 0.3, 2.68, z - 0.092); sign.rotation.y = Math.PI;
     grp.add(sign);
     this.noren = pixCanvas(192, 128);
     const norenMat = new THREE.MeshStandardMaterial({ map: this.noren.tex, roughness: 0.95, side: THREE.DoubleSide });
@@ -127,21 +133,24 @@ export class Ramen {
       grp.add(s);
       this.norenStrips.push(s);
     }
-    B.box(m.metal, 1.2, 0.025, 0.025, dx, 2.08, z - 0.2);
+    B.box(m.metal, 1.2, 0.025, 0.025, dx, 2.08, z - 0.2); // arch: the noren rod fixed over the door
     const lan = prop('rm_lantern', null, dx - 0.78, 1.55, z - 0.32, 0, 0.75);
     grp.add(lan);
     this.lantern = lan;
     this.board = pixCanvas(192, 288);
     const board = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.75), new THREE.MeshStandardMaterial({ map: this.board.tex, roughness: 0.85 }));
-    board.position.set(11.6, 0.62, 15.35); board.rotation.set(-0.12, Math.PI + 0.25, 0);
-    grp.add(board);
-    for (const sx of [-0.22, 0.22]) { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.04, 1.0, 0.04), pixMat('woodDark', { roughness: 0.7, bump: 0.3 })); leg.position.set(11.6 + sx * Math.cos(0.25), 0.5, 15.38 - sx * Math.sin(0.25)); leg.rotation.y = 0.25; grp.add(leg); }
+    // the standing menu: the printed board leaning on a real A-frame easel (r6 menu_easel)
+    const easel = new THREE.Group();
+    easel.position.set(11.6, 0, 15.38); easel.rotation.y = Math.PI + 0.25;
+    easel.add(lpModel('menu_easel', 0, 0, 0));
+    board.position.set(0, 0.712, 0.19); board.rotation.x = -0.12; // (on the ledge, against the legs)
+    easel.add(board);
+    grp.add(easel);
     this.flag = pixCanvas(64, 256);
     const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 1.4), new THREE.MeshStandardMaterial({ map: this.flag.tex, roughness: 0.9, side: THREE.DoubleSide }));
-    flag.position.set(15.05, 1.45, 15.2); flag.rotation.y = Math.PI;
+    flag.position.set(15.05, 1.65, 15.2); flag.rotation.y = Math.PI;
     grp.add(flag);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 2.3, 6), pixMat('steel', { roughness: 0.4, metalness: 0.6, bump: 0.2 }));
-    pole.position.set(15.25, 1.15, 15.2); grp.add(pole);
+    grp.add(lpModel('nobori_pole', 15.135, 0, 15.2)); // (the pole at x 15.25, its crossbar holds the flag's top edge)
     g.player.addObstacle(11.35, 11.85, 15.15, 15.55);
     this.redrawArt();
     whenPrint('ramen').then(() => this.redrawArt());
@@ -176,36 +185,15 @@ export class Ramen {
     B.plane(floor, 6, 5, 0, 0, 0, { tint: 0x8a7a6a });
     B.box(ceil, 6, 0.05, 5, 0, 2.6, 0, { tint: 0xf0e4d0 });
     // walls: wood wainscot to 0.9, plaster above
-    const wall = (w, x, z, ry) => { B.box(koshi, w, 0.9, 0.06, x, 0, z, { ry, tint: 0x9a7048 }); B.box(plaster, w, 1.7, 0.06, x, 0.9, z, { ry, tint: 0xf0e6d0 }); B.box(wood, w, 0.06, 0.08, x, 0.88, z, { ry, tint: 0x5a3a22 }); };
+    const wall = (w, x, z, ry) => { B.box(koshi, w, 0.9, 0.06, x, 0, z, { ry, tint: 0x9a7048 }); B.box(plaster, w, 1.7, 0.06, x, 0.9, z, { ry, tint: 0xf0e6d0 }); B.box(wood, w, 0.06, 0.08, x, 0.88, z, { ry, tint: 0x5a3a22 }); }; // arch: the shop's walls (wainscot, plaster, dado rail)
+    // arch-begin: the shop's walls (wainscot, plaster, dado rail) and the door's lintel
     wall(6, 0, -2.5, 0); wall(5, -3, 0, Math.PI / 2); wall(5, 3, 0, Math.PI / 2);
     // the front wall, with the door gap at x 1.45..2.35
     wall(4.45, -0.775, 2.5, 0); wall(0.65, 2.675, 2.5, 0);
     B.box(plaster, 0.9, 0.55, 0.06, 1.9, 2.05, 2.5);
     B.box(wood, 1.0, 0.08, 0.1, 1.9, 2.0, 2.48, { tint: 0x5a3a22 });
-    // the counter: wood front, a thick light top, the raised serving ledge
-    B.box(wood, 4.0, 0.95, 0.5, -0.55, 0, -0.5, { tint: 0x6a4428 });
-    B.box(woodL, 4.1, 0.05, 0.62, -0.55, 0.95, -0.44, { tint: 0xd8b07a });
-    B.box(woodL, 4.0, 0.12, 0.14, -0.55, 1.0, -0.72, { tint: 0xc8a06a });
-    B.box(paint, 4.0, 0.06, 0.04, -0.55, 0.1, -0.24, { tint: 0x3a2418 }); // footrail
-    // the back counter / prep shelf, the shelves of bowls over it
-    B.box(steel, 5.9, 0.86, 0.6, 0, 0, -2.18, { tint: 0xb8bcc2 });
-    for (const y of [1.55, 1.95]) B.box(wood, 4.4, 0.03, 0.26, 0.2, y, -2.35, { tint: 0x8a6040 });
-    // the stove box for the stock pots, the griddle
-    B.box(steel, 1.1, 0.7, 0.62, -1.55, 0, -1.55, { tint: 0x8a9096 });
-    B.box(paint, 0.7, 0.75, 0.55, 1.45, 0, -1.6, { tint: 0x3a3a3e });
-    B.box(steel, 0.66, 0.03, 0.5, 1.45, 0.75, -1.6, { tint: 0x2a2a2e });
-    // the exhaust hood over the kitchen
-    B.box(steel, 3.4, 0.4, 0.7, -0.4, 2.2, -1.7, { tint: 0xc8ccd2 });
-    // a side table for the dirty bowls by the sink
-    B.box(steel, 0.5, 0.82, 0.42, -2.62, 0, -0.95, { tint: 0xa8acb2 });
-    // condiment caddies along the counter: soy sauce, vinegar, chilli oil, pepper, a box of chopsticks
-    for (const x of [-1.72, -0.38, 0.95]) {
-      B.box(wood, 0.2, 0.02, 0.1, x, 1.0, -0.63, { tint: 0x5a3a22 });
-      B.box(wood, 0.06, 0.1, 0.14, x + 0.15, 1.0, -0.6, { tint: 0xc8a06a });
-    }
-    B.box(wood, 0.48, 0.04, 0.52, -2.74, 1.94, 1.9, { tint: 0x5a3a22 }); // the TV shelf
-    // a shelf over the door to the back (sake bottles), the back room's noren
-    B.box(wood, 1.2, 0.03, 0.22, 2.2, 1.95, -2.38, { tint: 0x6a4428 });
+    // arch-end
+    // (the furniture is real models: below)
     // (the bottles on it, the condiment caddies' bottles and the pendant lamps are imported models: below)
     // the stools are props; the pendant lamps' cords + shades
     B.pop();
@@ -213,6 +201,20 @@ export class Ramen {
     // imported models instead of tinted boxes: the pendant lamps over the counter, the bottles on the shelf over the
     // door, a condiment set on each caddy (src/data/props/home.js)
     const deco = (id, x, y, z, ry = 0, sc = 1) => { const m = prop(id, P.voxel(), ...L(x, y, z).toArray(), ry, sc); this.group.add(m); return m; };
+    // the furniture (own models, art/lowpix/world/made/r6_props.py): the counter with its serving ledge and footrail, the
+    // stainless worktables along the back wall and the bowl shelves over them, the stock-pot range, the gyoza griddle,
+    // the exhaust hood, the side table by the sink, the condiment caddies, the TV shelf and the shelf over the back door
+    const fur = (id, x, y, z, o = {}) => { const m = lpModel(id, ...L(x, y, z).toArray(), { mat: (mm) => P.mat(mm), ...o }); this.group.add(m); return m; };
+    fur('counter_ramen', -0.55, 0, -0.46);
+    for (const x of [-1.97, 0, 1.97]) fur('kitchen_bench', x, 0, -2.18);
+    for (const y of [1.55, 1.95]) for (const x of [-0.9, 1.3]) fur('shelf_long', x, y + 0.03 - 0.15, -2.35);
+    fur('stock_stove', -1.55, 0, -1.55);
+    fur('griddle_cab', 1.45, 0, -1.6);
+    fur('range_hood', -0.4, 2.18, -1.7);
+    fur('steel_table', -2.62, 0, -0.95);
+    for (const x of [-1.72, -0.38, 0.95]) fur('caddy', x, TOP_Y, -0.63); // (the tray, left of its centre, under the condiments)
+    fur('shelf_wall', -2.74, 1.98 - 0.15, 1.9, { ry: -Math.PI / 2, size: [0.52, 0.15, 0.48], fit: 'stretch' }); // the TV shelf
+    fur('shelf_wall', 2.2, 1.98 - 0.15, -2.38); // the sake shelf over the back door
     for (const x of [-1.6, 0, 1.4]) deco('hm_lamp_pendant', x, 2.6 - 0.55, 0.2, 0, 1);
     ['hm_sake', 'hm_beer', 'hm_sake_set', 'hm_beer', 'hm_sake'].forEach((id, i) => deco(id, 1.9 + i * 0.18, 1.98, -2.38, 0.3 * i, id === 'hm_beer' ? 1.05 : 1.1));
     for (const x of [-1.72, -0.38, 0.95]) deco('hm_condiments', x - 0.03, 1.02, -0.63, 0, 1);
@@ -245,7 +247,7 @@ export class Ramen {
   buildKitchen() {
     const P = this.places, vox = P.voxel(), grp = this.group;
     const add = (id, x, y, z, ry = 0, s = 1) => { const m = prop(id, vox, O.x + x, y, O.z + z, ry, s); grp.add(m); return m; };
-    this.pots = [add('rm_pot', -1.8, 0.7, -1.55), add('rm_pot', -1.3, 0.7, -1.55, 0.6, 0.85)];
+    this.pots = [add('rm_pot', -1.82, 0.716, -1.55), add('rm_pot', -1.28, 0.716, -1.55, 0.6, 0.85)]; // (on the range's pan supports)
     this.boiler = add('rm_boiler', 0.2, 0, -1.5);
     for (let i = 0; i < 6; i++) add('rm_bowl_clean', -1.6 + i * 0.12, 1.585 + (i % 3) * 0.075, -2.36, i, 0.85);
     for (let i = 0; i < 8; i++) add('rm_bowl_clean', -0.2 + (i % 4) * 0.2, 1.985, -2.36, i, 0.8);
@@ -255,7 +257,7 @@ export class Ramen {
     add('rm_sake', 2.05, 0.86, -2.25);
     // the dirty bowls waiting by the sink
     this.dirtyStack = [];
-    for (let i = 0; i < 5; i++) this.dirtyStack.push(add('rm_bowl_dirty', -2.62, 0.82 + i * 0.065, -0.95, i * 0.7, 0.92));
+    for (let i = 0; i < 5; i++) this.dirtyStack.push(add('rm_bowl_dirty', -2.62, 0.82 + i * 0.03, -0.95, i * 0.7, 0.92)); // (nested)
     this.rack = add('rm_rack', -2.62, 0.86, -2.15, Math.PI / 2, 0.9);
     add('mk_kamidana', 0.6, 2.05, -2.42, 0);
     add('pendulum_clock', -2.2, 1.45, -2.46, 0);
@@ -344,14 +346,12 @@ export class Ramen {
     root.rotation.y = -Math.PI / 2;
     this.group.add(root);
     root.updateMatrixWorld(true);
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.45).translate(0, 0.775, 0), P.mat(t.P(0.4, 0.2)));
-    body.material = P.mat(pixMat('steel', { roughness: 0.5, metalness: 0.1, bump: 0.2, color: 0xe4e8ea })); // (textured, painted steel cabinet: no flat colour, not a dark slab)
-    root.add(body);
-    const slot = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.04), P.mat(pixMat('steel', { roughness: 0.5, metalness: 0.4, color: 0x3a3a3e })));
-    slot.position.set(0, 0.55, 0.23); root.add(slot);
+    void t;
+    // the cabinet: a real meal-ticket machine (r6 ticket_machine), its menu panel (the canvas below) set in the bezel
+    root.add(lpModel('ticket_machine', 0, 0, 0, { mat: (mm) => P.mat(mm) })); // (its front face at z 0.185, the bezel to 0.203)
     this.tm = { root, canvas: pixCanvas(400, 496), sel: 0 };
     const panel = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.67), new THREE.MeshBasicMaterial({ map: this.tm.canvas.tex, color: 0xdedede }));
-    panel.position.set(0, 1.2, 0.228); panel.raycast = () => {};
+    panel.position.set(0, 1.2, 0.19); panel.raycast = () => {};
     root.add(panel);
     const hb = hitBox(0.62, 1.55, 0.1, 0, 0.78, 0.25);
     root.add(hb);

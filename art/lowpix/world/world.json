@@ -5171,6 +5171,709 @@
    "tris": 7000,
    "cap": 1024,
    "name": "Retro space-capsule exhibit base (our own model, hand-painted)"
+  },
+  {
+   "id": "gk_joist",
+   "src": "art/lowpix/world/made/garage_kit/gk_joist.glb",
+   "h": 0.102,
+   "ppm": 220,
+   "tris": 400,
+   "cap": 1024,
+   "name": "Sawn timber joist (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_hbeam",
+   "src": "art/lowpix/world/made/garage_kit/gk_hbeam.glb",
+   "h": 0.26,
+   "ppm": 240,
+   "tris": 800,
+   "cap": 1024,
+   "name": "Steel H-beam with bolted end plates (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_column",
+   "src": "art/lowpix/world/made/garage_kit/gk_column.glb",
+   "h": 3.1,
+   "ppm": 160,
+   "tris": 600,
+   "cap": 1024,
+   "name": "Steel H-column with base plate (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_channel",
+   "src": "art/lowpix/world/made/garage_kit/gk_channel.glb",
+   "h": 0.1,
+   "ppm": 220,
+   "tris": 400,
+   "cap": 1024,
+   "name": "Steel C-channel girt (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_fluoro",
+   "src": "art/lowpix/world/made/garage_kit/gk_fluoro.glb",
+   "h": 0.198,
+   "ppm": 500,
+   "tris": 1200,
+   "cap": 1024,
+   "name": "Inverted-Fuji fluorescent fixture (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_tube",
+   "src": "art/lowpix/world/made/garage_kit/gk_tube.glb",
+   "h": 0.028,
+   "ppm": 800,
+   "tris": 500,
+   "cap": 512,
+   "name": "Fluorescent tube (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_conduit",
+   "src": "art/lowpix/world/made/garage_kit/gk_conduit.glb",
+   "h": 0.06,
+   "ppm": 600,
+   "tris": 800,
+   "cap": 512,
+   "name": "PVC conduit with saddles (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_knob",
+   "src": "art/lowpix/world/made/garage_kit/gk_knob.glb",
+   "h": 0.028,
+   "ppm": 800,
+   "tris": 300,
+   "cap": 256,
+   "name": "Knob-and-tube wiring span (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_jbox",
+   "src": "art/lowpix/world/made/garage_kit/gk_jbox.glb",
+   "h": 0.032,
+   "ppm": 900,
+   "tris": 500,
+   "cap": 256,
+   "name": "Porcelain junction box (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_outlet",
+   "src": "art/lowpix/world/made/garage_kit/gk_outlet.glb",
+   "h": 0.11,
+   "ppm": 900,
+   "tris": 300,
+   "cap": 256,
+   "name": "Bakelite double outlet (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_cordlamp",
+   "src": "art/lowpix/world/made/garage_kit/gk_cordlamp.glb",
+   "h": 0.794,
+   "ppm": 300,
+   "tris": 1300,
+   "cap": 1024,
+   "name": "Desk lamp flex and power strip (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_switch",
+   "src": "art/lowpix/world/made/garage_kit/gk_switch.glb",
+   "h": 0.12,
+   "ppm": 900,
+   "tris": 300,
+   "cap": 256,
+   "name": "Light switch plate (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_toggle",
+   "src": "art/lowpix/world/made/garage_kit/gk_toggle.glb",
+   "h": 0.036,
+   "ppm": 900,
+   "tris": 100,
+   "cap": 64,
+   "name": "Light switch toggle (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_door",
+   "src": "art/lowpix/world/made/garage_kit/gk_door.glb",
+   "h": 2.1,
+   "ppm": 220,
+   "tris": 1800,
+   "cap": 1024,
+   "name": "Green steel back door (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_doorframe",
+   "src": "art/lowpix/world/made/garage_kit/gk_doorframe.glb",
+   "h": 2.16,
+   "ppm": 200,
+   "tris": 400,
+   "cap": 512,
+   "name": "Steel door frame (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_window",
+   "src": "art/lowpix/world/made/garage_kit/gk_window.glb",
+   "h": 0.94,
+   "ppm": 300,
+   "tris": 1200,
+   "cap": 1024,
+   "name": "Steel sash window with wooden sill (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_curtain",
+   "src": "art/lowpix/world/made/garage_kit/gk_curtain.glb",
+   "h": 0.836,
+   "ppm": 320,
+   "tris": 2000,
+   "cap": 512,
+   "name": "Cafe curtain on its rod (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_lightbox",
+   "src": "art/lowpix/world/made/garage_kit/gk_lightbox.glb",
+   "h": 0.7025,
+   "ppm": 320,
+   "tris": 700,
+   "cap": 512,
+   "name": "Light box sign housing (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_lanterns",
+   "src": "art/lowpix/world/made/garage_kit/gk_lanterns.glb",
+   "h": 0.206,
+   "ppm": 300,
+   "tris": 2000,
+   "cap": 1024,
+   "name": "Lantern cord with wire hangers (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_plank",
+   "src": "art/lowpix/world/made/garage_kit/gk_plank.glb",
+   "h": 0.205,
+   "ppm": 400,
+   "tris": 700,
+   "cap": 1024,
+   "name": "Plank wall shelf on steel brackets (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_hookpole",
+   "src": "art/lowpix/world/made/garage_kit/gk_hookpole.glb",
+   "h": 2.156,
+   "ppm": 260,
+   "tris": 500,
+   "cap": 512,
+   "name": "Shutter hook pole (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "gk_bin",
+   "src": "art/lowpix/world/made/garage_kit/gk_bin.glb",
+   "h": 0.427,
+   "ppm": 400,
+   "tris": 1400,
+   "cap": 512,
+   "name": "Storage bin with lid (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "counter_ramen",
+   "src": "art/lowpix/world/made/counter_ramen.glb",
+   "h": 1.123,
+   "ppm": 300,
+   "tris": 3000,
+   "cap": 1024,
+   "name": "Ramen counter (our own model, hand-painted)"
+  },
+  {
+   "id": "kitchen_bench",
+   "src": "art/lowpix/world/made/kitchen_bench.glb",
+   "h": 0.96,
+   "ppm": 300,
+   "tris": 1200,
+   "cap": 512,
+   "name": "Stainless worktable (our own model, hand-painted)"
+  },
+  {
+   "id": "steel_table",
+   "src": "art/lowpix/world/made/steel_table.glb",
+   "h": 0.92,
+   "ppm": 300,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Small stainless table (our own model, hand-painted)"
+  },
+  {
+   "id": "range_hood",
+   "src": "art/lowpix/world/made/range_hood.glb",
+   "h": 0.422,
+   "ppm": 300,
+   "tris": 1000,
+   "cap": 1024,
+   "name": "Exhaust hood (our own model, hand-painted)"
+  },
+  {
+   "id": "stock_stove",
+   "src": "art/lowpix/world/made/stock_stove.glb",
+   "h": 0.715,
+   "ppm": 300,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Stock-pot range (our own model, hand-painted)"
+  },
+  {
+   "id": "griddle_cab",
+   "src": "art/lowpix/world/made/griddle_cab.glb",
+   "h": 0.81,
+   "ppm": 300,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Gyoza griddle cabinet (our own model, hand-painted)"
+  },
+  {
+   "id": "shelf_wall",
+   "src": "art/lowpix/world/made/shelf_wall.glb",
+   "h": 0.15,
+   "ppm": 300,
+   "tris": 600,
+   "cap": 512,
+   "name": "Wall shelf (our own model, hand-painted)"
+  },
+  {
+   "id": "shelf_long",
+   "src": "art/lowpix/world/made/shelf_long.glb",
+   "h": 0.15,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Long wall shelf (our own model, hand-painted)"
+  },
+  {
+   "id": "caddy",
+   "src": "art/lowpix/world/made/caddy.glb",
+   "h": 0.124,
+   "ppm": 300,
+   "tris": 500,
+   "cap": 256,
+   "name": "Condiment caddy (our own model, hand-painted)"
+  },
+  {
+   "id": "signboard",
+   "src": "art/lowpix/world/made/signboard.glb",
+   "h": 0.521,
+   "ppm": 300,
+   "tris": 900,
+   "cap": 1024,
+   "name": "Shop signboard (our own model, hand-painted)"
+  },
+  {
+   "id": "nobori_pole",
+   "src": "art/lowpix/world/made/nobori_pole.glb",
+   "h": 2.43,
+   "ppm": 300,
+   "tris": 500,
+   "cap": 512,
+   "name": "Nobori flag pole (our own model, hand-painted)"
+  },
+  {
+   "id": "menu_easel",
+   "src": "art/lowpix/world/made/menu_easel.glb",
+   "h": 1.045,
+   "ppm": 300,
+   "tris": 500,
+   "cap": 512,
+   "name": "Menu easel (our own model, hand-painted)"
+  },
+  {
+   "id": "ticket_machine",
+   "src": "art/lowpix/world/made/ticket_machine.glb",
+   "h": 1.565,
+   "ppm": 300,
+   "tris": 1000,
+   "cap": 512,
+   "name": "Meal-ticket machine (our own model, hand-painted)"
+  },
+  {
+   "id": "kitchen_unit",
+   "src": "art/lowpix/world/made/kitchen_unit.glb",
+   "h": 1.17,
+   "ppm": 220,
+   "tris": 1500,
+   "cap": 1024,
+   "name": "Kitchen sink unit (our own model, hand-painted)"
+  },
+  {
+   "id": "wall_cupboard",
+   "src": "art/lowpix/world/made/wall_cupboard.glb",
+   "h": 0.55,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Kitchen wall cupboard (our own model, hand-painted)"
+  },
+  {
+   "id": "range_fan",
+   "src": "art/lowpix/world/made/range_fan.glb",
+   "h": 0.445,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Kitchen extractor hood (our own model, hand-painted)"
+  },
+  {
+   "id": "console_table",
+   "src": "art/lowpix/world/made/console_table.glb",
+   "h": 0.78,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Narrow console table (our own model, hand-painted)"
+  },
+  {
+   "id": "collection_cabinet",
+   "src": "art/lowpix/world/made/collection_cabinet.glb",
+   "h": 2.3,
+   "ppm": 220,
+   "tris": 1500,
+   "cap": 1024,
+   "name": "Collection cabinet (our own model, hand-painted)"
+  },
+  {
+   "id": "glass_showcase",
+   "src": "art/lowpix/world/made/glass_showcase.glb",
+   "h": 1.84,
+   "ppm": 220,
+   "tris": 800,
+   "cap": 1024,
+   "name": "Glass showcase (our own model, hand-painted)"
+  },
+  {
+   "id": "mk_shelf",
+   "src": "art/lowpix/world/made/mk_shelf.glb",
+   "h": 2.12,
+   "ppm": 220,
+   "tris": 800,
+   "cap": 1024,
+   "name": "Shop shelving bay (our own model, hand-painted)"
+  },
+  {
+   "id": "mk_island",
+   "src": "art/lowpix/world/made/mk_island.glb",
+   "h": 0.85,
+   "ppm": 300,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Dagashi island table (our own model, hand-painted)"
+  },
+  {
+   "id": "hang_bar",
+   "src": "art/lowpix/world/made/hang_bar.glb",
+   "h": 0.43,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Ceiling hanging bar (our own model, hand-painted)"
+  },
+  {
+   "id": "standing_mirror",
+   "src": "art/lowpix/world/made/standing_mirror.glb",
+   "h": 1.35,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Standing mirror (our own model, hand-painted)"
+  },
+  {
+   "id": "notice_board",
+   "src": "art/lowpix/world/made/notice_board.glb",
+   "h": 1.95,
+   "ppm": 220,
+   "tris": 800,
+   "cap": 1024,
+   "name": "Notice board (our own model, hand-painted)"
+  },
+  {
+   "id": "hang_sign",
+   "src": "art/lowpix/world/made/hang_sign.glb",
+   "h": 0.385,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Hanging shop plaque (our own model, hand-painted)"
+  },
+  {
+   "id": "standpipe_tap",
+   "src": "art/lowpix/world/made/standpipe_tap.glb",
+   "h": 0.818,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Garden standpipe tap (our own model, hand-painted)"
+  },
+  {
+   "id": "display_case",
+   "src": "art/lowpix/world/made/display_case.glb",
+   "h": 1.066,
+   "ppm": 300,
+   "tris": 1500,
+   "cap": 512,
+   "name": "Museum display case (our own model, hand-painted)"
+  },
+  {
+   "id": "shelf_open",
+   "src": "art/lowpix/world/made/shelf_open.glb",
+   "h": 1.565,
+   "ppm": 300,
+   "tris": 800,
+   "cap": 512,
+   "name": "Open display shelf (our own model, hand-painted)"
+  },
+  {
+   "id": "milk_box",
+   "src": "art/lowpix/world/made/milk_box.glb",
+   "h": 0.27,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Milk delivery box (our own model, hand-painted)"
+  },
+  {
+   "id": "window_box",
+   "src": "art/lowpix/world/made/window_box.glb",
+   "h": 0.16,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Window flower box (our own model, hand-painted)"
+  },
+  {
+   "id": "sat_dish",
+   "src": "art/lowpix/world/made/sat_dish.glb",
+   "h": 0.731,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Satellite dish (our own model, hand-painted)"
+  },
+  {
+   "id": "styro_box",
+   "src": "art/lowpix/world/made/styro_box.glb",
+   "h": 0.9,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Styrofoam vegetable box (our own model, hand-painted)"
+  },
+  {
+   "id": "pinch_hanger",
+   "src": "art/lowpix/world/made/pinch_hanger.glb",
+   "h": 0.53,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Pinch hanger with socks (our own model, hand-painted)"
+  },
+  {
+   "id": "donation_box",
+   "src": "art/lowpix/world/made/donation_box.glb",
+   "h": 0.211,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Donation box (our own model, hand-painted)"
+  },
+  {
+   "id": "mailbox",
+   "src": "art/lowpix/world/made/mailbox.glb",
+   "h": 0.36,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "House mailbox (our own model, hand-painted)"
+  },
+  {
+   "id": "mailbox_bank",
+   "src": "art/lowpix/world/made/mailbox_bank.glb",
+   "h": 1.45,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Apartment mailboxes on a post (our own model, hand-painted)"
+  },
+  {
+   "id": "plant_bench",
+   "src": "art/lowpix/world/made/plant_bench.glb",
+   "h": 0.655,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Plant bench (our own model, hand-painted)"
+  },
+  {
+   "id": "sign_posts",
+   "src": "art/lowpix/world/made/sign_posts.glb",
+   "h": 1.8,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Sign board posts (our own model, hand-painted)"
+  },
+  {
+   "id": "umbrella_closed",
+   "src": "art/lowpix/world/made/umbrella_closed.glb",
+   "h": 0.86,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Closed umbrella (our own model, hand-painted)"
+  },
+  {
+   "id": "barricade",
+   "src": "art/lowpix/world/made/barricade.glb",
+   "h": 0.955,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Road barricade (our own model, hand-painted)"
+  },
+  {
+   "id": "drawing_board",
+   "src": "art/lowpix/world/made/drawing_board.glb",
+   "h": 0.357,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Drawing board (our own model, hand-painted)"
+  },
+  {
+   "id": "hose_reel",
+   "src": "art/lowpix/world/made/hose_reel.glb",
+   "h": 0.4,
+   "ppm": 300,
+   "tris": 700,
+   "cap": 512,
+   "name": "Garden hose reel (our own model, hand-painted)"
+  },
+  {
+   "id": "stroller",
+   "src": "art/lowpix/world/made/stroller.glb",
+   "h": 0.97,
+   "ppm": 260,
+   "tris": 800,
+   "cap": 512,
+   "name": "Baby stroller (our own model, hand-painted)"
+  },
+  {
+   "id": "concrete_pipe",
+   "src": "art/lowpix/world/made/concrete_pipe.glb",
+   "h": 1.024,
+   "ppm": 260,
+   "tris": 800,
+   "cap": 512,
+   "name": "Concrete Hume pipe (our own model, hand-painted)"
+  },
+  {
+   "id": "open_shelf5",
+   "src": "art/lowpix/world/made/open_shelf5.glb",
+   "h": 2.04,
+   "ppm": 220,
+   "tris": 600,
+   "cap": 512,
+   "name": "Open shelf unit (our own model, hand-painted)"
+  },
+  {
+   "id": "pencil",
+   "src": "art/lowpix/world/made/pencil.glb",
+   "h": 0.0072,
+   "ppm": 1500,
+   "tris": 400,
+   "cap": 256,
+   "name": "Pencil (our own model, hand-painted)"
+  },
+  {
+   "id": "blade_sign",
+   "src": "art/lowpix/world/made/blade_sign.glb",
+   "h": 1.06,
+   "ppm": 300,
+   "tris": 400,
+   "cap": 512,
+   "name": "Projecting sign frame (our own model, hand-painted)"
+  },
+  {
+   "id": "gk_cordchanger",
+   "src": "art/lowpix/world/made/garage_kit/gk_cordchanger.glb",
+   "h": 0.457,
+   "ppm": 400,
+   "tris": 500,
+   "cap": 512,
+   "name": "Coin changer lead (our own model, hand-painted)",
+   "grain": 0.0,
+   "smooth": 1.0
+  },
+  {
+   "id": "laundry_shirt",
+   "src": "art/lowpix/world/made/laundry_shirt.glb",
+   "h": 0.783,
+   "ppm": 300,
+   "tris": 300,
+   "cap": 256,
+   "name": "Shirt on a hanger (our own model, hand-painted)"
+  },
+  {
+   "id": "laundry_tee",
+   "src": "art/lowpix/world/made/laundry_tee.glb",
+   "h": 0.683,
+   "ppm": 300,
+   "tris": 300,
+   "cap": 256,
+   "name": "T-shirt on a hanger (our own model, hand-painted)"
+  },
+  {
+   "id": "clay_pot",
+   "src": "art/lowpix/world/made/clay_pot.glb",
+   "h": 0.22,
+   "ppm": 500,
+   "tris": 300,
+   "cap": 256,
+   "name": "Terracotta flower pot (our own model, hand-painted)"
   }
  ]
 }

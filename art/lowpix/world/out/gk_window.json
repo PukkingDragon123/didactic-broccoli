@@ -1,0 +1,66 @@
+{
+ "id": "gk_window",
+ "src": "art/lowpix/world/made/garage_kit/gk_window.glb",
+ "credit": {
+  "title": "Steel sash window with wooden sill (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_window.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 628,
+ "tex": 1024,
+ "size": [
+  1.72,
+  0.94,
+  0.21
+ ],
+ "colours": 32,
+ "palette": {
+  "m0": [
+   "#46614f",
+   "#5f7c66",
+   "#7a937f",
+   "#99a79b",
+   "#b7bdb7",
+   "#c3c4c3",
+   "#cdcdcd",
+   "#d6d6d6",
+   "#e0e0e0"
+  ],
+  "m1": [
+   "#602e22",
+   "#7b442f",
+   "#945d3d",
+   "#ad784c",
+   "#b89369",
+   "#bfa780",
+   "#c7b897",
+   "#cfc8ad",
+   "#d9d6c1"
+  ],
+  "m2": [
+   "#1b1c26",
+   "#252730",
+   "#2f323a",
+   "#3a3d43",
+   "#45484c",
+   "#606263",
+   "#7b7b7b",
+   "#949494",
+   "#adadad"
+  ],
+  "m3": [
+   "#400f0f",
+   "#521b15",
+   "#64291c",
+   "#743824",
+   "#844a2c",
+   "#a3673b",
+   "#bb8751",
+   "#c5a475",
+   "#d0be97"
+  ]
+ },
+ "warnings": []
+}

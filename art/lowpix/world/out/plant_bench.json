@@ -1,0 +1,33 @@
+{
+ "id": "plant_bench",
+ "src": "art/lowpix/world/made/plant_bench.glb",
+ "credit": {
+  "title": "Plant bench (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/plant_bench.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 484,
+ "tex": 360,
+ "size": [
+  1.5,
+  0.655,
+  0.28
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#461c15",
+   "#5a2b1e",
+   "#6d3d27",
+   "#7f5031",
+   "#90643c",
+   "#aa814c",
+   "#b79b69",
+   "#c2b288",
+   "#cec7a6"
+  ]
+ },
+ "warnings": []
+}

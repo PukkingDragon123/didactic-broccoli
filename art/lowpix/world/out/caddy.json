@@ -1,0 +1,55 @@
+{
+ "id": "caddy",
+ "src": "art/lowpix/world/made/caddy.glb",
+ "credit": {
+  "title": "Condiment caddy (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/caddy.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 356,
+ "tex": 256,
+ "size": [
+  0.262,
+  0.124,
+  0.134
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#540b21",
+   "#6c1024",
+   "#831625",
+   "#991c23",
+   "#ae2824",
+   "#cc412f",
+   "#d36b51",
+   "#d99175",
+   "#e0b297"
+  ],
+  "m1": [
+   "#391410",
+   "#492016",
+   "#582e1d",
+   "#673d25",
+   "#754d2d",
+   "#946b3d",
+   "#b18c50",
+   "#bda775",
+   "#cabf97"
+  ],
+  "m2": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

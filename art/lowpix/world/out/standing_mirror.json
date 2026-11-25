@@ -1,0 +1,33 @@
+{
+ "id": "standing_mirror",
+ "src": "art/lowpix/world/made/standing_mirror.glb",
+ "credit": {
+  "title": "Standing mirror (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/standing_mirror.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 264,
+ "tex": 448,
+ "size": [
+  0.44,
+  1.35,
+  0.16
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#2c0f0d",
+   "#391812",
+   "#452317",
+   "#502e1d",
+   "#5b3b24",
+   "#7e5a36",
+   "#9f7c49",
+   "#b59b68",
+   "#c4b68e"
+  ]
+ },
+ "warnings": []
+}

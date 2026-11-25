@@ -2,8 +2,9 @@
 // turned gacha corner, built as a handful of merged static meshes (one per material) so it stays cheap on phones.
 //   * surfaces: worn slab decals (oil, tyre tracks, cracks, scuffs, paint), a vinyl P-tile gacha corner, a trench
 //     drain, banded contact AO along every floor / wall / ceiling junction and under the furniture, grime bands;
-//   * structure: wooden joists, steel H-beams, wall columns and girts, skirting, conduit and old knob-and-tube wiring
-//     with porcelain insulators, a breaker panel, outlets with plugged-in cables, inverted-Fuji fluorescent fixtures;
+//   * structure (real models: our garage kit, art/lowpix/world/made/garage_kit.py, placed through garage.mess): timber
+//     joists, steel H-beams, wall columns, a timber cap and skirting, PVC conduit and old knob-and-tube wiring on
+//     porcelain knobs, junction boxes, a breaker panel, outlets, inverted-Fuji fluorescent fixtures, plank shelves;
 //   * dressing (kept to the fixtures: the shop starts empty, you buy and place the rest): coin changer, capsule return
 //     box, the sink with its gas water heater, an empty high shelf, a wind chime, the pink phone, a few notices;
 //   * fake light: additive pixel halos on the ceiling / walls / floor that follow the tubes (no extra real lights).
@@ -376,6 +377,15 @@ export class GarageDetail {
     F('dust', -3.3, 4.6, 0.9, 0.9, { tint: 0xc0b8aa });
     F('dust', 3.55, 2.0, 0.7, 0.7, { rot: 1.4, tint: 0xc0b8aa });
     F('dust', -0.95, -4.55, 0.8, 0.8, { tint: 0xc0b8aa });
+    // dust and scuffs round Grandpa's piles of stock (src/world/garageLayout.js)
+    F('dust', -1.6, 4.5, 1.2, 0.8, { rot: 0.2, tint: 0xc0b8aa });
+    F('dust', 2.6, -0.2, 1.0, 0.9, { rot: 1.1, tint: 0xc0b8aa });
+    F('dust', -1.6, -2.2, 0.9, 1.4, { rot: 0.1, tint: 0xc0b8aa });
+    F('dust', 1.9, -2.9, 0.9, 1.2, { rot: -0.3, tint: 0xc0b8aa });
+    F('scuffs', 1.4, 1.1, 0.8, 0.4, { rot: 0.9, tint: 0xd8d2c8 });
+    F('scuffs', -1.1, -1.0, 0.7, 0.35, { rot: -0.6, tint: 0xd8d2c8 });
+    F('prints', 1.0, 3.2, 0.4, 0.8, { rot: -0.5, tint: 0xb0aa9e });
+    F('paintWhite', -2.9, 4.05, 0.35, 0.35, { rot: 2.0, tint: 0xe8e4dc });
     // dust drifted along the wall feet (tiles across, wall side first)
     // (a x b must point up: walk each wall so the room is on the left of the walking direction)
     const edge = (x0, z0, dx, dz, len, nx, nz, y = 0.0018) => {
@@ -391,14 +401,13 @@ export class GarageDetail {
     edge(G.minX, G.maxZ, 1, 0, 1, 0, -1); edge(3.0, G.maxZ, 1, 0, 1, 0, -1);
     // vinyl P-tile floor laid over the slab for the gacha corner, with an aluminium edge strip
     const T = { x0: G.minX + 0.02, x1: -2.2, z0: -3.78, z1: 2.42 };
-    const tile = B.box(m.tile, T.x1 - T.x0, 0.006, T.z1 - T.z0, (T.x0 + T.x1) / 2, 0, (T.z0 + T.z1) / 2, { tint: 0xf4f0e8 });
-    void tile;
-    B.box(m.chrome, 0.03, 0.008, T.z1 - T.z0 + 0.03, T.x1 + 0.015, 0, (T.z0 + T.z1) / 2, { tint: 0xc8ccd0, ao: false });
-    for (const z of [T.z0 - 0.015, T.z1 + 0.015]) B.box(m.chrome, T.x1 - T.x0, 0.008, 0.03, (T.x0 + T.x1) / 2, 0, z, { tint: 0xc8ccd0, ao: false });
+    B.quad(m.tile, V3(T.x0, 0.006, T.z1), V3(T.x1 - T.x0, 0, 0), V3(0, 0, T.z0 - T.z1), { tint: 0xf4f0e8 });
     // trench drain with a steel grating along the shutter threshold
     const dz = G.maxZ - 0.32;
     this.decal('grate', '+y', 0, 0.002, dz, 5.8, 0.16, { tint: 0xffffff });
-    for (const s of [-1, 1]) B.box(m.steel, 5.84, 0.006, 0.025, 0, 0, dz + s * 0.092, { tint: 0x7a7670 });
+    // the delivery spot: a square of yellow floor tape near the shutter
+    const DS = this.garage.deliverySpot;
+    for (const [x, z, rot] of [[0, -0.45, 0], [0, 0.45, 0], [-0.45, 0, Math.PI / 2], [0.45, 0, Math.PI / 2]]) F('yline', DS.x + x, DS.z + z, 0.95, 0.05, { rot, tint: 0xffffff, lift: 0.0004 });
     // a worn yellow "keep clear" box painted in front of the back door
     const Y = (x, z, w, rot) => F('yline', x, z, w, 0.05, { rot, tint: 0xffffff, lift: 0.0003 });
     Y(0, G.minZ + 1.2, 1.5, 0); Y(-0.75, G.minZ + 0.6, 1.2, Math.PI / 2); Y(0.75, G.minZ + 0.6, 1.2, Math.PI / 2);
@@ -407,160 +416,95 @@ export class GarageDetail {
 
   // ---------------------------------------------------------------------------------------------- structure
   structure() {
-    const G = this.G, B = this.B, m = this.m, H = G.height;
-    // wooden ceiling joists along z under the plywood, every 60 cm
+    const G = this.G, H = G.height, K = this.garage.mess, R = Math.PI / 2;
+    // timber joists along z under the ceiling boards every 60 cm, two lengths per run (the joints staggered), from the
+    // back wall plate to the shutter
     this.joistX = [];
+    const z0 = G.minZ + 0.08;
     for (let i = 0; i <= 12; i++) {
-      const x = -3.6 + i * 0.6;
+      const x = -3.6 + i * 0.6, cut = i % 2 ? -0.3 : 0.2;
       this.joistX.push(x);
-      B.box(m.wood, 0.05, 0.1, 10.0, x, H - 0.1, 0, { tint: 0xc8b8a4 });
+      K.put('gk_joist', x, H - 0.1, (z0 + cut) / 2, { ry: R, sx: (cut - z0) / 5, hang: true });
+      K.put('gk_joist', x, H - 0.1, (cut + G.maxZ) / 2, { ry: R, sx: (G.maxZ - cut) / 5, hang: true });
     }
-    // perimeter plate where ceiling meets the walls
-    for (const s of [-1, 1]) B.box(m.wood, 0.08, 0.1, 10.0, s * (G.maxX - 0.04), H - 0.1, 0, { tint: 0xb8a894 });
-    B.box(m.wood, 8.0, 0.1, 0.08, 0, H - 0.1, G.minZ + 0.04, { tint: 0xb8a894 });
-    // steel H-beams across (top flange, web, bottom flange) with stiffeners and bolt plates
+    // wall plates where the ceiling meets the walls
+    for (const s of [-1, 1]) for (const z of [-2.5, 2.5]) K.put('gk_joist', s * (G.maxX - 0.04), H - 0.1, z, { ry: R, sz: 1.6, hang: true });
+    for (const x of [-1.96, 1.96]) K.put('gk_joist', x, H - 0.1, G.minZ + 0.04, { sx: 0.784, sz: 1.6, hang: true });
+    // steel H-beams across, two 4 m lengths bolted together at the middle, cleats at the walls
     for (const z of [-3.4, -0.6, 2.2]) {
-      const top = H - 0.1;
-      B.box(m.steel, 8.0, 0.016, 0.15, 0, top - 0.016, z, { tint: 0x7c8288 });
-      B.box(m.steel, 8.0, 0.2, 0.012, 0, top - 0.216, z, { tint: 0x747a80 });
-      B.box(m.steel, 8.0, 0.016, 0.15, 0, top - 0.232, z, { tint: 0x7c8288 });
-      for (let x = -3.4; x <= 3.4; x += 1.7) for (const s of [-1, 1]) B.box(m.steel, 0.012, 0.2, 0.065, x, top - 0.216, z + s * 0.039, { tint: 0x6a7076 });
-      for (const s of [-1, 1]) B.box(m.steel, 0.02, 0.26, 0.2, s * (G.maxX - 0.01), top - 0.25, z, { tint: 0x6a7076 });
+      for (const x of [-2, 2]) K.put('gk_hbeam', x, H - 0.332, z, { hang: true });
       // rust bloom on the bottom flange near the walls
-      for (const s of [-1, 1]) this.decal('rust', '-y', s * 3.75, top - 0.233, z, 0.07, 0.4, { rot: Math.PI / 2, tint: 0xd0b8a8 });
+      for (const s of [-1, 1]) this.decal('rust', '-y', s * 3.75, H - 0.333, z, 0.07, 0.4, { rot: Math.PI / 2, tint: 0xd0b8a8 });
     }
-    // left wall: steel columns under the beams (none through the window) and girts
-    for (const z of [-3.4, -0.6]) {
-      const x = G.minX;
-      B.box(m.steel, 0.012, H - 0.1, 0.15, x + 0.006, 0, z, { tint: 0x6e747a });
-      B.box(m.steel, 0.12, H - 0.1, 0.012, x + 0.06, 0, z, { tint: 0x747a80 });
-      B.box(m.steel, 0.012, H - 0.1, 0.15, x + 0.126, 0, z, { tint: 0x7c8288 });
-      B.box(m.steel, 0.2, 0.012, 0.22, x + 0.1, 0, z, { tint: 0x5a6066 });
-      for (const dz of [-0.06, 0.06]) B.box(m.chrome, 0.03, 0.02, 0.02, x + 0.03, 0.012, z + dz, { tint: 0x9aa0a6 });
-    }
-    // a short knee brace above the window where the third beam lands
-    B.box(m.steel, 0.12, 0.42, 0.012, G.minX + 0.06, H - 0.52, 2.2, { tint: 0x747a80 });
-    // girts: a timber cap on the block skirting and a steel channel above the window
-    B.box(m.wood, 0.07, 0.04, 10.0, G.minX + 0.035, 1.0, 0, { tint: 0xa89a88 });
-    B.box(m.steel, 0.06, 0.1, 10.0, G.minX + 0.03, 2.66, 0, { tint: 0x7a8086 });
-    // right wall: dark skirting board and a dado batten
-    B.box(m.wood, 0.018, 0.09, 10.0, G.maxX - 0.009, 0, 0, { tint: 0x8a6a50 });
-    // back wall: a concrete step / plinth line and a cast ledge at the base
-    for (const [x0, x1] of [[G.minX, -G.doorHalf - 0.06], [G.doorHalf + 0.06, G.maxX]]) B.box(m.paint, x1 - x0, 0.08, 0.02, (x0 + x1) / 2, 0, G.minZ + 0.01, { tint: 0x8a867e });
-    // front piers: steel angle edge guards with hazard paint
-    for (const s of [-1, 1]) {
-      const x = s * 3.0;
-      B.box(m.steel, 0.05, 1.1, 0.05, x + s * 0.025, 0, G.maxZ - 0.025, { tint: 0x8a8e92 });
-      this.decal('hazard', '-z', x + s * 0.11, 0.55, G.maxZ - 0.0015, 1.1, 0.12, { rot: Math.PI / 2, tint: 0xffffff });
-    }
+    // left wall: steel columns under the two beams that land on it (none through the window)
+    for (const z of [-3.4, -0.6]) K.put('gk_column', G.minX, 0, z, { sy: (H - 0.332) / 3.1, hang: true, overlapOk: true });
+    // a timber cap on the block skirting (notched round the columns), a dark skirting board on the right wall
+    for (const [a, b] of [[-4.81, -3.48], [-3.32, -0.68], [-0.52, 2.24], [2.24, G.maxZ]]) K.put('gk_joist', G.minX + 0.035, 1.0, (a + b) / 2, { ry: R, sx: (b - a) / 5, sy: 0.4, sz: 1.4, hang: true, overlapOk: true });
+    for (const z of [-2.5, 2.5]) K.put('gk_joist', G.maxX - 0.009, 0, z, { ry: R, sy: 0.9, sz: 0.36, hang: true });
+    // front piers: hazard paint on the edges
+    for (const s of [-1, 1]) this.decal('hazard', '-z', s * 3.11, 0.55, G.maxZ - 0.0015, 1.1, 0.12, { rot: Math.PI / 2, tint: 0xffffff });
   }
 
   // ---------------------------------------------------------------------------------------------- light fixtures
-  /** Inverted-Fuji (逆富士) twin-tube fixture at (x, z): white body, sloped reflectors, sockets, hangers. tubeMat = shared emissive. */
-  fixture(x, z, tubeMat, { tubes = true, body = true, len = 1.3 } = {}) {
-    const B = this.B, m = this.m, H = this.G.height;
-    const top = H - 0.18;
-    if (body) B.box(m.white, 0.24, 0.022, len, x, top, z, { tint: 0xf2f0ea });
-    // reflectors slope in towards the narrow bottom plate that carries the sockets (wide at the ceiling: 逆富士)
-    for (const s of [-1, 1]) B.box(m.white, 0.006, 0.09, len - 0.02, x + s * 0.085, top - 0.085, z, { rz: -s * 0.7, tint: 0xf6f4ee, ao: false });
-    B.box(m.white, 0.118, 0.012, len, x, top - 0.085, z, { tint: 0xe8e6e0, ao: false });
-    for (const s of [-1, 1]) {
-      B.box(m.white, 0.22, 0.04, 0.012, x, top - 0.04, z + s * len / 2, { tint: 0xe8e6e0, ao: false });
-      B.box(m.white, 0.15, 0.045, 0.012, x, top - 0.085, z + s * len / 2, { tint: 0xe8e6e0, ao: false });
-      B.box(m.gloss, 0.11, 0.032, 0.035, x, top - 0.118, z + s * (len / 2 - 0.035), { tint: 0xd8d4c8, ao: false });
-      B.box(m.chrome, 0.008, H - 0.1 - top - 0.022, 0.008, x + s * 0.08, top + 0.022, z + s * 0.35, { tint: 0x9aa0a6, ao: false });
-    }
-    // glow starter (点灯管) and the brand sticker
-    B.box(m.gloss, 0.02, 0.02, 0.02, x + 0.07, top - 0.03, z - len / 2 + 0.15, { tint: 0xd8e0f0, ao: false });
-    if (tubes) for (const s of [-1, 1]) {
-      const g = new THREE.CylinderGeometry(0.014, 0.014, len - 0.08, 8);
-      g.rotateX(Math.PI / 2); g.translate(x + s * 0.034, top - 0.108, z);
-      B.geo(tubeMat, g, { ao: false });
-    }
-    return top;
-  }
-
   fixtures() {
-    const G = this.G, H = G.height;
-    const tubes = this.garage.lights.tubes;
-    const mat0 = tubes[0].mat;
-    // the two real fixtures (tubes[0] back, tubes[1] front = the dead one in a new game) get bodies around their tubes
-    for (const t of tubes) {
-      const p = t.light.position;
-      this.fixture(p.x, p.z, null, { tubes: false, body: false });
-    }
-    // extra fixtures on the same switch (emissive only; their light is faked with halos)
+    const G = this.G, H = G.height, K = this.garage.mess, top = H - 0.18, R = Math.PI / 2;
+    const mat0 = this.garage.lights.tubes[0].mat;
+    // the two real fixtures are Garage.buildLights'; five more on the same switch (their light faked with halos)
     this.extraFix = [[-2.4, -2.0], [-2.4, 0.8], [2.4, -2.0], [2.4, 0.8], [0, 3.6]];
-    for (const [x, z] of this.extraFix) this.fixture(x, z, mat0);
-    // enamel pendant over the PC desk with a pull cord
+    for (const [x, z] of this.extraFix) {
+      K.put('gk_fluoro', x, top, z, { ry: R, hang: true });
+      for (const dx of [-0.034, 0.034]) K.put('gk_tube', x + dx, top - 0.108, z, { ry: R, mat: mat0, hang: true, overlapOk: true });
+    }
+    // enamel pendant over the PC desk, hung from the joist above it
     const D = this.garage.pcDesk;
-    if (hasProp('shop_lamp')) this.prop('shop_lamp', D.x - 0.1, H - 0.1 - 0.68, D.z + 0.1, 0);
-    this.B.box(this.m.paint, 0.004, 0.5, 0.004, D.x - 0.04, H - 0.1 - 1.1, D.z + 0.16, { tint: 0xe8e0c8, ao: false });
-    this.B.box(this.m.gloss, 0.016, 0.03, 0.016, D.x - 0.04, H - 0.1 - 1.13, D.z + 0.16, { tint: 0xd8c8a0, ao: false });
+    if (hasProp('shop_lamp')) this.prop('shop_lamp', 3.6, H - 0.1 - 0.68, D.z + 0.1, 0);
   }
 
   // ---------------------------------------------------------------------------------------------- electrical
   electrical() {
-    const G = this.G, B = this.B, m = this.m, H = G.height;
-    const pvc = (pts, r = 0.011) => B.tube(m.gloss, pts, r, { tint: 0xb8b8b0, radial: 6 });
-    const box = (w, h, d, x, y, z, tint = 0xe8e6de) => B.box(m.gloss, w, h, d, x, y, z, { tint });
-    // breaker panel by the back door with conduits up to the ceiling
-    const bx = 1.12, by = 1.8, bz = G.minZ;
-    box(0.3, 0.42, 0.1, bx, by, bz + 0.05, 0xc8c8c0);
-    this.card('breaker', '+z', bx, by + 0.21, bz + 0.1015, 0.28, 0.4);
-    this.decal('smudge', '+z', bx + 0.08, by + 0.12, bz + 0.0012, 0.2, 0.2, { tint: 0x9a968e });
-    for (const dx of [-0.09, 0, 0.09]) pvc([V3(bx + dx, by + 0.42, bz + 0.03), V3(bx + dx, H - 0.1, bz + 0.03)], 0.012);
-    // old knob-and-tube wiring along the joists: twin black cable on white porcelain knobs, to every fixture
-    const knobs = new Map();
-    const run = (pts) => {
-      for (let i = 0; i < pts.length - 1; i++) {
-        const a = pts[i], b = pts[i + 1], n = Math.max(1, Math.floor(a.distanceTo(b) / 0.55));
-        B.tube(m.rubber, [a, b], 0.0045, { tint: 0x222020, radial: 4, seg: 1 });
-        for (let k = 0; k <= n; k++) { const p = a.clone().lerp(b, k / n); knobs.set(p.toArray().map((v) => Math.round(v * 20)).join(), p); }
-      }
+    const G = this.G, H = G.height, K = this.garage.mess, R = Math.PI / 2, wz = G.minZ;
+    // the breaker panel by the back door, two conduits up to a porcelain junction box under the ceiling
+    const bx = 1.12, by = 1.8;
+    const ps = propSize('gm_power');
+    K.put('gm_power', bx, by, wz + 0.06, { sx: 0.3 / ps.x, sy: 0.42 / ps.y, sz: 0.12 / ps.z, hang: true });
+    this.decal('smudge', '+z', bx + 0.08, by + 0.12, wz + 0.0012, 0.2, 0.2, { tint: 0x9a968e });
+    for (const dx of [-0.025, 0.025]) K.put('gk_conduit', bx + dx, (by + 0.42 + 2.955) / 2, wz, { rz: R, sx: 2.955 - by - 0.42, hang: true });
+    K.put('gk_jbox', bx, 3.0, wz, { rx: -R, hang: true, overlapOk: true });
+    // old knob-and-tube wiring: twin cloth flex on porcelain knobs, along the back wall from the junction box, then
+    // along the side of a joist to each fixture's junction box (screwed under the joist, right over the fixture)
+    const span = (x0, y0, z0, dir, len, o) => { // spans of 0.5 m (stretched to fit) from (x0, y0, z0) along dir
+      const n = Math.max(1, Math.round(len / 0.5)), k = len / n;
+      for (let i = 0; i < n; i++) K.put('gk_knob', x0 + dir[0] * k * i, y0 + dir[1] * k * i, z0 + dir[2] * k * i, { ...o, sx: k / 0.5, hang: true });
+      K.put('gk_knob', x0 + dir[0] * len, y0 + dir[1] * len, z0 + dir[2] * len, { ...o, sx: 0.03, hang: true }); // the last knob
     };
-    const yC = H - 0.1 - 0.012;
-    // main run from the breaker up the back wall, along the back plate, then down the joists to the fixtures
-    for (const [fx, fz] of [[0, -2.0], [0, 0.8], ...this.extraFix]) {
-      const jx = this.joistX.reduce((a, b) => (Math.abs(b - fx) < Math.abs(a - fx) ? b : a)) + 0.045;
-      run([V3(bx + 0.09, H - 0.06, bz + 0.08), V3(jx, H - 0.06, bz + 0.08), V3(jx, yC, bz + 0.3), V3(jx, yC, fz - 0.4)]);
-      B.tube(m.rubber, [V3(jx, yC, fz - 0.4), V3(fx + 0.05, H - 0.2, fz - 0.45)], 0.004, { tint: 0x222020, radial: 4 });
+    const wallX = { rx: -R }; // knobs on the back wall, the flex along +x
+    span(-2.4, 3.0, wz, [1, 0, 0], bx - 0.045 + 2.4, wallX);
+    span(bx + 0.045, 3.0, wz, [1, 0, 0], 2.4 - bx - 0.045, wallX);
+    const sideZ = { rz: R, rx: R }; // knobs on a face looking +x, the flex along +z
+    const fx = [[0, -2.0], [0, 0.8], ...this.extraFix];
+    for (const jx of [-2.4, 0, 2.4]) {
+      const fz = fx.filter(([x]) => x === jx).map(([, z]) => z);
+      span(jx + 0.025, H - 0.05, wz + 0.08, [0, 0, 1], Math.max(...fz) - 0.45 - (wz + 0.08), sideZ);
+      for (const z of fz) K.put('gk_jbox', jx, H - 0.1, z - 0.45, { ry: 0.4, hang: true, overlapOk: true });
     }
-    // run for the gacha sign and lanterns along the left wall top
-    run([V3(G.minX + 0.05, H - 0.15, -4.8), V3(G.minX + 0.05, H - 0.15, 4.6)]);
-    for (const p of knobs.values()) box(0.022, 0.022, 0.022, p.x, p.y - 0.011, p.z, 0xf4f2ea);
-    // round porcelain junction boxes
-    for (const [x, z] of [[0.045, -4.4], [-2.355, -4.4], [2.445, -4.4], [0.045, 2.6]]) {
-      const g = new THREE.CylinderGeometry(0.045, 0.045, 0.03, 10);
-      g.translate(x, yC - 0.015, z);
-      B.geo(m.gloss, g, { tint: 0xf0eee6 });
-    }
-    // left wall: grey conduit with an outlet behind each machine slot and a fat cable into the machine
-    const wx = G.minX + 0.02;
-    pvc([V3(wx, 0.42, -4.4), V3(wx, 0.42, 2.25)], 0.012);
-    pvc([V3(wx, 0.42, -4.4), V3(wx, H - 0.15, -4.4)], 0.012);
-    for (const sz of [-3.35, -2.3, -1.25, -0.2, 0.85, 1.9]) {
-      const oz = sz + 0.3;
-      box(0.04, 0.11, 0.075, G.minX + 0.02, 0.36, oz);
-      box(0.004, 0.05, 0.04, G.minX + 0.042, 0.39, oz, 0xd8d4c8);
-      B.box(m.rubber, 0.025, 0.03, 0.02, G.minX + 0.055, 0.385, oz, { tint: 0x1e1e1e });
-      B.tube(m.rubber, [V3(G.minX + 0.07, 0.4, oz), V3(G.minX + 0.16, 0.3, oz - 0.05), V3(G.minX + 0.2, 0.02, oz - 0.15), V3(-3.62, 0.012, sz)], 0.006, { tint: 0x1e1e1e, radial: 4 });
-    }
-    // right wall: outlet + switch pair near the PC, plus the PC's cord
-    box(0.03, 0.12, 0.08, G.maxX - 0.015, 0.32, -4.85);
-    B.tube(m.rubber, [V3(G.maxX - 0.03, 0.34, -4.85), V3(3.8, 0.02, -4.6), V3(3.72, 0.02, -4.3)], 0.006, { tint: 0x2a2a2a, radial: 4 });
-    // the desk lamp on the work table runs off an outlet by the back door: cord along the floor, gaffer-taped down
-    const T = this.garage.table;
-    box(0.03, 0.12, 0.08, 0.78, 0.3, G.minZ + 0.015);
-    const lx = T.x + T.w / 2 - 0.1, lz = T.z - T.d / 2 + 0.1;
-    const cord = [V3(0.78, 0.33, G.minZ + 0.06), V3(0.8, 0.008, G.minZ + 0.25), V3(1.0, 0.006, -3.6), V3(1.12, 0.006, -1.5), V3(lx + 0.02, 0.006, lz - 0.08), V3(lx, 0.05, lz), V3(lx, T.h - 0.07, lz)];
-    B.tube(m.rubber, cord, 0.0055, { tint: 0x2a2a2a, radial: 4, seg: 40 });
-    for (const [x, z, r] of [[0.98, -3.9, 0.1], [1.05, -2.7, 0.05], [1.12, -1.6, -0.02]]) this.decal('yline', '+y', x, 0.0105, z, 0.06, 0.16, { rot: r + Math.PI / 2, tint: 0x9a9a9a });
-    // the light switch gets a label and a grubby halo
+    // the run along the left wall plate for the gacha sign and the lanterns
+    span(G.minX + 0.08, H - 0.05, -4.8, [0, 0, 1], 9.4, sideZ);
+    // left wall: an outlet in the back corner by the coin changer, its conduit up to the wall plate
+    K.put('gk_outlet', G.minX, 0.36, -4.85, { ry: R, hang: true });
+    for (let i = 0; i < 3; i++) K.put('gk_conduit', G.minX, 0.47 + (i + 0.5) * (H - 0.1 - 0.47) / 3, -4.85, { rz: R, ry: R, sx: (H - 0.1 - 0.47) / 3, hang: true });
+    K.put('gk_cordchanger', 0, 0, 0, { overlapOk: true }); // (the coin changer's lead, plugged in there)
+    // right wall: an outlet behind the PC desk
+    K.put('gk_outlet', G.maxX, 0.3, -4.85, { ry: -R, hang: true });
+    // the desk lamp on the work table runs off the outlet by the back door: a long flex on the floor (gaffer-taped
+    // down) to a power strip behind the table, and the lamp's lead up the back of the desk (one model, placed as built)
+    K.put('gk_cordlamp', 0, 0, 0, { overlapOk: true });
+    for (const [x, z, r] of [[1.12, -3.75, 0.25], [1.21, -2.6, 0.02], [1.18, -1.6, -0.05]]) this.decal('yline', '+y', x, 0.0105, z, 0.06, 0.16, { rot: r + Math.PI / 2, tint: 0x9a9a9a });
+    // the light switch gets a label and a grubby halo, and its conduit up to the wall plate
     const sw = this.garage.lightSwitch.position;
-    this.card('switchTag', '+z', sw.x, sw.y + 0.12, G.minZ + 0.012, 0.11, 0.055);
+    this.card('switchTag', '+z', sw.x, sw.y - 0.15, G.minZ + 0.012, 0.11, 0.055);
     this.decal('smudge', '+z', sw.x, sw.y, G.minZ + 0.0013, 0.26, 0.26, { tint: 0x8e8a82 });
-    pvc([V3(sw.x, sw.y + 0.07, G.minZ + 0.02), V3(sw.x, H - 0.1, G.minZ + 0.02)], 0.01);
+    const y0 = sw.y + 0.06, L = 2.97 - y0; // (up to the wiring on the wall: the feed joins it there)
+    for (let i = 0; i < 2; i++) K.put('gk_conduit', sw.x, y0 + (i + 0.5) * L / 2, G.minZ, { rz: R, sx: L / 2, hang: true });
   }
 
   // ---------------------------------------------------------------------------------------------- walls
@@ -599,29 +543,14 @@ export class GarageDetail {
     this.card('rules', '+x', lx, 1.72, 4.35, 0.25, 0.28, { rot: -0.03 });
     // window sill plants and a wind chime under the head
     const win = this.garage.window;
-    this.prop('furin', G.minX + 0.2, win.y1 - 0.03 - 0.264, (win.z0 + win.z1) / 2 + 0.2, Math.PI / 2);
-    B.box(m.paint, 0.004, 0.03, 0.004, G.minX + 0.2, win.y1 - 0.035, (win.z0 + win.z1) / 2 + 0.2, { tint: 0xe8e0d0, ao: false });
-    // curtain rod and a faded café curtain bunched at one side
-    B.box(m.chrome, 0.012, 0.012, win.z1 - win.z0 + 0.2, G.minX + 0.12, win.y1 + 0.02, (win.z0 + win.z1) / 2, { tint: 0xc8ccd0, ao: false });
-    for (let i = 0; i < 6; i++) B.box(m.paint, 0.02, win.y1 - win.y0 - 0.04, 0.035, G.minX + 0.11 + (i % 2) * 0.012, win.y0 + 0.03, win.z1 - 0.03 - i * 0.032, { tint: i % 2 ? 0xd8c8a0 : 0xe8dcb8 });
+    // (hung from the curtain rod: the window, the rod and the curtain are garage kit pieces, Garage.buildWindow)
+    this.prop('furin', G.minX + 0.12, win.y0 + 0.864 - propSize('furin').y, (win.z0 + win.z1) / 2 + 0.2, Math.PI / 2);
 
-    // ---- right wall: a long high shelf on steel brackets (empty: an attach point), the PC corner
-    const sx = G.maxX - 0.13, sy = 2.45, sz0 = -1.12, sz1 = 3.78;
-    B.box(m.ply, 0.26, 0.025, sz1 - sz0, sx, sy, (sz0 + sz1) / 2, { tint: 0xd8c8b0 });
-    B.box(m.wood, 0.02, 0.04, sz1 - sz0, sx - 0.13, sy - 0.015, (sz0 + sz1) / 2, { tint: 0xa88a6a });
-    for (const z of [-0.95, 0.9, 2.35, 3.6]) {
-      B.box(m.steel, 0.2, 0.02, 0.02, G.maxX - 0.1, sy - 0.02, z, { tint: 0x5a6066 });
-      B.box(m.steel, 0.02, 0.18, 0.02, G.maxX - 0.01, sy - 0.18, z, { tint: 0x5a6066 });
-      B.box(m.steel, 0.012, 0.22, 0.012, G.maxX - 0.09, sy - 0.15, z, { rz: 0.72, tint: 0x5a6066 });
-    }
-    // (the shelf starts empty: it is an attach point for small things, src/build/)
-    // PC corner: shelf with binders and a photo (no memo cards: the owner wants no notes anywhere)
+    // ---- right wall: a long high shelf (four plank shelves on steel brackets: an attach point), the PC corner shelf
+    const K = this.garage.mess, sy = 2.475, sz0 = -1.12, sz1 = 3.78, L = (sz1 - sz0) / 4;
+    for (let k = 0; k < 4; k++) K.put('gk_plank', G.maxX, sy - 0.205, sz0 + (k + 0.5) * L, { ry: -Math.PI / 2, sx: L / 1.2, hang: true });
     const D = this.garage.pcDesk;
-    B.box(m.ply, 0.22, 0.02, 1.2, G.maxX - 0.11, 1.78, D.z + 0.05, { tint: 0xd8c8b0 });
-    for (const z of [D.z - 0.45, D.z + 0.55]) B.box(m.steel, 0.18, 0.02, 0.02, G.maxX - 0.09, 1.76, z, { tint: 0x5a6066 });
-    const binders = [0x2a5aa8, 0x2a5aa8, 0xc8302a, 0x3a8a4a, 0xe8c43a, 0x2a2a2c, 0x2a5aa8];
-    binders.forEach((c, i) => B.box(m.gloss, 0.2, 0.26 - (i % 3) * 0.02, 0.045, G.maxX - 0.12, 1.8, D.z - 0.5 + i * 0.05, { tint: c }));
-    for (let i = 0; i < 7; i++) B.box(m.paint, 0.002, 0.08, 0.025, G.maxX - 0.221, 1.88, D.z - 0.5 + i * 0.05, { tint: 0xf4f0e6, ao: false });
+    K.put('gk_plank', G.maxX, 1.8 - 0.205, D.z + 0.05, { ry: -Math.PI / 2, hang: true });
     this.card('photo', '-x', G.maxX - 0.002, 1.42, D.z - 0.55, 0.12, 0.15, { rot: 0.06 });
     // the back wall: a safety-first board above the racks (the clock and calendar are yours to buy and hang)
     this.card('anzen', '+z', -2.65, 2.55, G.minZ + 0.012, 0.6, 0.45, { rot: 0.01 });
@@ -643,10 +572,8 @@ export class GarageDetail {
     this.prop('utility_sink', 2.62, 0.5, G.minZ + 0.24, 0, { block: true, phys: true }); // (wall-hung: the basin at hip height, its tap up to the heater)
     this.prop('water_heater', 2.8, 1.36 - 0.24, G.minZ + 0.2, 0);
     // the long hooked pole for pulling the shutter down, leaning by the left pier
-    const hp = V3(-3.12, 0, G.maxZ - 0.09), ht = V3(-3.16, 2.05, G.maxZ - 0.04);
-    B.tube(m.steel, [hp, ht], 0.009, { tint: 0x8a8e92, radial: 5 });
-    B.tube(m.steel, [ht, ht.clone().add(V3(0, 0.08, 0)), ht.clone().add(V3(0.05, 0.1, 0)), ht.clone().add(V3(0.07, 0.05, 0))], 0.007, { tint: 0x8a8e92, radial: 5 });
-    B.box(m.rubber, 0.03, 0.06, 0.03, hp.x, 0, hp.z, { tint: 0x2a2a2a });
+    const K = this.garage.mess;
+    K.put('gk_hookpole', -3.12, 0, G.maxZ - 0.095, { rx: 0.04, ry: 0.3 });
     // cobwebs in the high back corners
     if (hasProp('cobweb')) {
       this.prop('cobweb', G.minX + 0.194, G.height - 0.1 - 0.392, G.minZ + 0.012, 0);
@@ -664,15 +591,7 @@ export class GarageDetail {
     };
     // stock shelves over the machine row on the left wall: plank boards on steel brackets either side of the steel column
     // at z -3.4 (what stands on them: src/plugins/garageDressing.js), and the opening hours under the kamidana
-    for (const [z0, z1] of [[-4.62, -3.5], [-3.3, -1.62]]) {
-      B.box(m.ply, 0.26, 0.025, z1 - z0, G.minX + 0.13, 1.95, (z0 + z1) / 2, { tint: 0xd8c8b0 });
-      B.box(m.wood, 0.02, 0.04, z1 - z0, G.minX + 0.26, 1.935, (z0 + z1) / 2, { tint: 0xa88a6a });
-      for (const z of [z0 + 0.12, z1 - 0.12]) {
-        B.box(m.steel, 0.2, 0.02, 0.02, G.minX + 0.1, 1.93, z, { tint: 0x5a6066 });
-        B.box(m.steel, 0.02, 0.18, 0.02, G.minX + 0.01, 1.77, z, { tint: 0x5a6066 });
-        B.box(m.steel, 0.012, 0.22, 0.012, G.minX + 0.09, 1.8, z, { rz: -0.72, tint: 0x5a6066 });
-      }
-    }
+    for (const [z0, z1] of [[-4.45, -3.5], [-3.3, -1.62]]) K.put('gk_plank', G.minX, 1.975 - 0.205, (z0 + z1) / 2, { ry: Math.PI / 2, sx: (z1 - z0) / 1.2, hang: true });
     this.card('hours', '+z', -1.01, 1.55, G.minZ + 0.012, 0.24, 0.15, { rot: 0.02 });
     // the old wall clock over the back door; the New Year's lucky rake beside Grandpa's kamidana (the charm shelf,
     // src/game/shop.js ensureKamidana); the umbrella stand by the way in (the rest: src/plugins/garageDressing.js)

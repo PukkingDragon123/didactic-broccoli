@@ -5,11 +5,13 @@
 //   buildEscalators(zone, gap, yo, opts) -> { gap, update(dt), steps }     yo: the lower floor's height in this zone
 //     (0 on the lower floor, -FH on the upper one)
 import * as THREE from 'three';
+import { lpModel } from '../../kit/place.js';
 import { GAPS, FH, CH, FLAT, RUN, PATH, STEP, SPEED, stepY, pathZ } from './layout.js';
 
 const _m = new THREE.Matrix4(), _s = new THREE.Vector3(1, 1, 1), _p = new THREE.Vector3(), _Y = new THREE.Vector3(0, 1, 0);
 let stepGeo = null;
 /** One step: the grooved tread (yellow edges), the riser hanging from its back edge. Local +z = the way it travels. */
+// arch-begin: the escalators (truss, steps, balustrades, comb plates, the well in the ceiling): building equipment
 function stepGeometry() {
   if (stepGeo) return stepGeo;
   const parts = [];
@@ -115,9 +117,9 @@ export function buildEscalators(zone, gap, yo, { open = () => true } = {}) {
   const barrier = new THREE.Group();
   const bz = pathZ(G, 0.25);
   const postM = Z.mat(new THREE.MeshStandardMaterial({ color: 0xd8c040, roughness: 0.6 })); // plain meshes: no vertex colours (else black)
-  for (const dx of [-0.42, 0.42]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.9, 6), postM); p.position.set(Z.o.x + G.up + dx, yo + 0.45, Z.o.z + bz); barrier.add(p); }
-  const chain = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.04, 0.02), Z.mat(new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.5 })));
-  chain.position.set(Z.o.x + G.up, yo + 0.75, Z.o.z + bz); barrier.add(chain);
+  void postM;
+  // a real road barricade across the lane (r6 barricade), narrowed to it
+  barrier.add(lpModel('barricade', Z.o.x + G.up, yo, Z.o.z + bz, { size: [0.9, 0.95, 0.5], fit: 'stretch', mat: (mm) => Z.mat(mm) }));
   Z.group.add(barrier);
   return {
     gap, G, steps, barrier,
@@ -135,3 +137,4 @@ export function ceilingWell(zone, gap, mat) {
 }
 
 export { CH };
+// arch-end

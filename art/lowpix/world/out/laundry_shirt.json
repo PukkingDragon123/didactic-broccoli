@@ -1,0 +1,33 @@
+{
+ "id": "laundry_shirt",
+ "src": "art/lowpix/world/made/laundry_shirt.glb",
+ "credit": {
+  "title": "Shirt on a hanger (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/laundry_shirt.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 148,
+ "tex": 256,
+ "size": [
+  0.62,
+  0.783,
+  0.035
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#80614b",
+   "#a18569",
+   "#b6a792",
+   "#cdc6b9",
+   "#e6e4de",
+   "#e9e8e3",
+   "#ecebe8",
+   "#efefed",
+   "#f2f2f2"
+  ]
+ },
+ "warnings": []
+}

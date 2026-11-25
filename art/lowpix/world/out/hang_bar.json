@@ -1,0 +1,44 @@
+{
+ "id": "hang_bar",
+ "src": "art/lowpix/world/made/hang_bar.glb",
+ "credit": {
+  "title": "Ceiling hanging bar (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/hang_bar.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 360,
+ "tex": 512,
+ "size": [
+  1.5,
+  0.43,
+  0.06
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#3f5345",
+   "#556a5a",
+   "#6c7f6f",
+   "#869287",
+   "#a0a4a0",
+   "#afafaf",
+   "#bcbcbc",
+   "#c8c8c8",
+   "#d5d5d5"
+  ],
+  "m1": [
+   "#150f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#292626",
+   "#464545",
+   "#636363",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

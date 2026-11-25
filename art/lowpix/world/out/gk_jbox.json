@@ -1,0 +1,44 @@
+{
+ "id": "gk_jbox",
+ "src": "art/lowpix/world/made/garage_kit/gk_jbox.glb",
+ "credit": {
+  "title": "Porcelain junction box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_jbox.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 244,
+ "tex": 256,
+ "size": [
+  0.12,
+  0.032,
+  0.088
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#8d6742",
+   "#af8e60",
+   "#c1b08c",
+   "#d6ceb7",
+   "#eceae0",
+   "#eeede5",
+   "#f0f0ea",
+   "#f3f3ee",
+   "#f5f5f2"
+  ],
+  "m1": [
+   "#140e0d",
+   "#191412",
+   "#1f1a17",
+   "#231f1c",
+   "#282522",
+   "#464440",
+   "#63625f",
+   "#7f7f7f",
+   "#9d9d9d"
+  ]
+ },
+ "warnings": []
+}

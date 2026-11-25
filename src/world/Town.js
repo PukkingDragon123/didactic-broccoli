@@ -41,6 +41,8 @@
 //   town.runTrain(side?, dir?)  force a train over the west (-1) or east (+1) underpass (debug/screenshots).
 //   town.batch() / town.signInto(batch, key, ...)  a fresh static batcher and the shared sign atlas, for add-ons.
 import * as THREE from 'three';
+import { tagBlock, tagBuilt } from '../dev/blockTag.js';
+import { lpModel, LpInstances } from '../kit/place.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { worldBox, pixMat } from '../gfx/geo.js';
 import { townPix, posterTexture, Pix, NAME_COUNT } from '../gfx/textures.js';
@@ -193,6 +195,7 @@ class Batch {
       col[i * 3] = r * f; col[i * 3 + 1] = gg * f; col[i * 3 + 2] = b * f;
     }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    tagBlock(g, mat, g.type);
     if (!this.lists.has(mat)) this.lists.set(mat, []);
     this.lists.get(mat).push(g);
     return g;
@@ -233,6 +236,7 @@ class Batch {
       g.computeBoundingSphere();
       const m = new THREE.Mesh(g, mat);
       m.castShadow = cast; m.receiveShadow = receive;
+      tagBuilt(list, m);
       m.matrixAutoUpdate = false;
       parent.add(m);
     }
@@ -464,6 +468,7 @@ export class Town {
   build() {
     this.initMats();
     this.B = new Batch(shadeAt);
+    this.lpi = new LpInstances(); // real models along the lane, instanced (pots, umbrella stands, laundry, milk boxes...)
     this.leaves = new Leaves(3); // every bush, climber and potted plant of the lane: one mesh of sprig cards
     this.buildSky();
     this.buildGround();
@@ -486,6 +491,7 @@ export class Town {
     this.leaves.build(this.group, { cast: true, name: 'leaves:lane' });
     this.flushTrees();
     this.flushProps();
+    this.lpi.build(this.group);
     this.buildTrains();
     try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }
     this.setShopOpen(true);
@@ -529,6 +535,7 @@ export class Town {
     for (const sx of [-1, 1]) B.plane(m.strip, XT - 4.3, ZG0 - 5.2, sx * (XT + 4.3) / 2, 0, (5.2 + ZG0) / 2, { uv: [sx * 0.3, 0] });
     for (const [a, b] of [[-XT, -9.5], [-7.4, XT]]) B.plane(m.paving, b - a, ZF - ZG3, (a + b) / 2, 0, (ZG3 + ZF) / 2);
     // side ditches: concrete lids with steel gratings at driveways and the shop front
+    // arch-begin: road gutters, drain grates and road paint
     const gutter = (z0, z1, grates) => {
       let x = -XT;
       for (const [a, b] of [...grates.sort((p, q) => p[0] - q[0]), [XT, XT]]) {
@@ -543,6 +550,7 @@ export class Town {
     const line = (x0, x1, z, w = 0.15) => B.box(m.paint, x1 - x0, 0.006, w, (x0 + x1) / 2, 0, z);
     const diag = (x0, z0, x1, z1) => { const len = Math.hypot(x1 - x0, z1 - z0); B.box(m.paint, len, 0.006, 0.15, (x0 + x1) / 2, 0, (z0 + z1) / 2, { ry: -Math.atan2(z1 - z0, x1 - x0) }); };
     line(-24, -3.6, 6.45); line(3.6, 9.6, 6.45); line(11.5, 24, 6.45);
+    // arch-end
     line(-24, -9.7, 13.0); line(-7.2, 24, 13.0);
     for (const s of [-1, 1]) {
       diag(s * 24, 6.45, s * XT, 6.95); diag(s * 24, 13.0, s * XT, 11.4);
@@ -647,17 +655,17 @@ export class Town {
 
   /** 暖簾 over the doorway: three indigo panels with a white capsule mark (shown while open). */
   noren(H, parent) {
-    const mat = this.T('noren', 24, 40, { rough: 0.95 });
+    const mat = this.T('noren', 24, 40, { rough: 0.95 }).clone(); mat.side = THREE.DoubleSide; // (printed cloth: a hanging sheet)
     const g = new THREE.Group();
     for (let i = -1; i <= 1; i++) {
-      const panel = this.vmesh(new THREE.BoxGeometry(0.66, 0.72, 0.015), mat);
+      const panel = this.vmesh(new THREE.PlaneGeometry(0.66, 0.72), mat);
       panel.position.set(i * 0.69, H - 0.48, 6.06);
       panel.rotation.x = 0.03;
       g.add(panel);
     }
     const rod = this.vmesh(new THREE.BoxGeometry(2.3, 0.03, 0.03), detailize(new THREE.MeshStandardMaterial({ color: 0x8a6a42, roughness: 0.7, vertexColors: true }), 'wood')); // a bamboo pole
     rod.position.set(0, H - 0.1, 6.06);
-    g.add(rod);
+    g.add(rod); // arch: the noren rod fixed over the shop's doorway
     parent.add(g);
   }
 
@@ -708,11 +716,10 @@ export class Town {
     g.position.set(x, 0, z);
     const pole = this.P(0.4, 0.5);
     const mk = (geo, mat, px, py, pz) => { const m = this.vmesh(geo, mat); m.position.set(px, py, pz); g.add(m); return m; };
-    mk(new THREE.BoxGeometry(0.03, 2.1, 0.03), pole, 0, 1.05, 0);
-    mk(new THREE.BoxGeometry(0.42, 0.025, 0.025), pole, 0.21, 2.0, 0);
-    mk(new THREE.BoxGeometry(0.3, 0.12, 0.3), detailize(new THREE.MeshStandardMaterial({ color: 0x2a6a3a, roughness: 0.6 }), 'paint'), 0, 0.06, 0); // the water-filled base
-    const flag = mk(new THREE.BoxGeometry(0.4, 1.5, 0.01), this.T('nobori', 20, 80, { rough: 0.9 }), 0.22, 1.25, 0);
-    flag.rotation.y = 0.15;
+    void pole;
+    g.add(lpModel('nobori_pole', 0.115, 0, 0, { ry: Math.PI })); // the pole, its crossbar (+x) and the weighted base (r6 nobori_pole)
+    const flagMat = this.T('nobori', 20, 80, { rough: 0.9 }).clone(); flagMat.side = THREE.DoubleSide;
+    mk(new THREE.PlaneGeometry(0.4, 1.5), flagMat, 0.2, 2.36 - 0.76, 0); // the printed cloth, hanging from the crossbar
     g.rotation.y = -0.25;
     parent.add(g);
   }
@@ -754,6 +761,7 @@ export class Town {
    * (src/world/interiors.js) unless the house is lite; frost / shoji / amado stay flat.
    * extra(B, { W, D, base, fy, top }) is called with the house frame still pushed (local coordinates).
    */
+  // arch-begin: house shells (walls, eaves, rafters, AC brackets and pipes on the houses)
   house(o) {
     const B = this.B, m = this.m;
     if (DUMP_HOUSES) (this.houseDump ||= []).push(this.dumpHouse(o));
@@ -842,9 +850,11 @@ export class Town {
     this._lp = false;
     return { top, anchor, ridge: this._ridgeY };
   }
+  // arch-end
 
   /** A house's parameters as plain JSON (materials by their name in this.m) for the lowpix house generator
    *  (art/lowpix/world_arch/_src/houses.py reads the dump: `?dumphouses`, then town.houseDump). */
+  // arch-begin: house shells
   dumpHouse(o) {
     const names = new Map(Object.entries(this.m).map(([k, v]) => [v, k]));
     const plain = (v) => {
@@ -856,6 +866,7 @@ export class Town {
     };
     return { id: houseId(o), ...plain(o) };
   }
+  // arch-end
 
   /** The lowpix model drawing this house's shell (placing its block model the first time), or null: { block, ridge }. */
   /** A wall material that draws over a coplanar lowpix wall face (polygon offset), cached per material. */
@@ -870,6 +881,7 @@ export class Town {
     }
     return c;
   }
+  // arch-begin: house shells
   archHouse(o) {
     const h = LP_HOUSES[houseId(o)];
     if (!h || !archReady(h.block)) return null;
@@ -883,8 +895,10 @@ export class Town {
 
   /** Is this one of the kawara (clay tile) roof materials? */
   isKawara(mat) { const m = this.m; return mat === m.roofGrey || mat === m.roofBlue || mat === m.roofBrown || mat === m.roofGreen || mat === m.roofIbushi; }
+  // arch-end
 
   /** A row of round eave-tile ends (軒瓦) along local x at height y, the front lip at z. */
+  // arch-begin: eave tiles
   eaveTiles(x0, x1, y, z, tint = 0x5a5e66) {
     const B = this.B, n = Math.max(2, Math.round((x1 - x0) / 0.26)), s = (x1 - x0) / n;
     for (let i = 0; i < n; i++) {
@@ -893,9 +907,11 @@ export class Town {
       B.box(this.m.ridge, s * 0.45, 0.05, 0.02, x, y + 0.015, z + 0.065, { tint, k: k * 1.12 });
     }
   }
+  // arch-end
 
   /** Weathering and services on a house's lane face (in the house's frame): splash-back dirt, soot under the eaves,
    *  rain streaks, an address plate, wall-mounted AC units on brackets (o.ac = [[floor, u], ...]). */
+  // arch-begin: house weathering, address plates and fittings
   weather(W, D, base, fy, top, seed, two, o) {
     const B = this.B, m = this.m, drip = this.decal('stainDrip', 48, 144), sb = this.decal('stainBase', 128, 64);
     if (this._lp) { // the lowpix model paints its own weathering and has the AC units; the address plate stays
@@ -934,8 +950,10 @@ export class Town {
       B.box(m.pv, 0.025, 0.4, 0.025, u - 0.3, ay - 0.4, 0.12, { tint: 0x8a8a84 });
     }
   }
+  // arch-end
 
   /** A row of ~1 m stain decals along local x (or z) at height y on a wall plane. */
+  // arch-begin: stain decals
   stainRow(mat, x0, x1, y, h, z, ry = 0, tint = 0xc0bcb4, axis = 'x') {
     const n = Math.max(1, Math.round((x1 - x0) / 1.1)), w = (x1 - x0) / n;
     for (let i = 0; i < n; i++) {
@@ -944,8 +962,10 @@ export class Town {
       else this.B.quad(mat, w, h, z, y, c, { ry, tint, flipU });
     }
   }
+  // arch-end
 
   /** Stepped (blocky) roof: gable with ridge along x, a hip roof, a shed, or a flat roof with parapet. */
+  // arch-begin: roofs
   roof(W, D, yb, o, attic) {
     const B = this.B, m = this.m;
     const rm = o.roofM || m.roofGrey, kind = o.roof || 'gable';
@@ -1032,12 +1052,14 @@ export class Town {
       B.box(m.pv, 0.04, 0.04, zt - zc + 0.6, x + 0.6, slopeY(zc) + 0.25, (zt + zc) / 2, { rx: ang, tint: 0x2a2a2a });
     }
   }
+  // arch-end
 
   /**
    * Window: a room behind the glass (interiors.js) or a flat pane, with an aluminium casing standing proud of the wall,
    * sill flashing, and options: grille (面格子), tobukuro (戸袋, ±1 side), amado (closed rain shutters), hood, sudare,
    * flowers. Spec: [floor, u, w, h, kind, opts].
    */
+  // arch-begin: windows (frames, glass, shutters, bars, sills)
   window(W, spec, fy) {
     const B = this.B, m = this.m;
     const [fl, u, w, h, kind, opt0 = {}] = spec;
@@ -1084,9 +1106,11 @@ export class Town {
     if (hk < 0.6 && !opt.clean && !this._lite) { const dh = 0.3 + hk * 0.6; B.quad(this.decal('stainDrip', 48, 144), w * 0.8, dh, x + nx * 0.012, y - 0.08 - dh, z + nz * 0.012, { ry, tint: 0xd8d4cc, flipU: hk < 0.3 }); }
     this.windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt);
   }
+  // arch-end
 
   /** What hangs on or sits at a window (kept by the town even when a lowpix model draws the house): a summer bamboo
    *  blind, a window box of flowers. */
+  // arch-begin: window dressing on the facade (sudare rail, hoods)
   windowDressing(x, y, z, w, h, nx, nz, tx, tz, ry, wp, opt) {
     const B = this.B, m = this.m;
     // summer bamboo blind (すだれ) hung over the window
@@ -1096,7 +1120,7 @@ export class Town {
     }
     // a window box of flowers on the sill
     if (opt.flowers) {
-      B.box(m.pv, w * 0.9, 0.15, 0.2, x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, tint: 0x5a4030 });
+      this.lpi.add('window_box', x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, s: [w, 1, 1] }); // a real planter trough (r6 window_box)
       // geraniums and pansies spilling over the box (sprig cards, src/world/foliage.js)
       const m4 = new THREE.Matrix4().makeRotationY(ry).setPosition(x + nx * 0.16, y - 0.06, z + nz * 0.16).premultiply(B.top);
       const kinds = ['pelargonium', 'pansy', 'azalea'], k0 = kinds[Math.floor(hash2(wp.x, wp.z) * 3)];
@@ -1104,9 +1128,11 @@ export class Town {
       this.leaves.hang(m4, -w * 0.4, w * 0.4, 0.05, 0.1, { kind: 'pothos', size: 0.2, drop: 0.25, density: 0.5, seed: wp.z });
     }
   }
+  // arch-end
 
   /** Front door: sliding genkan doors (glass lattice), old wooden ones, a Western door or a steel apartment door, with
    *  casing, a tiled or stone step, canopy, lamp, 表札 name plate, intercom, mailbox, milk box and an umbrella stand. */
+  // arch-begin: doors, porches, steps and door fittings (bells, plates, lamps)
   door(d, base, win = [], fy = [base, base + 2.65]) {
     const B = this.B, m = this.m;
     const kind = d.kind || 'genkan', w = d.w ?? (kind === 'apt' || kind === 'west' ? 0.9 : 1.5), x = d.x, y = base + (d.y ?? 0);
@@ -1136,9 +1162,8 @@ export class Town {
     const mx = x - (w / 2 + 0.28) * (d.lamp ?? 1);
     const clear = !win.some(([fl, u, ww, , , op = {}]) => fl === 0 && (op.face || 'f') === 'f' && Math.abs(u - mx) < ww / 2 + 0.14 && fy[0] + (op.sill ?? 0.9) < y + 1.3);
     if (d.milk !== false && clear && hash2(nk, Math.round(dp.x)) < 0.6) {
-      B.box(m.woodL, 0.2, 0.24, 0.15, mx, y + 1.0, 0.075, { k: 0.85 });
-      B.box(m.wood, 0.22, 0.03, 0.17, mx, y + 1.24, 0.08);
-      this.sign('signMilk', 0.15, 0.09, mx, y + 1.1, 0.152);
+      this.lpi.add('milk_box', mx, y + 1.0, 0.095, { frame: B.top }); // (a real model: r6 milk_box, its bracket on the wall)
+      this.sign('signMilk', 0.15, 0.09, mx, y + 1.08, 0.188);
     }
     if (d.umbrella !== false && kind !== 'apt') this.umbrellaStand(x - (w / 2 + 0.2) * (d.lamp ?? 1), 0.0, 0.3, nk);
     // potted plants by the step on the lamp side (鉢植え: geraniums, a rubber plant, aloe in old pots)
@@ -1147,21 +1172,17 @@ export class Town {
       for (let i = 0; i < n; i++) this.potPlant(x + side * (w / 2 + 0.34 + i * 0.3), 0, 0.3 + (i % 2) * 0.14, 0.95 + hash2(nk, i + Math.round(dp.x)) * 0.55, { seed: nk * 13 + i + Math.round(dp.x * 10) });
     }
   }
+  // arch-end
 
   /** 傘立て: a little stand by the door with two or three umbrellas (local frame of the current batch). */
   umbrellaStand(x, y, z, seed = 0) {
-    const B = this.B, m = this.m, cols = [0x2a3a6a, 0xe86a7a, 0xf4f0e6, 0x3a6a3a, 0x1a1a1a, 0xffd23f];
-    B.box(m.metal, 0.2, 0.34, 0.2, x, y, z, { tint: 0x8a8e90 });
-    B.box(m.metal, 0.22, 0.03, 0.22, x, y + 0.34, z, { tint: 0x6a6e70 });
-    for (let i = 0; i < 3; i++) {
-      const c = cols[Math.floor(hash2(seed + i, 11) * cols.length)], dx = (i - 1) * 0.05, lean = (i - 1) * 0.12;
-      B.box(m.pv, 0.07, 0.62, 0.07, x + dx, y + 0.2, z + (hash2(i, seed) - 0.5) * 0.06, { rz: lean, tint: c });
-      B.box(m.pv, 0.02, 0.14, 0.02, x + dx + lean * 0.4, y + 0.8, z, { rz: lean, tint: 0x3a2a1a });
-    }
+    // a real umbrella stand with its umbrellas (lowpix umbrella_stand), turned a little per house
+    this.lpi.add('umbrella_stand', x, y, z, { frame: this.B.top, ry: (hash2(seed, 11) - 0.5) * 1.2, s: 0.72 });
   }
 
   /** 2F balcony: slab, aluminium railing (or a panel), laundry pole with washing, maybe a futon airing over the rail
    *  (with clips), a pinch hanger of socks, a BS dish (b.dish) and potted plants (b.pots). */
+  // arch-begin: balcony slabs, railings and drying poles
   balcony(b, fy1, seed) {
     const B = this.B, m = this.m;
     const w = b.x1 - b.x0, cx = (b.x0 + b.x1) / 2, d = b.d ?? 0.95;
@@ -1190,37 +1211,30 @@ export class Town {
         const cw = (0.24 + hash2(seed + i, 3) * 0.3) * small, ch = (0.35 + hash2(seed + i, 4) * 0.45) * small;
         if (hash2(seed + i, 5) < 0.8) {
           const c = cols[Math.floor(hash2(seed + i, 6) * cols.length)], r = (hash2(i, seed) - 0.5) * 0.3;
-          B.box(m.pv, cw, ch, 0.03, x + cw / 2, py - ch, d * 0.55, { tint: c, ry: r });
-          // a coat hanger hook on the pole
-          B.box(m.metal, 0.012, 0.08, 0.012, x + cw / 2, py - 0.06, d * 0.55, { tint: 0x8a8a88 });
-          // shirts get sleeves
-          if (ch > 0.55 && !b.small) for (const s of [-1, 1]) B.box(m.pv, 0.1, 0.18, 0.03, x + cw / 2 + s * (cw / 2 + 0.04), py - 0.24, d * 0.55, { tint: c, rz: s * 0.5, ry: r });
+          // a shirt or a tee on its hanger, hooked on the pole (real models, instanced; baby clothes are small)
+          const shirt = ch > 0.55 && !b.small, hh = shirt ? 0.783 : 0.683, k = small * (0.8 + ch * 0.3);
+          this.lpi.add(shirt ? 'laundry_shirt' : 'laundry_tee', x + cw / 2, py - hh * k, d * 0.55, { frame: B.top, ry: r, s: k, color: c });
         }
         x += cw + 0.1;
       }
       // a pinch hanger (ピンチハンガー) of socks and small things at one end
       const hx = b.x0 + 0.35, hz = d * 0.55;
-      B.box(m.metal, 0.4, 0.02, 0.26, hx, py - 0.28, hz, { tint: 0x7ab0d8 });
-      for (let i = 0; i < 6; i++) B.box(m.pv, 0.05, 0.12 + (i % 3) * 0.03, 0.012, hx - 0.15 + (i % 3) * 0.15, py - 0.42 - (i % 3) * 0.03, hz + (i < 3 ? -0.12 : 0.12), { tint: [0xfbf8f0, 0x2a3a6a, 0xe86a7a, 0x5aa86a][(i + seed) % 4] });
+      this.lpi.add('pinch_hanger', hx, py - 0.53, hz, { frame: B.top }); // (r6 pinch_hanger: the hook on the pole, pegs and socks)
     }
-    if (b.futon) {
-      const fw = Math.min(1.5, w - 0.3), fx = cx + (b.futonX ?? 0);
-      B.box(m.pv, fw, 0.06, 0.18, fx, fy1 + 1.0, d - 0.03, { tint: b.futon });
-      B.box(m.pv, fw, 0.6, 0.07, fx, fy1 + 0.45, d + 0.04, { tint: b.futon, k: 0.95 });
-      B.box(m.pv, fw, 0.45, 0.06, fx, fy1 + 0.6, d - 0.1, { tint: b.futon, k: 0.85 });
-      for (const s of [-1, 1]) B.box(m.pv, 0.06, 0.14, 0.22, fx + s * fw * 0.35, fy1 + 0.98, d - 0.03, { tint: 0x2a8ae8 });
-    }
-    if (b.dish) { B.box(m.metal, 0.03, 0.4, 0.03, b.x1 - 0.15, fy1 + 1.0, d - 0.03, { tint: 0x8a8a88 }); B.box(m.pv, 0.42, 0.42, 0.05, b.x1 - 0.15, fy1 + 1.3, d + 0.05, { rx: -0.3, tint: 0xe8e8e0 }); B.box(m.metal, 0.03, 0.03, 0.3, b.x1 - 0.15, fy1 + 1.5, d + 0.2, { tint: 0x5a5a58 }); }
+    // (a futon airing over the rail used to be blocks: gone; a BS dish on its bracket at the end of the rail)
+    if (b.dish) this.lpi.add('sat_dish', b.x1 - 0.15, fy1 + 0.85, d + 0.275, { frame: B.top });
     if (b.pots) for (let i = 0; i < b.pots; i++) this.potPlant(b.x1 - 0.25 - i * 0.32, fy1, d - 0.2, 0.9 + hash2(i, seed) * 0.3, { seed: seed * 7 + i });
   }
+  // arch-end
 
   /** A potted plant (in the current batch frame): a lathe pot (terracotta, glazed or plastic) and a bush of sprig cards.
    *  o: { kind, flower (a sprig kind with flowers), pot (tint), h (bush height factor), seed }. */
   potPlant(x, y, z, s = 1, o = {}) {
     const B = this.B, m = this.m, seed = o.seed ?? Math.round(x * 31 + z * 17);
     const r = 0.11 * s, h = 0.19 * s, pots = [0xb4603a, 0xa8582e, 0x3a5a8a, 0x6a4a5a, 0xd8d4c8];
-    const g = potGeometry(r, h, 10); g.translate(x, y, z);
-    B.geo(m.pv, g, { tint: o.pot ?? pots[Math.floor(hash2(seed, 3) * 2.6)] });
+    void pots; void m;
+    // the pot: a real terracotta pot (r6 clay_pot, 0.26 x 0.22 m) sized to the plant, instanced lane-wide
+    this.lpi.add('clay_pot', x, y, z, { frame: B.top, ry: hash2(seed, 3) * 6.28, s: [2 * r / 0.26, h / 0.22, 2 * r / 0.253] });
     const kinds = ['small', 'kaname', 'aloe', 'fern', 'pothos', 'pelargonium', 'hydrangea'];
     const kind = o.kind || kinds[Math.floor(hash2(seed, 5) * kinds.length)];
     const bh = (0.16 + hash2(seed, 7) * 0.08) * s * (o.h ?? 1);
@@ -1248,11 +1262,9 @@ export class Town {
   styroPlanter(x, y, z, ry = 0, s = 1, kind = 'tomato') {
     const B = this.B, m = this.m;
     B.push(x, y, z, ry);
-    B.box(m.pv, 0.6 * s, 0.3 * s, 0.4 * s, 0, 0, 0, { tint: 0xeeeee8 });
-    B.box(m.pv, 0.62 * s, 0.03 * s, 0.42 * s, 0, 0.3 * s, 0, { tint: 0xe2e2da });
-    B.box(m.pv, 0.56 * s, 0.02, 0.36 * s, 0, 0.29 * s, 0, { tint: 0x4a3426 });
+    void m;
+    this.lpi.add('styro_box', 0, 0, 0, { frame: B.top, s }); // the fish box, its soil and the canes (r6 styro_box)
     this.leaves.bush(B.top, null, null, { clumps: [[-0.14 * s, 0.52 * s, 0, 0.17 * s, 0.24 * s, 0.15 * s], [0.14 * s, 0.48 * s, 0, 0.16 * s, 0.2 * s, 0.15 * s]], kind, mix: ['sprout', 0.25], size: 0.26 * s, density: 1.8, seed: x + z });
-    for (const dx of [-0.14, 0.14]) B.box(m.wood, 0.015, 0.6 * s, 0.015, dx * s, 0.3 * s, 0, { tint: 0x9a8a60 });
     B.pop();
   }
 
@@ -1269,8 +1281,8 @@ export class Town {
   hedge(x, y, z, ry = 0, s = 1, o = {}) {
     const B = this.B, m = this.m, L = 2.0 * s, D = 0.6 * s, H = 1.0 * s;
     B.push(x, y, z, ry);
-    B.box(m.found, L + 0.04, 0.075 * s, D + 0.04, 0, 0, 0, { tint: 0xb4b0a6 });
-    B.box(m.pv, L - 0.04, 0.02, D - 0.04, 0, 0.075 * s, 0, { tint: 0x4a3828 });
+    B.box(m.found, L + 0.04, 0.075 * s, D + 0.04, 0, 0, 0, { tint: 0xb4b0a6 }); // arch: the hedge bed's kerb (landscaping)
+    B.box(m.pv, L - 0.04, 0.02, D - 0.04, 0, 0.075 * s, 0, { tint: 0x4a3828 }); // arch: the hedge bed's soil
     // no solid core: two layers of overlapping leaf masses, so the inside reads as shaded leaves, never a green slab
     const n = Math.max(2, Math.round(L / (0.45 * s))), clumps = [];
     for (let i = 0; i < n; i++) {
@@ -1284,6 +1296,7 @@ export class Town {
 
   /** Block wall along a building line with gaps; z is the wall's lane-side face. Options: mat (e.g. Ōya stone), deco
    *  (a top course of perforated decorative blocks, 透かしブロック), tint. */
+  // arch-begin: block walls
   blockWall(x0, x1, z, side, { h = 1.3, gaps = [], pillars = true, clean = [], mat = null, deco = false, tint = 0xffffff } = {}) {
     const B = this.B, m = this.m, t = 0.15, zc = z - side * t / 2, wm = mat || m.block;
     const drip = this.decal('stainDrip', 48, 144), sb = this.decal('stainBase', 128, 64), ry = side > 0 ? 0 : Math.PI, zf = z + side * 0.011;
@@ -1318,8 +1331,10 @@ export class Town {
       x = b;
     }
   }
+  // arch-end
 
   /** Charred-cedar board fence (焼杉板塀) on a low block base, with posts and a cap rail; z is the lane-side face. */
+  // arch-begin: board fences
   woodFence(x0, x1, z, side, { h = 1.6, gaps = [] } = {}) {
     const B = this.B, m = this.m, zc = z - side * 0.06;
     let x = x0;
@@ -1344,8 +1359,10 @@ export class Town {
       B.box(m.roofGrey, b - a + 0.6, 0.06, 0.5, (a + b) / 2, 2.12, zc, {});
     }
   }
+  // arch-end
 
   /** Sliding aluminium gate in a wall gap. */
+  // arch-begin: gates
   gate(a, b, z, side, open = 0.35) {
     const B = this.B, m = this.m, w = b - a - 0.06, zc = z - side * 0.25;
     const x = a + 0.03 + w / 2 - w * open;
@@ -1359,16 +1376,20 @@ export class Town {
 
   /** Both sides of the lane: the neighbours' houses, their gates and the town.doors list (src/world/Neighbours.js). */
   buildNeighbours() { buildNeighbours(this); }
+  // arch-end
 
   /** Cheap second-row house (body + stepped roof + a couple of windows). */
+  // arch-begin: back houses (skyline)
   backHouse(x, z, w, d, h, side) {
     const m = this.m, roofs = [m.roofGrey, m.roofBlue, m.roofBrown, m.roofGreen], walls = [m.wallCream, m.mortar, m.wallGrey, m.wallBeige];
     const k = Math.floor(hash2(x, z) * 4);
     this.house({ x, z, w, d, side, lite: true, floors: h > 6.5 ? 2 : 1, h1: h > 6.5 ? 2.7 : 3.2, h2: h - 3.4, wallA: walls[k], roofM: roofs[(k + 1) % 4], step: 0.45, rise: 0.2,
       win: [[0, -w / 4, 1.3, 1.0, hash2(x, 1) < 0.5 ? 'lit' : 'dark'], [h > 6.5 ? 1 : 0, w / 4, 1.2, 1.0, hash2(x, 2) < 0.6 ? 'lit3' : 'dark']] });
   }
+  // arch-end
 
   /** Four/five-storey マンション with a window grid and lit windows (background). */
+  // arch-begin: mid-rise blocks (skyline)
   midrise(x, z, w, h) {
     const B = this.B, m = this.m;
     B.box(m.conc, w, h, 8, x, 0, z + 4, { k: 0.85, uv: [x, 0] });
@@ -1387,6 +1408,7 @@ export class Town {
 
   // ---------------------------------------------------------------- the corner store
   buildCornerShop() { buildCornerShop(this); } // src/world/CornerShop.js
+  // arch-end
 
   /** Standalone mesh whose geometry gets a white colour attribute (so vertex-colour materials work). */
   vmesh(geo, mat) {
@@ -1422,6 +1444,7 @@ export class Town {
   }
 
   // ---------------------------------------------------------------- the two railway underpasses
+  // arch-begin: the railway viaduct, track, sleepers, catenary and the underpasses
   buildUnderpasses() {
     const B = this.B, m = this.m;
     for (const s of [-1, 1]) {
@@ -1534,8 +1557,10 @@ export class Town {
       this.tunnelMouth(s);
     }
   }
+  // arch-end
 
   /** Lane-side dressing of an underpass mouth (built unmirrored): grime under the girder, notices, conduit, a puddle. */
+  // arch-begin: the underpass mouths (piers, the conduit and junction box on them)
   tunnelMouth(s) {
     const B = this.B, m = this.m, ry = s > 0 ? -Math.PI / 2 : Math.PI / 2;
     const fx = s * (XT - 0.39), drip = this.decal('stainDrip', 48, 144), base = this.decal('stainBase', 128, 64);
@@ -1561,6 +1586,7 @@ export class Town {
 
   /** Alpha-cut town decal material (pixel stains, cracks, lids...). */
   decal(key, w, h, rough = 0.95) { return this.T(key, w, h, { alpha: true, decal: true, rough }); }
+  // arch-end
 
   /** Rain puddle on the ground: a wet alpha-cut decal (reflects the probe; faint sky tint baked in). Satin, not a mirror:
    *  at roughness 0.1 the low sun's highlight, seen from a low eye, bloomed into a smooth pale blob (no glows). */
@@ -1607,6 +1633,7 @@ export class Town {
   }
 
   // ---------------------------------------------------------------- utility poles, wires, lamps
+  // arch-begin: utility poles and overhead cables
   buildPoles() {
     const zP = 14.32, xs = [-22.4, -16.3, -6.3, 2.6, 10.0, 17.6, 24.6];
     for (const x of xs) {
@@ -1652,6 +1679,7 @@ export class Town {
   /** A concrete utility pole (the lowpix model, art/lowpix/world_arch/_src/street.py; else the voxel prop): queued, then
    *  drawn instanced by flushPoles(). ry turns the prop's frame (crossarms along its x). */
   pole(x, z, ry = 0) { (this._poles ||= []).push({ x, y: 0, z, ry }); }
+  // arch-end
   flushPoles() {
     const list = this._poles || [];
     this._poles = [];
@@ -1776,6 +1804,7 @@ export class Town {
   }
 
   /** Square-section bar between two world points (guy wires, braces). */
+  // arch-begin: guy wires and their guards, house antenna stays (infrastructure)
   beam(mat, a, b, t, o = {}) {
     const d = new THREE.Vector3().subVectors(b, a), len = d.length();
     const g = new THREE.BoxGeometry(t, t, len);
@@ -1783,6 +1812,7 @@ export class Town {
     g.translate((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
     return this.B.geo(mat, g, o);
   }
+  // arch-end
 
   buildDetails() {
     const B = this.B, m = this.m, P = this.game.player, V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -1817,7 +1847,7 @@ export class Town {
     const zP = 14.32, poles = [-22.4, -16.3, -6.3, 2.6, 10.0, 17.6, 24.6];
     poles.forEach((x, i) => {
       if (x === -6.3) return; // the promo posters are on the wall right behind this one
-      B.box(m.pv, 0.2, 0.32, 0.015, x, 2.3, zP - 0.175, { tint: 0x2a3a6a });
+      B.box(m.pv, 0.2, 0.32, 0.015, x, 2.3, zP - 0.175, { tint: 0x2a3a6a }); // arch: the pole's number plate (part of the utility pole)
       this.addrPlate(i % 3, 0.18, 0.08, x, 2.5, zP - 0.184, { ry: Math.PI });
       this.addrPlate((i + 1) % 3, 0.18, 0.08, x, 2.34, zP - 0.184, { ry: Math.PI });
     });
@@ -1827,13 +1857,13 @@ export class Town {
       this.beam(guy, top, foot, 0.025, { tint: 0x4a4c4e });
       const k = 1.9 / 6.25, g0 = foot.clone(), g1 = foot.clone().lerp(top, k);
       this.beam(m.hazard, g0, g1, 0.1);
-      B.box(m.found, 0.3, 0.06, 0.3, ax, 0, 14.62);
+      B.box(m.found, 0.3, 0.06, 0.3, ax, 0, 14.62); // arch: the guy wire's anchor block in the ground
       P.addObstacle(ax - 0.2, ax + 0.2, 14.42, 14.82);
     }
     for (let i = 0; i < poles.length - 1; i += 2) {
       const t = 0.32, x = poles[i] + (poles[i + 1] - poles[i]) * t, y = 5.0 - Math.sin(t * Math.PI) * 0.35;
-      B.box(m.pv, 0.6, 0.15, 0.15, x, y - 0.075, zP + 0.16, { tint: 0x2a2a2c });
-      for (const dx of [-0.32, 0.32]) B.box(m.pv, 0.05, 0.1, 0.1, x + dx, y - 0.05, zP + 0.16, { tint: 0x4a4a4c });
+      B.box(m.pv, 0.6, 0.15, 0.15, x, y - 0.075, zP + 0.16, { tint: 0x2a2a2c }); // arch: a cable closure on the overhead line
+      for (const dx of [-0.32, 0.32]) B.box(m.pv, 0.05, 0.1, 0.1, x + dx, y - 0.05, zP + 0.16, { tint: 0x4a4a4c }); // arch: the closure's cable clamps
     }
 
     // ---- house-front clutter: pots, planters, fire buckets, bicycles, an extinguisher box, a reed screen
@@ -1851,11 +1881,10 @@ export class Town {
     {
       const g = new THREE.PlaneGeometry(0.95, 1.9); g.rotateX(-0.27); g.rotateY(Math.PI / 2); g.translate(25.65 + 0.27, 0.93, 1.6);
       B.geo(this.T('yoshizu', 30, 60, { alpha: true, rough: 0.9 }), g, {});
-      B.box(m.pv, 0.12, 0.12, 1.0, 25.71, 1.76, 1.6, { tint: 0xb89a5a });
     }
     this.potRow(-21.2, 0, 2.45, 0, 0.8, { n: 4 });
     // stepping stones from the gate to the door in the garden of NW4
-    for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 });
+    for (const [x, z, r] of [[-22.2, 4.8, 0.2], [-22.05, 4.2, -0.3], [-22.15, 3.6, 0.5], [-21.95, 3.05, 0.1]]) B.box(m.found, 0.46, 0.05, 0.38, x, 0, z, { ry: r, tint: 0xb8b4ac, k: 0.95 }); // arch: stepping stones set in the ground
     P.addObstacle(11.3, 11.66, 5.38, 5.56);
     // Shōwa enamel signs on the alley walls and the old tobacco shop, a beware-of-dog sticker on a gate pillar
     // (alley A1 beside Mikawa-ya is reserved for the ghost-alley feature: nothing is added inside it)
@@ -1868,17 +1897,13 @@ export class Town {
     // a pinch hanger of socks and a towel drying under the edge of NE1's carport roof
     {
       const hx = 7.05, hz = 5.0, hy = 1.92;
-      B.box(m.metal, 0.012, 0.36, 0.012, hx, hy + 0.04, hz, { tint: 0xd8dce0 });
-      for (const [dx, dz, w, d] of [[0, -0.14, 0.44, 0.02], [0, 0.14, 0.44, 0.02], [-0.21, 0, 0.02, 0.3], [0.21, 0, 0.02, 0.3]]) B.box(m.pv, w, 0.02, d, hx + dx, hy, hz + dz, { tint: 0x7ab0d8 });
-      const cols = [0xfbf8f0, 0x2a3a6a, 0xe86a7a, 0xfbf8f0, 0x5aa86a, 0xffd23f];
-      cols.forEach((c, i) => B.box(m.pv, 0.06, 0.16 + (i % 3) * 0.03, 0.012, hx - 0.18 + (i % 4) * 0.12, hy - 0.19 - (i % 3) * 0.03, hz + (i < 4 ? -0.14 : 0.14), { tint: c }));
-      B.box(m.pv, 0.3, 0.26, 0.012, hx + 0.02, hy - 0.26, hz + 0.14, { tint: 0xf2a0b8, ry: 0.05 });
+      this.lpi.add('pinch_hanger', hx, hy + 0.12 - 0.53, hz); // pegs and socks on a real pinch hanger (r6), a towel beside it
+      this.lpi.add('laundry_tee', hx + 0.42, hy + 0.12 - 0.683 * 0.8, hz + 0.14, { ry: 0.05, s: 0.8, color: 0xf2a0b8 });
     }
     // the neighbourhood notice board by SAKURA HEIGHTS, a piano-class board on the FE3 wall
-    for (const dx of [-0.42, 0.42]) B.box(m.wood, 0.07, 1.75, 0.07, 17.45 + dx, 0, 5.52, { tint: 0x5a4030 });
-    B.box(m.wood, 0.98, 0.66, 0.05, 17.45, 0.98, 5.5, { tint: 0x5a4030 });
-    this.sign('noticeBoard', 0.92, 0.6, 17.45, 1.01, 5.527);
-    B.box(m.tinTeal, 1.12, 0.04, 0.3, 17.45, 1.72, 5.56, { rx: -0.25 });
+    // (a real notice board: r6 notice_board; the print pinned on its cork)
+    this.add(lpModel('notice_board', 17.45, 0, 5.534, { ry: 0 }));
+    this.sign('noticeBoard', 0.92, 0.6, 17.45, 1.12, 5.535);
     P.addObstacle(16.95, 17.95, 5.42, 5.62);
     this.sign('signPiano', 0.5, 0.18, -2.6, 0.85, ZF - 0.022, { ry: Math.PI });
     // a few birds perched on the thick cable between the poles
@@ -1903,6 +1928,7 @@ export class Town {
   }
 
   // ---------------------------------------------------------------- sky & skyline
+  // arch-begin: the sky dome
   buildSky() {
     // the sky dome: zenith-to-horizon bands, a glow band toward the sun, pixel clouds, pixel stars and moon at night.
     // Every colour is a uniform driven by the time of day (applySky); the defaults are the late golden hour.
@@ -1982,6 +2008,7 @@ export class Town {
     dome.frustumCulled = false;
     this.add(dome);
   }
+  // arch-end
 
   /** Distant city all around: flat dusk silhouettes with lit windows (unfogged, merged). */
   buildBackdrop() {

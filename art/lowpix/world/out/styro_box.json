@@ -1,0 +1,55 @@
+{
+ "id": "styro_box",
+ "src": "art/lowpix/world/made/styro_box.glb",
+ "credit": {
+  "title": "Styrofoam vegetable box (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/styro_box.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 220,
+ "tex": 512,
+ "size": [
+  0.62,
+  0.9,
+  0.42
+ ],
+ "colours": 21,
+ "palette": {
+  "m0": [
+   "#8e502c",
+   "#b5733d",
+   "#c79964",
+   "#d4ba90",
+   "#e2d6ba",
+   "#e5dec5",
+   "#e8e5cf",
+   "#ebead9",
+   "#efefe3"
+  ],
+  "m1": [
+   "#54261d",
+   "#6b3928",
+   "#814e34",
+   "#976541",
+   "#ab7d4f",
+   "#b59569",
+   "#beaa84",
+   "#c8bd9d",
+   "#d3ceb6"
+  ],
+  "m2": [
+   "#140f11",
+   "#1a1416",
+   "#1f1a1b",
+   "#242020",
+   "#282626",
+   "#454545",
+   "#626262",
+   "#808080",
+   "#9e9e9e"
+  ]
+ },
+ "warnings": []
+}

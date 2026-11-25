@@ -162,7 +162,7 @@ export function buildPC() {
   if (LP) screen.position.set(0, 0.22, -0.02 + 0.1705); // (the lowpix CRT's opening)
   else screen.position.set(0, 0.255, 0.164);
   screen.userData.noRim = true;
-  root.add(screen);
+  root.add(screen); // arch: the CRT's screen face (a display, drawn live)
   const glassM = new THREE.MeshPhysicalMaterial({ color: 0xffffff, transparent: true, opacity: 0.06, roughness: 0.05, clearcoat: 1, depthWrite: false, envMapIntensity: 1.5 });
   const glass = new THREE.Mesh(sg, glassM);
   glass.position.copy(screen.position).add(new THREE.Vector3(0, 0, 0.002));

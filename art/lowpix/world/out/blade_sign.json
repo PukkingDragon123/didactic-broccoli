@@ -1,0 +1,44 @@
+{
+ "id": "blade_sign",
+ "src": "art/lowpix/world/made/blade_sign.glb",
+ "credit": {
+  "title": "Projecting sign frame (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/blade_sign.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 392,
+ "tex": 344,
+ "size": [
+  0.071,
+  1.06,
+  0.574
+ ],
+ "colours": 12,
+ "palette": {
+  "m0": [
+   "#894f2d",
+   "#b0723f",
+   "#c39663",
+   "#d0b78e",
+   "#dfd3b7",
+   "#e2dbc2",
+   "#e6e2cd",
+   "#e9e9d7",
+   "#eeeee1"
+  ],
+  "m1": [
+   "#400e0e",
+   "#521914",
+   "#63271b",
+   "#733722",
+   "#83482a",
+   "#a36539",
+   "#bc854d",
+   "#c6a372",
+   "#d1bd95"
+  ]
+ },
+ "warnings": []
+}

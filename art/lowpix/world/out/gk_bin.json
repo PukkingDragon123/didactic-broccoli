@@ -1,0 +1,55 @@
+{
+ "id": "gk_bin",
+ "src": "art/lowpix/world/made/garage_kit/gk_bin.glb",
+ "credit": {
+  "title": "Storage bin with lid (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_bin.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 744,
+ "tex": 312,
+ "size": [
+  0.53,
+  0.427,
+  0.53
+ ],
+ "colours": 19,
+ "palette": {
+  "m0": [
+   "#4f6f7e",
+   "#6e929e",
+   "#96b0b5",
+   "#bccccd",
+   "#e1e7e7",
+   "#e6eae9",
+   "#eaecec",
+   "#efefef",
+   "#f3f3f3"
+  ],
+  "m1": [
+   "#0f186d",
+   "#152b8c",
+   "#1d43a9",
+   "#275ec6",
+   "#3d7fd5",
+   "#5b9bd8",
+   "#77b4db",
+   "#93c8e0",
+   "#aed9e6"
+  ],
+  "m2": [
+   "#0f1f8e",
+   "#1738b7",
+   "#2057de",
+   "#4c84e2",
+   "#78aae6",
+   "#8dbde7",
+   "#a1cee9",
+   "#b4dbec",
+   "#c7e7ef"
+  ]
+ },
+ "warnings": []
+}

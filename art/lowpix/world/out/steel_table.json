@@ -1,0 +1,66 @@
+{
+ "id": "steel_table",
+ "src": "art/lowpix/world/made/steel_table.glb",
+ "credit": {
+  "title": "Small stainless table (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/steel_table.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 580,
+ "tex": 400,
+ "size": [
+  0.5,
+  0.92,
+  0.428
+ ],
+ "colours": 27,
+ "palette": {
+  "m0": [
+   "#43465e",
+   "#5b6078",
+   "#757c8f",
+   "#9398a2",
+   "#b0b3b7",
+   "#bdbebf",
+   "#c8c8c8",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m1": [
+   "#120d0d",
+   "#161111",
+   "#1b1716",
+   "#1f1c1b",
+   "#232120",
+   "#41403f",
+   "#5e5e5e",
+   "#7d7d7d",
+   "#9b9b9b"
+  ],
+  "m2": [
+   "#440f0f",
+   "#571b16",
+   "#6a2a1d",
+   "#7b3a24",
+   "#8c4d2d",
+   "#aa6a3b",
+   "#bf8a54",
+   "#c8a777",
+   "#d3c099"
+  ],
+  "m3": [
+   "#422c2e",
+   "#553c3c",
+   "#664f4d",
+   "#76625e",
+   "#857671",
+   "#938b87",
+   "#a19f9d",
+   "#b1b1b1",
+   "#c4c4c4"
+  ]
+ },
+ "warnings": []
+}

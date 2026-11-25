@@ -13,6 +13,7 @@ import { DisplaySlots } from '../game/Display.js';
 import { buildDisplay } from './displays.js';
 import { assetSlot } from '../kit/assets.js';
 import { lpAsset } from '../kit/lowpixWorld.js';
+import { archAsset } from '../kit/lowpixArch.js';
 import { treeInstances } from '../world/foliage.js';
 import { DISPLAYS, decorPrice, THEME_NAMES } from './catalog.js';
 import { DISPLAY_STYLES, STYLE_ORDER, sheetMesh } from './styles.js';
@@ -237,7 +238,7 @@ export class Museum {
       beamZ.push(z);
       const b = boxMesh(W, 0.22, 0.16, beamM, { cast: false });
       b.position.set(0, WALL_H - 0.11, z);
-      this.shell.add(b);
+      this.shell.add(b); // arch: the exposed ceiling beams
     }
     // enamel-shade pendant lamps
     this.lights = [];
@@ -252,7 +253,7 @@ export class Museum {
       const cordY = lampY + (hasProp('shop_lamp') ? 0.68 : 0.2);
       const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, WALL_H - 0.22 - cordY, 4), colMat(0x1a1a1a));
       cord.position.set(x, (WALL_H - 0.22 + cordY) / 2, z);
-      this.shell.add(cord);
+      this.shell.add(cord); // arch: the lamp's flex cord from the beam
       if (this.lights.length < 6 && (k++ % Math.max(1, Math.ceil((beamZ.length * nl) / 6)) === 0)) {
         const l = new THREE.PointLight(0xffe2c4, 5.2, 8.5, 1.4);
         l.position.set(x, lampY - 0.15, z);
@@ -294,7 +295,7 @@ export class Museum {
     const g = new THREE.Group();
     this.shell.add(g);
     const wood = pixMat('woodDark', { roughness: 0.55 });
-    const fb = (w, h, d, x, y, z, parent = g) => { const m = boxMesh(w, h, d, wood); m.position.set(x, y + h / 2, z); parent.add(m); return m; };
+    const fb = (w, h, d, x, y, z, parent = g) => { const m = boxMesh(w, h, d, wood); m.position.set(x, y + h / 2, z); parent.add(m); return m; }; // arch: the entrance's door frame and its lattice sliding doors
     // door frame + threshold
     fb(0.1, ENTRANCE.h, 0.16, ENTRANCE.x0 - 0.05, 0, zS);
     fb(0.1, ENTRANCE.h, 0.16, ENTRANCE.x1 + 0.05, 0, zS);
@@ -363,7 +364,7 @@ export class Museum {
     // stone step + street outside
     const step = boxMesh(2.4, 0.08, 0.5, colMat(0x8a8680, { roughness: 0.95 }));
     step.position.set(0, -0.03, zS - 0.45);
-    g.add(step);
+    g.add(step); // arch: the stone step at the door
     const street = new THREE.Mesh(new THREE.PlaneGeometry(24, 8), pixMat('asphalt', { roughness: 0.95, color: 0xb0aaa0 }));
     street.rotation.x = -Math.PI / 2; street.position.set(0, -0.012, zS - 4.4);
     street.receiveShadow = true;
@@ -381,7 +382,7 @@ export class Museum {
     const trees = { pine: [], sakura: [] };
     for (let i = 0; i < 4; i++) trees[i % 2 ? 'sakura' : 'pine'].push({ x: -7 + i * 4.6 + hash2(i, 1), y: 0, z: zS - 5.5 - hash2(i, 2), ry: hash2(i, 4) * 6.283, s: (i % 2 ? 0.55 : 0.8) + hash2(i, 3) * 0.2 });
     for (const k of Object.keys(trees)) treeInstances(k, g, trees[k], { cast: true });
-    if (hasProp('utility_pole')) { const pole = propMesh('utility_pole'); pole.position.set(3.2, 0, zS - 3.2); g.add(pole); }
+    { const pole = assetSlot(archAsset('utility_pole'), { cast: false }); pole.position.set(3.2, 0, zS - 3.2); g.add(pole); } // the lane's real pole model
     const sunOut = new THREE.PointLight(0xffc890, 3, 10, 1.5);
     sunOut.position.set(0, 3, zS - 3);
     g.add(sunOut);
@@ -456,11 +457,11 @@ export class Museum {
     const tk = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.13), new THREE.MeshStandardMaterial({ map: this.ticketTex, side: THREE.DoubleSide }));
     tk.position.set(0.05, H + 0.05, 0.22); tk.rotation.set(-0.5, 0, 0); g.add(tk);
     // donation box
-    const don = boxMesh(0.2, 0.22, 0.16, pixMat('woodLight', { roughness: 0.5 }));
-    don.position.set(-0.62, H + 0.11, -0.15); g.add(don);
+    const don = assetSlot(lpAsset('donation_box'), {}); // a real wooden donation box (r6)
+    don.position.set(-0.62, H, -0.15); g.add(don);
     const dp = new Pix(64, 32, 6); dp.fill(0xfff8e8); dp.frame(1, 1, 62, 30, 0xd8c8a8); dp.text('DONATE', 32, 8, { size: 16, color: 0x8a2a1e, align: 'center', font: FONT_EN });
     const dl = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.08), new THREE.MeshBasicMaterial({ map: dp.texture() }));
-    dl.position.set(-0.62, H + 0.12, -0.069); g.add(dl);
+    dl.position.set(-0.62, H + 0.11, -0.058); g.add(dl);
     // shopkeeper's raised tatami nook behind the counter (agari-kamachi)
     const tat = pixMat('tatami', { roughness: 0.9 });
     const nook = boxMesh(1.6, 0.36, 1.0, tat);

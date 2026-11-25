@@ -1,0 +1,44 @@
+{
+ "id": "gk_knob",
+ "src": "art/lowpix/world/made/garage_kit/gk_knob.glb",
+ "credit": {
+  "title": "Knob-and-tube wiring span (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_knob.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 300,
+ "tex": 256,
+ "size": [
+  0.511,
+  0.028,
+  0.025
+ ],
+ "colours": 15,
+ "palette": {
+  "m0": [
+   "#130d0d",
+   "#181211",
+   "#1d1716",
+   "#221c1b",
+   "#262220",
+   "#45413e",
+   "#62605d",
+   "#7e7e7e",
+   "#9c9c9c"
+  ],
+  "m1": [
+   "#8e6841",
+   "#b08e5f",
+   "#c3b18c",
+   "#d7cfb8",
+   "#edebe1",
+   "#efeee6",
+   "#f1f1ea",
+   "#f3f3ef",
+   "#f6f6f3"
+  ]
+ },
+ "warnings": []
+}

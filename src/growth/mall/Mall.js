@@ -25,6 +25,7 @@ import { X0, X1, Z0, Z1, FH, CH, FLOORS, FLAT, RUN, PATH, GAPS, LIFT, MALL_SLOTS
 import { buildEscalators, ceilingWell } from './Escalator.js';
 import { Elevator } from './Elevator.js';
 import { hasHD, hdMap } from '../../gfx/hdtex.js';
+import { lpModel, LpInstances } from '../../kit/place.js';
 
 const MOVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
 const RIDE_SPEED = SPEED; // the same speed as the steps (layout.js)
@@ -47,7 +48,7 @@ function tileTex(a, b, grout, kind = 'checker', hd = null) {
 const STACK_COLS = { red: [0xd8322c, 0xf4f0e6], blue: [0x2f6ad8, 0xf2c230], yellow: [0xf2c230, 0xd8322c], pink: [0xe86aa8, 0xf4f0e6], green: [0x3a9a5a, 0xf4f0e6], black: [0x26262c, 0xd4a83a] };
 let farGeoC = null;
 function farGeo() {
-  if (!farGeoC) { farGeoC = new THREE.BoxGeometry(0.92, 2.0, 0.44); farGeoC.translate(0, 1.0, 0); }
+  if (!farGeoC) { farGeoC = new THREE.BoxGeometry(0.92, 2.0, 0.44); farGeoC.translate(0, 1.0, 0); } // (only when a module has no model)
   return farGeoC;
 }
 const farCache = {};
@@ -148,12 +149,16 @@ export class Mall {
     for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, below ? [below] : [])) B.plane(floor, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, 0, (r.z0 + r.z1) / 2);
     for (const r of minusHoles({ x0: X0, x1: X1, z0: Z0, z1: Z1 }, above ? [above] : [])) B.plane(ceil, r.x1 - r.x0, r.z1 - r.z0, (r.x0 + r.x1) / 2, CH, (r.z0 + r.z1) / 2, { down: true });
     // ceiling lights: long glowing strips in a grid (not over the well)
+    // (each a real fluorescent fitting, lowpix lamp_fluoro, instanced; the lit tube under it stays an emissive strip)
+    const lamps = new LpInstances();
     for (let x = -11; x <= 11; x += 3.6) for (const z of [-6, -1.5, 3, 7]) {
       if (above && x > above.x0 - 0.8 && x < above.x1 + 0.8 && z > above.z0 - 1.6 && z < above.z1 + 1.6) continue;
-      B.box(glow, 0.22, 0.03, 2.4, x, CH - 0.04, z, { tint: 0xfffaf0 });
-      B.box(paint, 0.34, 0.05, 2.5, x, CH - 0.02, z, { tint: 0xe8e8e4 });
+      const p = Z.L(x, CH - 0.035, z);
+      lamps.add('lamp_fluoro', p.x, p.y, p.z, { ry: Math.PI / 2, s: [2.4 / 0.914, 1, 0.34 / 0.647] });
+      B.box(glow, 0.22, 0.03, 2.4, x, CH - 0.065, z, { tint: 0xfffaf0 }); // arch: the fitting's lit tube (an emissive strip)
     }
-    // walls: painted, a coloured band, a skirting
+    lamps.build(Z.group, { mat: (mm) => bright(mm) });
+    // arch-begin: the walls, front, wells and ceiling beams (painted, a coloured band, a skirting)
     const wall = (w, x, z, ry) => {
       B.box(paint, w, CH, 0.2, x, 0, z, { ry, tint: T.wall });
       B.box(paint, w, 0.12, 0.22, x, 0, z, { ry, tint: 0x3a3a40 });
@@ -163,6 +168,7 @@ export class Mall {
     wall(Z1 - Z0, X1 + 0.1, 0, Math.PI / 2);
     wall(Z1 - Z0, X0 - 0.1, 0, Math.PI / 2);
     this.front(Z, n, paint, metal, glow, wall);
+    // arch-end
     Z.block(X0 - 1, X1 + 1, Z0 - 1, Z0); Z.block(X1, X1 + 1, Z0, Z1 + 1); Z.block(X0 - 1, X0, Z0, Z1 + 1);
     // escalators: the pair up from here (n < 4), the pair arriving from below (n > 1)
     this.esc[n] = [];
@@ -204,6 +210,7 @@ export class Mall {
   }
 
   /** The front wall: 1F the entrance and the display windows, upstairs big windows over the station. */
+  // arch-begin: the shop fronts and the entrance (walls, fascias, window frames, door rails)
   front(Z, n, paint, metal, glow, wall) {
     const B = Z.B, T = THEMES[n];
     // the view out: a real photo as HD pixel art (src/gfx/hdtex.js 'view_plaza' / 'view_tracks'), else the drawn one
@@ -261,6 +268,7 @@ export class Mall {
       Z.block(-8.2, -5.8, Z1 - 1.0, Z1); Z.block(5.8, 8.2, Z1 - 1.0, Z1);
     }
   }
+  // arch-end
   /** The view out of the windows: the station plaza (1F) or roofs and the tracks (upstairs), dusk or day. */
   drawView(x, w, h, n) {
     const R = (c, a, b, ww, hh) => { x.fillStyle = c; x.fillRect(a, b, ww, hh); };
@@ -336,6 +344,7 @@ export class Mall {
     }
   }
   /** The well in this floor's floor (the escalators from below): the slab edge, the railing. */
+  // arch-begin: the well's slab edge and railing
   floorWell(Z, n, W, paint, metal) {
     const B = Z.B;
     for (const [w, d, x, z] of [[W.x1 - W.x0, 0.06, (W.x0 + W.x1) / 2, W.z0], [W.x1 - W.x0, 0.06, (W.x0 + W.x1) / 2, W.z1], [0.06, W.z1 - W.z0, W.x0, (W.z0 + W.z1) / 2], [0.06, W.z1 - W.z0, W.x1, (W.z0 + W.z1) / 2]]) {
@@ -344,6 +353,7 @@ export class Mall {
     this.railing(Z, W, 0, GAPS[n - 1]);
     void metal;
   }
+  // arch-end
 
   // ------------------------------------------------------------------ escalator obstacles and the ride
   escBlocksLower(Z, n) {
@@ -452,9 +462,10 @@ export class Mall {
       if (!geo) continue;
       // a module drawn with its model (src/data/propModels.js) keeps the model's own textured materials (mall-lit)
       const near = new THREE.InstancedMesh(geo, propAsset(`gr_stack_${c}`) ? bright(maskedMaterials(geo, voxelMaterials('normal'))) : brightVoxel(), arr.length);
-      const far = new THREE.InstancedMesh(farGeo(), farMats(c), arr.length);
+      // (a module drawn with its model has no box stand-in: the model at every distance)
+      const far = propAsset(`gr_stack_${c}`) ? null : new THREE.InstancedMesh(farGeo(), farMats(c), arr.length);
       const mats = arr.map((s) => new THREE.Matrix4().compose(Z.L(s.x, y, s.z), q.setFromAxisAngle(Y, s.ry), one));
-      for (const im of [near, far]) { im.receiveShadow = true; im.frustumCulled = false; Z.group.add(im); }
+      for (const im of [near, far]) if (im) { im.receiveShadow = true; im.frustumCulled = false; Z.group.add(im); }
       const set = { near, far, mats, pos: arr.map((s) => Z.L(s.x, y + 1, s.z)) };
       this.lodSets[Z.id].push(set);
       this.lodSet(set, null);
@@ -464,11 +475,11 @@ export class Mall {
   lodSet(set, cam, d2 = 64) {
     let a = 0, b = 0;
     set.pos.forEach((p, i) => {
-      if (cam && p.distanceToSquared(cam) < d2) set.near.setMatrixAt(a++, set.mats[i]);
+      if (!set.far || (cam && p.distanceToSquared(cam) < d2)) set.near.setMatrixAt(a++, set.mats[i]);
       else set.far.setMatrixAt(b++, set.mats[i]);
     });
-    set.near.count = a; set.far.count = b;
-    set.near.instanceMatrix.needsUpdate = true; set.far.instanceMatrix.needsUpdate = true;
+    set.near.count = a; if (set.far) set.far.count = b;
+    set.near.instanceMatrix.needsUpdate = true; if (set.far) set.far.instanceMatrix.needsUpdate = true;
   }
   lod(n) {
     const P = this.game.player, cam = (this._lodV ||= V()).set(P.pos.x, P.eye, P.pos.z); // (the player: moved at once by a swap)
@@ -527,7 +538,7 @@ export class Mall {
       }, 0, 2.55, z, 0);
       b.material.side = THREE.DoubleSide;
       // (a plain mesh: its own material without vertex colours, or the missing colour attribute renders it black)
-      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.wire ||= Z.mat(new THREE.MeshStandardMaterial({ color: 0x9aa0a8, roughness: 0.3, metalness: 0.6 }))); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str);
+      const str = new THREE.Mesh(new THREE.BoxGeometry(0.01, CH - 2.95, 0.01), this.mats.wire ||= Z.mat(new THREE.MeshStandardMaterial({ color: 0x9aa0a8, roughness: 0.3, metalness: 0.6 }))); str.position.copy(Z.L(0, 2.95 + (CH - 2.95) / 2, z)); Z.group.add(str); // arch: the sign's hanging wire
     }
     // capsule-toy posters on the front wall, pixel art only
     for (const [x, i] of [[-12.2, 0], [12.2, 1]]) neon(0.9, 1.25, 30, 42, (c) => this.drawPoster(c, i + n), x, 1.6, Z1 - 0.12, Math.PI);
@@ -546,9 +557,8 @@ export class Mall {
   groundFloor(Z, paint, metal, glow) {
     const B = Z.B;
     // the info counter by the door: today's numbers
-    B.box(paint, 3.0, 1.0, 0.7, 7.5, 0, 6.9, { tint: 0xf04a8a });
-    B.box(paint, 3.1, 0.06, 0.8, 7.5, 1.0, 6.9, { tint: 0xf4f0e8 });
-    B.box(glow, 2.6, 0.08, 0.02, 7.5, 0.8, 6.54, { tint: 0xffd8e8 });
+    // two real shop counters side by side (lowpix showcase: a glass-topped counter)
+    for (const dx of [-0.78, 0.78]) { const p = Z.L(7.5 + dx, 0, 6.9); Z.group.add(lpModel('showcase', p.x, p.y, p.z, { ry: Math.PI, size: [1.55, 1.0, 0.7], fit: 'stretch', mat: (mm) => bright(mm) })); }
     Z.prop('cash_register', 7.0, 1.06, 6.95, Math.PI, 0.9);
     Z.prop('call_bell', 8.2, 1.06, 6.7, 0, 1);
     Z.block(5.9, 9.1, 6.45, 7.35);
@@ -560,8 +570,8 @@ export class Mall {
     Z.prop('capsule_return', 1.6, 0, 7.8, Math.PI, 1);
     Z.block(1.3, 1.9, 7.5, 8.1);
     // the stock room door (west wall): capsule cartons for the Kaikan's machines
-    B.box(paint, 0.06, 2.1, 1.1, X0 + 0.04, 0, -6.0, { tint: 0x7a8088 });
-    B.box(metal, 0.04, 0.06, 0.2, X0 + 0.09, 1.0, -5.65, { tint: 0xc8ccd2 });
+    B.box(paint, 0.06, 2.1, 1.1, X0 + 0.04, 0, -6.0, { tint: 0x7a8088 }); // arch: the stock room door
+    B.box(metal, 0.04, 0.06, 0.2, X0 + 0.09, 1.0, -5.65, { tint: 0xc8ccd2 }); // arch: its handle
     const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.16), Z.mat(canvasMat(40, 12, (x) => { x.fillStyle = '#2a2a30'; x.fillRect(0, 0, 40, 12); pixText(x, 'STOCK 倉庫', 20, 1, { size: 8, align: 'center', color: '#f4f0e6' }); })));
     pl.position.copy(Z.L(X0 + 0.08, 2.25, -6.0)); pl.rotation.y = Math.PI / 2; Z.group.add(pl);
     Z.hit(0.2, 2.1, 1.1, X0 + 0.1, 1.05, -6.0, { reach: 2.4, hint: () => ({ key: 'LMB', text: 'Stock room', sub: 'Capsule cartons for the Kaikan\'s machines (paid from the bank)' }), use: () => { this.stockRoom(); return false; } });

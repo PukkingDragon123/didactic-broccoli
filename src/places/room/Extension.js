@@ -8,6 +8,7 @@
 // Room.js without changing it: the connecting door is added to the room's group.
 //   game.places.home103 = { zone, build(), cookStep(dt), takeDish(), fillBath(), bath(), applyTier() }     save: game.state.growth.home
 import * as THREE from 'three';
+import { lpModel } from '../../kit/place.js';
 import { audio } from '../../core/audio.js';
 import { makeItemMesh } from '../../game/collectibles.js';
 import { makeToolMesh } from '../../game/Held.js';
@@ -100,6 +101,7 @@ export class Extension {
     B.plane(M.floor, 3.3, 2.1 - ZP, (X0 + 0.8) / 2, 0, (ZP + 2.1) / 2);
     B.plane(M.floor, 2.1, Z1 - 2.1, (-1.3 + 0.8) / 2, 0, (2.1 + Z1) / 2);
     B.plane(M.genkan, 1.2, 0.7, X0 + 0.6, -0.12, Z1 - 0.35);
+    // arch-begin: the flat's shell (the genkan step, walls, doors and their frames, partitions, tiles, ceilings, mouldings)
     B.box(M.woodL, 1.2, 0.12, 0.08, X0 + 0.6, -0.12, Z1 - 0.72, { tint: 0xc8a070 });
     B.plane(M.tile, X1 - 0.8, Z1 - ZP, (0.8 + X1) / 2, 0.01, (ZP + Z1) / 2, { s: 1 });
     // walls (shell boxes outside the interior)
@@ -141,9 +143,9 @@ export class Extension {
       B.box(M.wood, len, 0.06, 0.02, cx, 0, cz, { ry, tint: 0x8a6040 });
       B.box(M.wood, len, 0.07, 0.03, cx, H - 0.07, cz, { ry, tint: 0xc89868 });
     }
-    // lamps: a kitchen tube, a round ceiling lamp in the back room
-    B.box(M.glow, 0.9, 0.05, 0.1, -0.6, H - 0.07, 1.4, { tint: 0xfff4dc });
-    B.box(M.paint, 1.0, 0.03, 0.16, -0.6, H - 0.03, 1.4, { tint: 0xe8e4dc });
+    // arch-end
+    // lamps: a fluorescent fitting in the kitchen (a real model), a round ceiling lamp in the back room
+    Z.group.add(lpModel('lamp_fluoro', ...Z.L(-0.6, H - 0.04, 1.4).toArray(), { ry: Math.PI / 2, size: 1.0, fit: 'z', mat: (mm) => this.places.mat(mm) }));
     // obstacles
     Z.block(X0 - 0.5, X0, Z0 - 0.5, Z1 + 0.5); Z.block(X1, X1 + 0.5, Z0 - 0.5, Z1 + 0.5);
     Z.block(X0 - 0.5, X1 + 0.5, Z0 - 0.5, Z0); Z.block(X0 - 0.5, X1 + 0.5, Z1, Z1 + 0.5);
@@ -163,17 +165,13 @@ export class Extension {
   // ------------------------------------------------------------------ kitchen
   kitchen() {
     const Z = this.zone, B = Z.B, M = this.M, z1 = this.dims.Z1;
-    // a counter along the front wall: cupboards, a steel top with the sink, the stove on the right end
-    B.box(M.paint, 1.9, 0.82, 0.58, -0.35, 0, z1 - 0.3, { tint: 0xf0e6cc });
-    for (let i = 0; i < 4; i++) { B.box(M.paint, 0.44, 0.7, 0.01, -1.06 + i * 0.475, 0.06, z1 - 0.595, { tint: 0xf6eedc }); B.box(M.metal, 0.12, 0.015, 0.02, -1.06 + i * 0.475, 0.68, z1 - 0.605, { tint: 0xc8ccd2 }); }
-    B.box(M.metal, 1.92, 0.04, 0.62, -0.35, 0.82, z1 - 0.3, { tint: 0xc8ccd2 });
-    B.box(M.metal, 0.5, 0.02, 0.36, -0.75, 0.84, z1 - 0.32, { tint: 0x7a7e84 }); // sink basin
-    B.box(M.metal, 0.03, 0.3, 0.03, -0.75, 0.86, z1 - 0.08, { tint: 0xd8dce0 });
-    B.box(M.metal, 0.03, 0.03, 0.18, -0.75, 1.14, z1 - 0.16, { tint: 0xd8dce0 });
-    B.box(M.paint, 1.9, 0.55, 0.34, -0.35, 1.55, z1 - 0.17, { tint: 0xf0e6cc }); // wall cupboard
-    B.box(M.paint, 1.9, 0.6, 0.01, -0.35, 0.86, z1 - 0.005, { tint: 0xe4ece8 }); // splash panel
-    // exhaust fan box over the stove
-    B.box(M.paint, 0.62, 0.3, 0.4, 0.3, 1.75, z1 - 0.2, { tint: 0xd8d4cc });
+    // a counter along the front wall: the sink unit, the wall cupboard over it, the extractor hood over the stove (own
+    // models, art/lowpix/world/made/r6_props.py)
+    const fur = (id, x, y, z, o = {}) => Z.group.add(lpModel(id, ...Z.L(x, y, z).toArray(), { ry: Math.PI, mat: (mm) => this.places.mat(mm), ...o }));
+    fur('kitchen_unit', -0.35, 0, z1 - 0.32);
+    fur('wall_cupboard', -0.35, 1.55, z1 - 0.19);
+    B.box(M.paint, 1.9, 0.6, 0.01, -0.35, 0.86, z1 - 0.005, { tint: 0xe4ece8 }); // arch: the splash panel on the wall
+    fur('range_fan', 0.3, 1.75 - 0.145, z1 - 0.21);
     Z.prop('gr_stove', 0.3, 0.86, z1 - 0.32, Math.PI);
     this.pan = Z.prop('gr_pan', 0.44, 0.99, z1 - 0.34, Math.PI - 0.4);
     Z.prop('gr_ricecooker', -1.12, 0.86, z1 - 0.3, Math.PI);
@@ -186,8 +184,7 @@ export class Extension {
     Z.prop('hm_pots', 0.1, 2.1, z1 - 0.2, Math.PI, 0.8);
     Z.block(-1.3, 0.6, z1 - 0.62, z1);
     // a little dining spot by the partition: a stool and a narrow shelf-table
-    B.box(M.woodL, 1.0, 0.04, 0.32, -1.6, 0.74, 0.42, { tint: 0xc8a070 });
-    for (const x of [-2.05, -1.15]) B.box(M.wood, 0.04, 0.74, 0.04, x, 0, 0.5, { tint: 0x7a5030 });
+    fur('console_table', -1.6, 0, 0.42, { ry: 0 });
     Z.prop('stool', -1.25, 0, 0.7, 0.2);
     Z.prop('hm_sake_set', -1.75, 0.78, 0.42, 0.2, 0.9);
     Z.prop('hm_thermos', -1.3, 0.78, 0.36, -0.4, 0.8);
@@ -411,20 +408,13 @@ export class Extension {
     Hb.plane(this.M.paint, 1.8, 1.2, 0.3, 0.007, -0.8, { tint: 0xa83a48 });
     // the collection cabinet on the back wall: dark wood, 5 shelves, a glass front, a lit header
     const cw = 4.4, cx = 0, cz = Z0 + 0.22;
-    Hb.box(M.wood, cw, 0.12, 0.42, cx, 0, cz, { tint: 0x8a5a36 });
-    Hb.box(M.wood, cw, 0.08, 0.42, cx, 2.12, cz, { tint: 0x8a5a36 });
-    for (const x of [-cw / 2, cw / 2]) Hb.box(M.wood, 0.06, 2.2, 0.42, cx + x, 0, cz, { tint: 0x8a5a36 });
-    for (let i = 1; i < 4; i++) Hb.box(M.wood, 0.04, 2.0, 0.42, cx - cw / 2 + i * cw / 4, 0.12, cz, { tint: 0x9a6a40 });
-    Hb.box(M.paint, cw - 0.1, 2.0, 0.02, cx, 0.12, cz - 0.2, { tint: 0x2a3a5a }); // a dark blue back so the figures stand out
-    this.cabShelves = [0.16, 0.56, 0.96, 1.36, 1.74];
-    for (const y of this.cabShelves) Hb.box(M.woodL, cw, 0.025, 0.4, cx, y - 0.03, cz, { tint: 0xd8c8a8 });
-    Hb.box(M.glow, cw - 0.1, 0.03, 0.04, cx, 2.06, cz + 0.15, { tint: 0xfff4dc });
-    Hb.box(M.paint, cw, 0.1, 0.03, cx, 2.2, cz + 0.2, { tint: 0x2a1a12 });
-    // the showcase on the west wall: glass all round, three glass shelves
+    this.cabShelves = [0.16, 0.56, 0.96, 1.36, 1.74]; // (the shelf tops of the own model are at y - 0.005)
+    Hb.box(M.glow, cw - 0.1, 0.03, 0.04, cx, 2.06, cz + 0.15, { tint: 0xfff4dc }); // arch: the cabinet's lit tube (an emissive strip under its lamp rail)
+    // the showcase on the west wall: glass all round, three glass shelves (the glass panes below)
     const sx = X0 + 0.25;
-    Hb.box(M.wood, 0.45, 0.6, 1.3, sx, 0, -1.3, { tint: 0x3a2418 });
-    for (const y of [0.62, 1.0, 1.38]) Hb.box(M.paint, 0.4, 0.015, 1.24, sx, y, -1.3, { tint: 0xd8e8ee, k: 1.2 });
-    Hb.box(M.wood, 0.45, 0.06, 1.3, sx, 1.78, -1.3, { tint: 0x3a2418 });
+    const hm = (id, x, z) => { const m = lpModel(id, ...Z.L(x, 0, z).toArray(), { mat: (mm) => this.places.mat(mm) }); hobby.add(m); return m; };
+    hm('collection_cabinet', cx, cz - 0.01);
+    hm('glass_showcase', sx, -1.3);
     Hb.build(hobby);
     const glassF = new THREE.Mesh(new THREE.PlaneGeometry(cw - 0.1, 2.0), M.glass);
     glassF.position.copy(Z.L(cx, 1.12, cz + 0.215)); hobby.add(glassF);

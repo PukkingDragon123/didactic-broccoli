@@ -1,0 +1,55 @@
+{
+ "id": "gk_channel",
+ "src": "art/lowpix/world/made/garage_kit/gk_channel.glb",
+ "credit": {
+  "title": "Steel C-channel girt (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_channel.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 200,
+ "tex": 1024,
+ "size": [
+  5,
+  0.1,
+  0.06
+ ],
+ "colours": 22,
+ "palette": {
+  "m0": [
+   "#1b1d27",
+   "#252831",
+   "#2f333b",
+   "#3a3e44",
+   "#45494d",
+   "#606264",
+   "#7b7b7b",
+   "#949494",
+   "#adadad"
+  ],
+  "m1": [
+   "#3d0f0f",
+   "#4e1915",
+   "#5e261c",
+   "#6e3523",
+   "#7d462b",
+   "#9d633a",
+   "#b8834e",
+   "#c3a173",
+   "#cebb96"
+  ],
+  "m2": [
+   "#321111",
+   "#401b18",
+   "#4e261f",
+   "#5b3327",
+   "#67412f",
+   "#865d42",
+   "#a47c55",
+   "#b39a77",
+   "#c3b499"
+  ]
+ },
+ "warnings": []
+}

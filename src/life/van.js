@@ -957,10 +957,10 @@ export class Van {
     ng.translate(0, 0.02, 0);
     const needle = new THREE.Mesh(ng, new THREE.MeshBasicMaterial({ color: 0xff6a2a }));
     needle.position.set((DIAL_C[0] / DIAL_W - 0.5) * D.w, (0.5 - DIAL_C[1] / DIAL_H) * D.h, 0.003);
-    face.add(needle);
+    face.add(needle); // arch: the dashboard gauge's needle (the van's instrument)
     const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, 0.004, 8).rotateX(Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x1a1a1a }));
     hub.position.copy(needle.position).setZ(0.005);
-    face.add(hub);
+    face.add(hub); // arch: the gauge needle's hub
     cab.needle = needle;
     // the omamori on its cord
     cab.charm = new THREE.Group();

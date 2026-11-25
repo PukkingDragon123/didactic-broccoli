@@ -1,0 +1,33 @@
+{
+ "id": "range_fan",
+ "src": "art/lowpix/world/made/range_fan.glb",
+ "credit": {
+  "title": "Kitchen extractor hood (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/range_fan.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 144,
+ "tex": 344,
+ "size": [
+  0.62,
+  0.445,
+  0.412
+ ],
+ "colours": 7,
+ "palette": {
+  "m0": [
+   "#894f2d",
+   "#b0723f",
+   "#c39663",
+   "#d0b78e",
+   "#dfd3b7",
+   "#e2dbc2",
+   "#e6e2cd",
+   "#e9e9d7",
+   "#eeeee1"
+  ]
+ },
+ "warnings": []
+}

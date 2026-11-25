@@ -1,0 +1,33 @@
+{
+ "id": "gk_lanterns",
+ "src": "art/lowpix/world/made/garage_kit/gk_lanterns.glb",
+ "credit": {
+  "title": "Lantern cord with wire hangers (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_lanterns.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 1096,
+ "tex": 1024,
+ "size": [
+  0.016,
+  0.206,
+  5.622
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#130d0d",
+   "#181211",
+   "#1d1716",
+   "#221c1b",
+   "#262220",
+   "#45413e",
+   "#62605d",
+   "#7e7e7e",
+   "#9c9c9c"
+  ]
+ },
+ "warnings": []
+}

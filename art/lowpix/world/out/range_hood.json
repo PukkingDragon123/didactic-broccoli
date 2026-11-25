@@ -1,0 +1,44 @@
+{
+ "id": "range_hood",
+ "src": "art/lowpix/world/made/range_hood.glb",
+ "credit": {
+  "title": "Exhaust hood (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/range_hood.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 488,
+ "tex": 1024,
+ "size": [
+  3.408,
+  0.42,
+  0.733
+ ],
+ "colours": 16,
+ "palette": {
+  "m0": [
+   "#43485f",
+   "#5b6279",
+   "#747e91",
+   "#939aa4",
+   "#b0b4b8",
+   "#bdbfc0",
+   "#c9c9c9",
+   "#d3d3d3",
+   "#dddddd"
+  ],
+  "m1": [
+   "#440e0d",
+   "#571913",
+   "#692719",
+   "#7b3820",
+   "#8c4a28",
+   "#ac6835",
+   "#c3884c",
+   "#cba671",
+   "#d5c094"
+  ]
+ },
+ "warnings": []
+}

@@ -1,0 +1,44 @@
+{
+ "id": "gk_switch",
+ "src": "art/lowpix/world/made/garage_kit/gk_switch.glb",
+ "credit": {
+  "title": "Light switch plate (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_switch.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 128,
+ "tex": 256,
+ "size": [
+  0.08,
+  0.12,
+  0.016
+ ],
+ "colours": 13,
+ "palette": {
+  "m0": [
+   "#874f2d",
+   "#ad713f",
+   "#c19562",
+   "#ceb58c",
+   "#ddd1b4",
+   "#e0d9c0",
+   "#e4e1cb",
+   "#e8e7d6",
+   "#edede0"
+  ],
+  "m1": [
+   "#414958",
+   "#576270",
+   "#707b87",
+   "#8c949a",
+   "#a7abad",
+   "#b5b6b6",
+   "#c1c1c1",
+   "#cdcdcd",
+   "#d9d9d9"
+  ]
+ },
+ "warnings": []
+}

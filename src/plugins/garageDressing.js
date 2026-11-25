@@ -27,7 +27,6 @@ const H = Math.PI / 2;
 // the workbench along the left wall in the front corner (top at 0.8 m), clear of the pink phone, the customers' way to
 // the machines and the umbrella stand by the shutter
 const BENCH = { x: -3.7, z: 3.62, top: 0.8 };
-const T = 0.1925; // the work table's low shelf (src/world/Garage.js buildFurniture)
 const S = 1.975; // the left wall's plank shelves (src/world/GarageDetail.js dressing)
 // [prop id, x, y, z, ry, opts?] (opts: block (the player bumps into it), shadow)
 const PIECES = [
@@ -42,36 +41,33 @@ const PIECES = [
   ['gg_jar_shelf', -3.892, 1.42, 3.85, H],
   ['gg_work_lamp', -3.15, 3.2 - 0.95, 3.6, 0.4],
   ['gg_stool', -3.12, 0, 3.45, 0.35, { block: true, shadow: true }],
-  ['gg_toy_box', -0.4, T, 0.12, 0.08],
-  ['gg_crate', 0.15, T, 0.1, H],
-  ['gg_bundle', 0.65, T, 0.12, 0.1],
   ['gg_bucket', 1.85, 0, -4.72, 0.4, { block: true }],
   // along the right wall in the gaps between the wall shelves' slots (src/world/Garage.js SHELF_SLOTS, 1.3 m each):
   // the old electric fan, and two crates of capsule stock
-  ['gg_fan', 3.72, 0, 2.15, -H + 0.25, { block: true, shadow: true }],
+  ['gg_fan', 3.66, 0, 2.15, -H + 0.25, { block: true, shadow: true }],
   ['gg_crate', 3.83, 0, 0.35, 0.04, { block: true }],
   ['gg_crate', 3.83, 0.264, 0.36, -0.06],
   // ---- round 3: every wall run dressed at eye level, the ceiling, the corners
   // left wall: his bicycle hung over the workbench, stock on the plank shelves over the machine row (board top 1.975)
   ['gg_bicycle', -3.744, 2.02, 3.9, H],
-  ['gg_carton', -3.87, S, -4.44, H], ['gg_screw_jars', -3.86, S, -4.18, 0.2], ['gg_screw_jars', -3.85, S, -3.97, -0.4],
-  ['gg_puff', -3.87, S, -3.72, H],
+  ['gg_carton', -3.87, S, -4.25, H], ['gg_screw_jars', -3.86, S, -3.98, 0.2], ['gg_screw_jars', -3.85, S, -3.82, -0.4],
+  ['gg_puff', -3.87, S, -3.64, H],
   ['gg_bottle', -3.86, S, -3.16, 0.3], ['gg_bottle', -3.86, S, -3.07, -0.5], ['gg_bottle', -3.85, S, -2.98, 1.2],
   ['gg_toy_box', -3.88, S, -2.62, H], ['gg_carton', -3.87, S, -2.2, H + 0.1], ['gg_noodle', -3.86, S, -1.9, 0.4], ['gg_noodle', -3.86, S, -1.77, -0.3],
   // right wall: a jar shelf and a mirror by the sell box; the steel shelving unit of boxed stock in the front corner,
   // the old tyres and the fire alarm beside it; his jacket on the front pier with the hand truck and a jerrycan
   ['gg_jar_shelf', 3.892, 1.25, -2.75, -H],
   ['gg_mirror', 3.98, 1.1, -1.6, -H],
-  ['gg_shelf_unit', 3.755, 0, 4.55, -H, { block: true, shadow: true }],
-  ['gg_crate2', 3.76, 0.15, 4.55, -H], ['gg_toy_box', 3.78, 0.6, 4.43, -H], ['gg_puff', 3.76, 0.6, 4.71, -H + 0.2],
-  ['gg_boxes', 3.77, 1.1, 4.55, -H], ['gg_crate', 3.76, 1.55, 4.43, -H], ['gg_carton', 3.78, 1.55, 4.71, -H],
-  ['gg_box', 3.77, 2.0, 4.45, -H + 0.1], ['gg_cap', 3.76, 2.3, 4.45, 0.6], // (his cap on the top box)
-  ['gg_tyres', 3.73, 0, 3.98, 0.3, { block: true, shadow: true }],
+  ['gg_shelf_unit', 3.73, 0, 4.7, -H, { block: true, shadow: true }],
+  ['gg_crate2', 3.735, 0.15, 4.7, -H], ['gg_toy_box', 3.755, 0.6, 4.58, -H], ['gg_puff', 3.735, 0.6, 4.86, -H + 0.2],
+  ['gg_boxes', 3.745, 1.1, 4.7, -H], ['gg_crate', 3.735, 1.55, 4.58, -H], ['gg_carton', 3.755, 1.55, 4.86, -H],
+  ['gg_box', 3.745, 2.0, 4.6, -H + 0.1], ['gg_cap', 3.735, 2.3, 4.6, 0.6], // (his cap on the top box)
+  ['gg_tyres', 3.62, 0, 4.05, 0.3, { block: true, shadow: true, scale: 0.9 }],
   ['lp_fire_alarm', 3.97, 1.45, 3.95, -H],
-  ['gg_jacket', 3.2, 1.05, 4.8, Math.PI],
-  ['lp_hand_truck', 2.6, 0, 4.55, 0.1, { block: true, shadow: true }],
-  ['lp_jerrycan_metal', 3.16, 0, 4.82, 0.05, { shadow: true }],
-  ['lp_dustpan', 3.3, 0, 4.4, 0.4],
+  ['gg_jacket', 3.83, 1.05, 2.15, -H], // (on a hook over the old fan)
+  ['lp_hand_truck', -2.65, 0, 4.6, 0.1, { block: true, shadow: true }],
+  ['lp_jerrycan_metal', 3.33, 0, 4.8, H, { shadow: true }],
+  ['lp_dustpan', 3.05, 0, 3.95, 0.4],
   // back wall: the dartboard over the PC desk's end (the poster beside it is a print, below)
   ['gg_dartboard', 3.15, 1.92, -4.975, 0],
   // the ceiling: bare bulbs on their flexes
@@ -84,7 +80,7 @@ const PIECES = [
 const PRINTS = [
   ['shop', 'mk:calendar', '-x', -2.1, 1.47, 0.36, 0.54, 0.01], // April 1999, the cherry blossom month
   ['shop', 'mk:poster1', '-x', 0.35, 1.42, 0.4, 0.6, -0.015], // the ice cream poster
-  ['shop', 'mk:poster5', '-x', 2.15, 1.42, 0.4, 0.6, 0.012], // the kaiju film
+  ['shop', 'mk:poster5', '+z', 1.62, 1.68, 0.3, 0.45, 0.012], // the kaiju film, over the fridge
   ['lane', 'lane:travel:0', '+z', 2.1, 2.15, 0.4, 0.6, 0.01], // a railway travel poster over the sink
 ];
 // three of his figures on the front of the bench (real figure models: the first lowpix one of each series)

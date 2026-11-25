@@ -1,0 +1,33 @@
+{
+ "id": "gk_doorframe",
+ "src": "art/lowpix/world/made/garage_kit/gk_doorframe.glb",
+ "credit": {
+  "title": "Steel door frame (our own model, hand-painted)",
+  "author": "Gacha Garage (made for the game, art/lowpix/world/made/garage_kit/gk_doorframe.glb)",
+  "license": "CC0 1.0",
+  "url": "",
+  "site": "Original"
+ },
+ "tris": 156,
+ "tex": 288,
+ "size": [
+  1.32,
+  2.16,
+  0.12
+ ],
+ "colours": 8,
+ "palette": {
+  "m0": [
+   "#1e2a22",
+   "#29352c",
+   "#344036",
+   "#404a41",
+   "#4d534d",
+   "#676967",
+   "#808080",
+   "#989898",
+   "#b0b0b0"
+  ]
+ },
+ "warnings": []
+}
