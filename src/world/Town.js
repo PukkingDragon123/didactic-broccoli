@@ -491,7 +491,7 @@ export class Town {
     this.leaves.build(this.group, { cast: true, name: 'leaves:lane' });
     this.flushTrees();
     this.flushProps();
-    this.lpi.build(this.group);
+    this.lpi.build(this.group, { cast: false }); // (small street clutter: no shadow passes)
     this.buildTrains();
     try { this.pylon = buildPylon(this); } catch (e) { console.error('Town: pylon failed', e); }
     this.setShopOpen(true);

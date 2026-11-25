@@ -281,7 +281,7 @@ function nearSide(t) {
     door: { x: 0.1, kind: 'wood', w: 1.2, name: N('田中'), porch: 'stone' },
     extra: (Bq, f) => {
       // a wind chime (風鈴) under the balcony eave, a long-wire radio antenna to the ridge
-      t.lpi.add('furin', 2.1, f.top - 0.12 - 0.27, 0.6, { frame: Bq.top }); // a real wind chime hung from the eave
+      t.lpi.add('furin', 2.1, f.top - 0.12 - 0.27, 0.066, { frame: Bq.top }); // a real wind chime on its hook by the window
       pot(t, -0.85, 0, 0.45, 0.8, 0x4a8a3a, 0xe5383b);
       pot(t, 0.95, 0, 0.42, 0.7, 0x3e7a34);
     } });
