@@ -10,6 +10,8 @@
 //                        startRide(gap, 'up' | 'down'), simulate(min) }     save: game.state.growth.mall / .machines
 import * as THREE from 'three';
 import { audio } from '../../core/audio.js';
+import { assetSlot } from '../../kit/assets.js';
+import { lpAsset } from '../../kit/lowpixWorld.js';
 import { bgm } from '../../core/bgm.js';
 import { playSong } from '../../room/sfx.js';
 import { propGeometry, propAsset, maskedMaterials } from '../../world/props.js';
@@ -525,8 +527,9 @@ export class Mall {
     if (n < FLOORS) { const G = GAPS[n]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▲ ${n + 1}F`, 24, 0, { size: 8, align: 'center', color: '#7aff9a', font: 'DotGothic16' }); }, G.x, 2.7, pathZ(G, 0) - G.dir * 0.3, G.dir > 0 ? 0 : Math.PI); }
     if (n > 1) { const G = GAPS[n - 1]; neon(1.8, 0.35, 48, 10, (x) => { x.fillStyle = '#1a1a22'; x.fillRect(0, 0, 48, 10); pixText(x, `▼ ${n - 1}F`, 24, 0, { size: 8, align: 'center', color: '#ffb05a', font: 'DotGothic16' }); }, G.x, 2.4, pathZ(G, PATH) + G.dir * 0.3, G.dir > 0 ? Math.PI : 0); }
     // the floor's centrepiece on a round plinth, and two sale banners hanging over the promenade
-    const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.05, 0.35, 16), Z.mat(new THREE.MeshStandardMaterial({ color: new THREE.Color(T.band), roughness: 0.4 })));
-    plinth.position.copy(Z.L(0, 0.175, CENTRE_Z)); Z.group.add(plinth);
+    // (our riveted round display base, hand-painted: not a flat-colour cylinder)
+    const plinth = assetSlot(lpAsset('pod_base_own'), { size: [2.1, 0.35, 2.1], fit: 'stretch' });
+    plinth.position.copy(Z.L(0, 0, CENTRE_Z)); Z.group.add(plinth);
     Z.prop(T.centre[0], -0.25, 0.35, CENTRE_Z, 0.4, 1.2);
     Z.prop(T.centre[1], 0.55, 0.35, CENTRE_Z + 0.3, -0.6, 0.9);
     Z.block(-1.05, 1.05, CENTRE_Z - 1.05, CENTRE_Z + 1.05);
