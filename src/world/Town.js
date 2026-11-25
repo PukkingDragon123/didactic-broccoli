@@ -1120,7 +1120,7 @@ export class Town {
     }
     // a window box of flowers on the sill
     if (opt.flowers) {
-      this.lpi.add('window_box', x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, s: [w, 1, 1] }); // a real planter trough (r6 window_box)
+      this.lpi.add('window_box', x + nx * 0.16, y - 0.2, z + nz * 0.16, { ry, s: [w, 1, 1], frame: B.top }); // (in the house's frame, like its sprigs) // a real planter trough (r6 window_box)
       // geraniums and pansies spilling over the box (sprig cards, src/world/foliage.js)
       const m4 = new THREE.Matrix4().makeRotationY(ry).setPosition(x + nx * 0.16, y - 0.06, z + nz * 0.16).premultiply(B.top);
       const kinds = ['pelargonium', 'pansy', 'azalea'], k0 = kinds[Math.floor(hash2(wp.x, wp.z) * 3)];
